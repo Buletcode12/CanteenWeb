@@ -1,0 +1,37 @@
+
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="header">
+<div class="header">
+	<div class="container-fluid">
+		<div class="d-flex indexheader">
+			
+				<div class="logo">
+					<a th:href="${'/'+session.DASHBOARD}"> <img
+						src="../assets/images/login_img/logo.png" alt=""
+						class="img-fluid" />
+					</a>
+				</div>
+				 
+				<div class="headerright" align="right">
+				<div class="logo-org">
+					<a th:href="${'/'+session.DASHBOARD}"> <img
+						th:src="${session.ORGANIZATION_LOGO}" alt=""
+						class="img-fluid" />
+					</a>
+				</div>
+   <div class="dropdown">
+					  <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+					    <i class="ti-user"></i>
+					  </button>
+					  <ul class="dropdown-menu">
+					<!--     <li><a class="dropdown-item" href="#"><i class="ti-lock"></i>Lock Screen</a> </li>
+					    <li><a class="dropdown-item" href="#"><i class="ti-email"></i> Profile</a></li>
+					    <li><a class="dropdown-item" href="/notification"><i class="ti-power-off"></i>Notification</a> </li> -->
+					    <li><a class="dropdown-item" href="/logout"><i class="ti-power-off"></i> Log Out</a> </li>
+					  </ul>
+					</div>
+
+				</div>
+		</div>
+	</div>
+</div>
+</html>

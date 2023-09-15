@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<!-- <link rel="stylesheet" href="../assets/css/extend/style-extend.css"> -->
+<title>Welcome To NERP</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<!-- <script src="../assets/css/extend/ag-grid-community.min.js"></script> -->
+<!-- <script src="../assets/js/extend/grid.js"></script> -->
+<!-- <script src="https://unpkg.com/@ag-grid-community/all-modules@24.1.0/dist/ag-grid-community.min.js"></script>
+   <link rel="stylesheet" href="../assets/css/extend/ag-theme-material.css">  -->
+<style>
+/* Slimselect ends*/
+.select-pure__select {
+	align-items: center;
+	border-radius: 4px;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+	box-sizing: border-box;
+	color: #363b3e;
+	cursor: pointer;
+	display: flex;
+	font-size: 9px;
+	font-weight: 500;
+	justify-content: left;
+	min-height: 44px;
+	padding: 5px 10px;
+	position: relative;
+	transition: 0.2s;
+	width: 100%;
+	background: #FFF;
+}
+
+.select-pure__options {
+	border-radius: 4px;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+	box-sizing: border-box;
+	color: #363b3e;
+	display: none;
+	left: 0;
+	max-height: 221px;
+	overflow-y: scroll;
+	position: absolute;
+	top: 50px;
+	width: 100%;
+	z-index: 5;
+}
+
+.select-pure__select--opened .select-pure__options {
+	display: block;
+}
+
+.select-pure__option {
+	background: #fff;
+	border-bottom: 1px solid #e4e4e4;
+	box-sizing: border-box;
+	height: 44px;
+	line-height: 25px;
+	padding: 10px;
+}
+
+.select-pure__option--disabled {
+	color: #e4e4e4;
+}
+
+.select-pure__option--selected {
+	color: #e4e4e4;
+	cursor: initial;
+	pointer-events: none;
+}
+
+.select-pure__option--hidden {
+	display: none;
+}
+
+.select-pure__selected-label {
+	align-items: 'center';
+	background: #931b1e;
+	border-radius: 4px;
+	color: #fff;
+	cursor: initial;
+	display: inline-flex;
+	justify-content: 'center';
+	margin: 5px 10px 5px 0;
+	padding: 3px 7px;
+}
+
+.select-pure__selected-label:last-of-type {
+	margin-right: 0;
+}
+
+.select-pure__selected-label i {
+	cursor: pointer;
+	display: inline-block;
+	margin-left: 7px;
+}
+
+.select-pure__selected-label img {
+	cursor: pointer;
+	display: inline-block;
+	height: 18px;
+	margin-left: 7px;
+	width: 14px;
+}
+
+.select-pure__selected-label i:hover {
+	color: #e4e4e4;
+}
+
+.select-pure__autocomplete {
+	background: #f9f9f8;
+	border-bottom: 1px solid #e4e4e4;
+	border-left: none;
+	border-right: none;
+	border-top: none;
+	box-sizing: border-box;
+	font-size: 16px;
+	outline: none;
+	padding: 10px;
+	width: 100%;
+}
+
+.select-pure__placeholder--hidden {
+	display: none;
+}
+/*Slimselect ends*/
+.blueClsWT {
+	background: #0076ba !important;
+	color: #fff !important;
+}
+
+.redClsWT {
+	background: #ff9e99 !important;
+	color: #fff !important;
+}
+
+.redClsWT::before {
+	font-size: 8px;
+	color: #FFF;
+	content: '\e646';
+	font-family: 'themify';
+	padding-right: 7px;
+}
+
+.blueCls {
+	background: #0076ba;
+	color: #fff;
+}
+
+.blueClsWT::before {
+	font-size: 8px;
+	color: #FFF;
+	content: '\e64c';
+	font-family: 'themify';
+	padding-right: 7px;
+}
+
+.tptCls {
+	background: transparnt;
+}
+
+#myGrid1 .ag-row:first-child {
+	border: 1px solid #007bff;
+}
+
+#myGrid1 .ag-row-selected {
+	border: 1px solid #007bff !important;
+}
+
+#myGrid2 .ag-row-selected {
+	border: 1px solid #007bff !important;
+}
+</style>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+  for(var n = 1; n <=25; n++){    
+    $('#box ul').append('<li><span>image '+n+' </span><img src="http://unsplash.it/280/180?image='+n+'"></li>');
+  }
+  $('#box').mCustomScrollbar({
+    theme: "inset",    
+    scrollButtons:{ enable: true }   
+  });
+  $('.loader').show();
+  agGrid.simpleHttpRequest({url: 'view-new-requi-mstr-view-data'}).then(function(data) {
+		var len = data.length;
+		$('#totalReq').find('span').html(len);
+	      gridOptions.api.setRowData(data);
+	   });
+  
+});
+
+</script>
+<script type="text/javascript">
+function newBtn(){
+	var userid = $("#sessionId").val();
+	$("#appliedId").text("0");
+	$("#shortlistId").text("0");
+	$("#interviewedId").text("0");
+	
+	$('#createDate').html('');
+	$("#myGrid").hide();
+    $(".btn-hs").hide();
+    $("#hideTbl").hide();
+    $("#btnReset").hide();
+    $("#demo").show();
+    
+    $("#delete1").hide();
+    $('#reqId').val("");
+	$('#jobTitle').val("");
+	$('#jobType').val("");
+	$('#location').val("");
+	$('#educationReq').val("");
+	$('#dept').val("");
+	$('#hiringManager').val("");
+	$('#workHour').val("");
+	$('#band').val("");
+	$('#designation').val("");
+	$('#minSalary').val("");
+	$('#maxSalary').val("");
+	$('#noPos').val("");
+	$('#dateReq').val("");
+	$('#applyStartDate').val("");
+	$('#applyEndDate').val("");
+	$('#txtAreaSumN').val("");
+		txtLen = $('#txtAreaSumN').val().length;
+	 	var pId1 = $('#txtAreaSumN').next().attr("id");
+	 	 $('#'+pId1+' span').empty();
+	 	 $('#'+pId1+' span').append(txtLen);
+	$('#txtAreaResN').val("");
+		txtLen = $('#txtAreaResN').val().length;
+	 	var pId2 = $('#txtAreaResN').next().attr("id");
+	 	 $('#'+pId2+' span').empty();
+	 	 $('#'+pId2+' span').append(txtLen);
+	$('#txtAreaExpN').val("");
+		txtLen = $('#txtAreaExpN').val().length;
+	 	var pId3 = $('#txtAreaExpN').next().attr("id");
+	 	 $('#'+pId3+' span').empty();
+	 	 $('#'+pId3+' span').append(txtLen);
+	
+	if($('#approvalCheck').is("checked")){
+		approval();
+	}
+	if($('.about').is("checked")){
+		about();
+	}
+	document.getElementById("approvalCheck").checked = false;
+	$(".about").attr("checked",false);
+	$(".benefitChk").attr("checked",false);
+	
+	$('#createdDiv').attr("class","grey-box");
+	$('#divCreate').attr("class","");
+	
+	$('#activityId').hide();
+}
+
+
+    $(document).ready(function(){
+    	$("#add").attr("disabled", false);
+    	$("#copy").attr("disabled", true);
+    	$('#delete').attr('disabled', true);
+    	$('#approve').attr('disabled', true);
+    	$('#post').attr('disabled', true);
+		$('#reject').attr('disabled', true);
+		$('#vendor').attr("disabled", true);
+        
+        agGrid.simpleHttpRequest({url: 'view-new-requi-mstr-view-data'}).then(function(data) {
+        	var len = data.length;
+        	$('#totalReq').find('span').html(len);
+              gridOptions.api.setRowData(data);
+           });
+ cancelBtn();
+
+         $("#copycancelBtn").click(function(){
+        	 $("#myGrid").show();
+             $(".btn-hs").show();
+             $("#hideTbl").show();
+             $("#btnReset").show();
+            $("#demo").hide();
+        });
+
+         $("#profilebtn").click(function(){
+            $("#myTbl").hide();
+            $(".btn-hs").hide();
+            $("#profile").show();
+        })
+        $("#profilecancelbtn").click(function(){
+            $("#myTbl").show();
+            $(".btn-hs").show();
+            $("#profile").hide();
+        });
+    });
+  function cancelBtn(){
+      $("#myGrid").show();
+      $(".btn-hs").show();
+      $("#hideTbl").show();
+  	$("#add").attr("disabled", false);
+	$("#copy").attr("disabled", true);
+	$('#delete').attr('disabled', true);
+	$('#approve').attr('disabled', true);
+	$('#post').attr('disabled', true);
+	$('#reject').attr('disabled', true);
+	$('#vendor').attr("disabled", true);
+      $("#btnReset").show();
+      $("#demo").hide();
+      $(".formValidation").remove();
+      
+      $('#myGrid1').empty();
+      $('#activityId').hide();
+      len = 0;
+      $('#approvalName').hide();
+      agGrid.simpleHttpRequest({url: 'view-new-requi-mstr-view-data'}).then(function(data) {
+  		var len = data.length;
+  		$('#totalReq').find('span').html(len);
+  	      gridOptions.api.setRowData(data);
+  	   });
+  }
+</script>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+	  
+	  $('#approvalName').hide();
+	  
+   /* $('#header').load('../header-ads.html');
+    $('#footer').load('../footer-ads.html');*/
+     jQuery(document).delegate('a.add-record', 'click', function(e) {
+     e.preventDefault();    
+     var content = jQuery('#append_table tr'),
+     size = jQuery('#myTbl >tbody >tr').length + 1,
+     element = null,    
+     element = content.clone();
+     element.attr('id', 'rec-'+size);
+     element.find('.delete-record').attr('data-id', size);
+     element.appendTo('#myTbl_body');
+     element.find('.sn').html(size);
+   });
+    jQuery(document).delegate('a.delete-record', 'click', function(e) {
+     e.preventDefault();    
+     var didConfirm = confirm("Are you sure You want to delete");
+     if (didConfirm == true) {
+      var id = jQuery(this).attr('data-id');
+      var targetDiv = jQuery(this).attr('targetDiv');
+      jQuery('#rec-' + id).remove();
+      
+    //regnerate index number on table
+    $('#myTbl_body tr').each(function(index){
+        $(this).find('span.sn').html(index+1);
+    });
+    return true;
+  } else {
+    return false;
+  }
+     
+});
+    
+    
+    $('input,textarea').focus(function(){
+    	   $(this).data('placeholder',$(this).attr('placeholder'))
+    	          .attr('placeholder','');
+    	}).blur(function(){
+    	   $(this).attr('placeholder',$(this).data('placeholder'));
+    	});
+   
+  
+    
+    
+  });
+  
+  var count = 0;
+  function allCheck(){
+	  count++;
+	  
+	  if(count == 1){
+		  $('.checkCls').prop("checked",true);
+	  } else{
+		  count = 0;
+		  $('.checkCls').prop("checked",false);
+	  }
+  }
+  
+  function cancelBar(){
+	  var id = document.getElementById("closeKey");
+	  id.style.display = "block";
+	  if($('#quickFilter').val() == null || $('#quickFilter').val() == ""){
+		  id.style.display = "none";
+	  }
+  }
+  
+  var txtLen = 0;
+  function textCount(event){
+	  
+	  var id = event.target.id;
+	  var pId = $('#'+id).next().attr("id");
+	  $('#'+pId+' span').empty();
+	  txtLen = $('#'+id).val().length;
+	  $('#'+pId+' span').append(txtLen);
+  }
+  
+  
+//AG GRID 
+var columnDefs = [
+	{ headerCheckboxSelection: true,
+        headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true,width: 10, sortable: false,filter: false,resizable: true},
+	    {headerName: "Requisition ID", /* field: "requisitionId", */
+   	     cellRenderer: function(params){
+ 	        return '<a id="editId" onclick=titlePage("' +  params.data.requisitionId + '") href="javascript:void(0)">' + params.data.requisitionId + '</a>';} },
+	    {headerName: "Title", field: "jobTitle",cellStyle: {textAlign: 'center'}},
+	    {headerName: "Number of positions", field: "noPosition", width:190,type:"rightAligned"},
+	    {headerName: "Band", field: "band",cellStyle: {textAlign: 'center'}},
+	    {headerName: "Department", field: "department",cellStyle: {textAlign: 'center'}},
+	    {headerName: "Hiring Manager", field: "hiringManager"},
+	    {headerName: "Join Date", field: "joinDate",cellStyle: {textAlign: 'center'}},
+	    {
+			headerName : 'Status',
+			field : "activityStatus",
+			cellStyle: {textAlign: 'center'},
+			cellRenderer : function(params) {
+				if (params.data.activityStatus == 'Active') { 
+					return '<div style="color:#a9a9a9">Active</div>';
+				} else {
+					return '<div style="color:#a9a9a9">Created</div>';
+				}	
+			}
+			
+		},
+		{headerName: "apply Start Date", field: "applyStartDate",width:180,type:"rightAligned"},
+		{headerName: "Apply End Date", field: "applyEndDate",type:"rightAligned"},
+	    {headerName: "CTC Cap", field: "minSalary",type:"rightAligned"},
+	    {headerName: "Applicants", field: "applicants",type:"rightAligned"},
+	    {headerName: "Shortlisted", field: "shortlisted",type:"rightAligned"},
+	    {headerName: "Interviewed", field: "interviewed",type:"rightAligned"},
+	    {
+			headerName : 'Approval Status',
+			field : "approveStatus",
+			width:190,
+			cellStyle: {textAlign: 'center'},
+			cellRenderer : function(params) {
+			 if (params.data.approveStatus =="0") {
+					return 'Pending';
+				} else if (params.data.approveStatus =="3") {
+					return 'Approved';
+				}  else if (params.data.approveStatus =="2") {
+					return 'Rejected';
+				}
+				else {
+					return 'Forwarded';
+				}
+			}
+		},
+	
+	    {headerName: "Approved By", field: "approvedBy",cellStyle: {textAlign: 'center'}},
+	    {headerName: "Rejected By", field: "rejeactedBy",cellStyle: {textAlign: 'center'}},
+	    {headerName: "Comments", field: "comments"},
+	    {headerName: "Create Date", field: "createdOn",cellStyle: {textAlign: 'center'}}
+	]; 
+
+ function titlePage(id){
+	
+			  $("#myGrid").hide();
+			     $(".btn-hs").hide();
+			     $("#hideTbl").hide();
+			     $("#btnReset").hide();
+			     $('#activityId').show();
+			     $("#delete1").hide();
+			     $('.loader').show();
+			     $('#searchRowDiv').hide();
+			 $.ajax({
+				type : "GET",
+				url : "view-new-requi-mstr-edit?id=" + id,
+				async: false,
+				success : function(response) {
+				if (response.message == "Success") {
+					 $('.loader').hide();
+					var s1 = 0;
+					var s2 = 0;
+
+					for(i = 0; i< response.body.length; i++){
+	
+						$("#appliedId").text(response.body[i].applicants);
+						$("#shortlistId").text(response.body[i].shortlisted);
+						$("#interviewedId").text(response.body[i].interviewed);
+						$('#reqId').val(response.body[i].requisitionId);
+						$('#jobTitle').val(response.body[i].jobTitle);
+						$('#jobType').val(response.body[i].jobType);
+						$('#location').val(response.body[i].jobLocation);
+						$('#educationReq').val(response.body[i].minEducation);
+						$('#dept').val(response.body[i].department);
+						$('#hiringManager').val(response.body[i].hiringManager);
+						$('#workHour').val(response.body[i].workHour);
+						$('#band').val(response.body[i].band);
+						$('#designation').val(response.body[i].designation);
+						
+						var amount = Number((response.body[i].minSalary)).toLocaleString();
+						var amount1 = Number((response.body[i].maxSalary)).toLocaleString();
+						
+						$('#minSalary').val(amount);
+						$('#maxSalary').val(amount1);
+						$('#noPos').val(response.body[i].noPosition);
+						//$('#dateReq').val(new Date(response.body[i].joinDate));
+						$('#dateReq').val(response.body[i].joinDate);
+						$('#applyStartDate').val(response.body[i].applyStartDate);
+					    $('#applyEndDate').val(response.body[i].applyEndDate);
+						$('#dateReqCalendar').val(response.body[i].joinDate);
+						$('#applyStartCalendar').val(response.body[i].applyStartDate);
+						$('#applyEndCalendar').val(response.body[i].applyEndDate);
+						
+						$('#txtAreaSumN').val(response.body[i].positionSummary);
+							txtLen = $('#txtAreaSumN').val().length;
+						 	var pId1 = $('#txtAreaSumN').next().attr("id");
+						 	 $('#'+pId1+' span').empty();
+						 	 $('#'+pId1+' span').append(txtLen);
+						$('#txtAreaResN').val(response.body[i].positionResponsibility);
+							txtLen = $('#txtAreaResN').val().length;
+						 	var pId2 = $('#txtAreaResN').next().attr("id");
+						 	 $('#'+pId2+' span').empty();
+						 	 $('#'+pId2+' span').append(txtLen);
+						$('#txtAreaExpN').val(response.body[i].requiredSkillExperience);
+							txtLen = $('#txtAreaExpN').val().length;
+						 	var pId3 = $('#txtAreaExpN').next().attr("id");
+						 	 $('#'+pId3+' span').empty();
+						 	 $('#'+pId3+' span').append(txtLen);
+						$("#" + response.body[i].reqBenefits).attr("checked","checked");
+						if(response.body[i].approver != null && response.body[i].approver != ""){
+							$("#approvalCheck").attr("checked","checked");
+							s1 = 1;
+						}
+						if(response.body[i].about != null && response.body[i].about != ""){
+							$(".about").attr("checked","checked");
+							s2 = 1;
+						}
+						if(response.body[i].activityStatus == "1"){
+							$('#createDate').html(response.body[i].createdOn);
+							$('#createdDiv').attr("class","green-box");
+							$('#divCreate').attr("class","green-box-heading");
+							
+							} else if(response.body[i].activityStatus == "2"){
+							
+						} else if(response.body[i].activityStatus == "3"){
+							
+						}
+					}
+					if(s1 == 1){
+						approval();
+					}
+					if(s2 == 1){
+						about();
+					}
+				
+					$("#demo").show();
+				}
+				},
+				error : function(data) {
+				
+				}
+			});
+			
+			 
+			 agGrid.simpleHttpRequest({
+				 url: 'view-new-requi-mstr-view-activity?id=' + id})
+				 .then(function(data1) {
+			     gridOptions1.api.setRowData(data1);
+			   });
+			 
+			 var myGrid12 = document.querySelector('#myGrid1');
+		    new agGrid.Grid(myGrid12, gridOptions1);
+		    
+ }
+ 
+/* var columnDefs1 = [
+	{headerName: "Date", field: "activityHistoryDate", cellStyle: {textAlign: 'center'}},
+	    {headerName: "Activity", field: "activityHistoryStatus"},
+	    {headerName: "By", field: "activityHistoryCretaedBy"},
+	 
+	]; 
+
+var gridOptions1 = {
+		   columnDefs: columnDefs1,
+		  defaultColDef: {
+			  sortable: true, 
+			  filter: true, 
+			  resizable: true, 
+			  width: 430,
+			  height: 10
+		   }
+             
+		 }; */
+ 
+ // let the grid know which columns and what data to use
+ var gridOptions = {
+   columnDefs: columnDefs,
+  defaultColDef: {
+	  sortable: true, 
+	  filter: true, 
+	  resizable: true, 
+	  width: 149,
+	  height: 10
+   },
+   rowSelection : 'multiple',
+   onSelectionChanged : rowSelectId
+  // onSelectionChanged: onSelectionChangedVendor
+};
+	var dataVendor = {};
+	function onSelectionChangedVendor(){
+		
+		var selectedNodes= gridOptions.api.getSelectedNodes();
+		var selectedData= selectedNodes.map(node => node.data);
+		gridOptionsChild.api.setRowData(selectedData);
+	}
+ 
+    function onQuickFilterChanged() {
+    	  gridOptions.api.setQuickFilter(document.getElementById('quickFilter').value);
+    	}
+    
+    //OTHER THAN AG-GRID
+    var len = 0;
+    var approverName = '';
+    function approval(){
+    	len ++;
+    	
+    	if(len == 1){
+    		$('#approvalName').show();
+    		approverName = $('#approver').val();
+    	}else{
+    		$('#approvalName').hide();
+    		len=0;
+    		
+    	}
+    	
+    }
+    var len1 = 0;
+    var aboutComp = '';
+    function about(){
+    	len1 ++;
+    	var id =  document.getElementById("aboutCompany");
+    	if(len1 == 1){
+    		id.style.display="block";
+    		aboutComp = $('#aboutComp').attr('value');
+    	}else{
+    		id.style.display="none";
+    		
+    		len1=0;
+    	}
+    	
+    }
+
+ // hide show
+ 
+ 	 var reqId="";
+	 id="";
+	function rowSelectId() {
+		/*  var status=$("#approveStatus").val();
+		 alert(status) */
+		 var selectedNodes = gridOptions.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		 reqId= selectedData.map(node => node.requisitionId);
+		 var empID= selectedData.map(node => node.empID);
+		var selectedRows = gridOptions.api.getSelectedRows();
+		id = "";
+		 var rowCount = 0;
+		for (var i = 0; i < selectedRows.length; i++) {
+			id = id + '"' + selectedRows[i].requisitionId+ '"';
+		     rowCount = rowCount + 1;
+		}
+			 var uid=$("#sessionId").val();
+		   if (rowCount > 0) {
+				$('#add').attr('disabled', true);
+				if(reqId!=uid){
+					 if (selectedData.map(node => node.approveStatus) == 3) {
+				        	$("#add").attr("disabled", true);
+				        	$("#copy").attr("disabled", false);
+				        	$('#delete').attr('disabled', true);
+				        	$('#approve').attr('disabled', true);
+				        	$('#post').attr('disabled', false);
+							$('#reject').attr('disabled', true);
+							$('#vendor').attr("disabled", false);
+				        } else if (selectedData.map(node => node.approveStatus) == 2){
+				        	$("#add").attr("disabled", true);
+				        	$("#copy").attr("disabled", true);
+				        	$('#delete').attr('disabled', true);
+				        	$('#approve').attr('disabled', true);
+				        	$('#post').attr('disabled', true);
+							$('#reject').attr('disabled', true);
+							$('#vendor').attr("disabled", true);
+				        } else if (selectedData.map(node => node.approveStatus) == 0)
+				        	{
+				        	$("#add").attr("disabled", true);
+				        	$("#copy").attr("disabled", true);
+				        	$('#delete').attr('disabled', false);
+				        	$('#approve').attr('disabled', false);
+				        	$('#post').attr('disabled', true);
+							$('#reject').attr('disabled', false);
+							$('#vendor').attr("disabled", true);
+				        	}
+				          else{
+				        		$("#add").attr("disabled", true);
+					        	$("#copy").attr("disabled", true);
+					        	$('#delete').attr('disabled', false);
+					        	$('#approve').attr('disabled', false);
+					        	$('#post').attr('disabled', true);
+								$('#reject').attr('disabled', false);
+								$('#vendor').attr("disabled", true);
+				              }	
+				}else{
+						$("#add").attr("disabled", true);
+			        	$("#copy").attr("disabled", true);
+			        	$('#delete').attr('disabled', false);
+			        	$('#approve').attr('disabled', false);
+			        	$('#post').attr('disabled', true);
+						$('#reject').attr('disabled', false);
+						$('#vendor').attr("disabled", true);
+					}
+
+    } else {
+    	$("#add").attr("disabled", false);
+    	$("#copy").attr("disabled", true);
+    	$('#delete').attr('disabled', true);
+    	$('#approve').attr('disabled', true);
+    	$('#post').attr('disabled', true);
+		$('#reject').attr('disabled', true);
+		$('#vendor').attr("disabled", true);
+
+    }
+	}
+
+var userRole = [];
+	function addNewReq(){
+		var userid = $("#sessionId").val();
+		$("input:checkbox[name=benefits]:checked").each(function() {
+			userRole.push($(this).val());
+		})
+		var minSalary = parseFloat($('#minSalary').val().replace(/\D/g,''));
+		var maxSalary = parseFloat($('#maxSalary').val().replace(/\D/g,''));
+		var obj = {};
+		obj.requisitionId = $('#reqId').val();
+		obj.benefits = userRole;
+		obj.jobTitle = $('#jobTitle').val();
+		obj.jobType = $('#jobType').find(":selected").val();
+		obj.jobLocation = $('#location').find(":selected").val();
+		obj.minEducation = $('#educationReq').find(":selected").val();
+		obj.minSalary = minSalary;
+		obj.maxSalary = maxSalary;
+		obj.department = $('#dept').find(":selected").val();
+		obj.hiringManager = $('#hiringManager').find(":selected").val();
+		obj.noPosition = $('#noPos').val();
+		obj.workHour = $('#workHour').find(":selected").val();
+		obj.band= $('#band').find(":selected").val();
+		obj.designation = $('#designation').val();
+		obj.joinDate = $('#dateReq').val();
+		obj.applyStartDate = $('#applyStartDate').val();
+		obj.applyEndDate = $('#applyEndDate').val();
+		obj.positionSummary = $('#txtAreaSumN').val();
+		obj.positionResponsibility = $('#txtAreaResN').val();
+		obj.requiredSkillExperience = $('#txtAreaExpN').val();
+		obj.approver = approverName;
+		obj.about = aboutComp;
+	
+		
+		/* FORM VALIDATION STARTS*/
+		//$(".formValidation").remove();
+		
+		allValid = true;
+		
+		if(obj.jobTitle == null || obj.jobTitle == ""){
+			allValid = validationUpdated("Job Title Required","jobTitle");
+		}
+		if(obj.jobType == null || obj.jobType == ""){
+			allValid = validationUpdated("Job Type Required","jobType");
+		} 
+		if(obj.jobLocation == null || obj.jobLocation == ""){
+			allValid = validationUpdated("Location Required","location");
+		}
+		if(obj.minEducation == null || obj.minEducation == ""){
+			allValid = validationUpdated("Minimum Education Required","educationReq");
+		}
+		if($('#minSalary').val() == null || $('#minSalary').val() == ""){
+			allValid = validationUpdated("Minimum Salary Required","minSalary");
+		}
+		if(obj.department == null || obj.department == ""){
+			allValid = validationUpdated("Department Name Required","dept");
+		}
+		if(obj.hiringManager == null || obj.hiringManager == ""){
+			allValid = validationUpdated("Hiring Manager Name Required","hiringManager");
+		}
+		if(obj.workHour == null || obj.workHour == ""){
+			allValid = validationUpdated("Working Hour Required","workHour");
+		}
+		if(obj.joinDate == null || obj.joinDate == ""){
+			allValid = validationUpdated("Joining Date Required","dateReq");
+		}
+		if(obj.applyStartDate == null || obj.applyStartDate == ""){
+			allValid = validationUpdated("Apply Start Date Required","applyStartDate");
+		}
+		if(obj.applyEndDate == null || obj.applyEndDate == ""){
+			allValid = validationUpdated("Apply End Date Required","applyEndDate");
+		}
+		if(obj.band == null || obj.band == ""){
+			allValid = validationUpdated("Band Name Required","band");
+		}
+		if($('#maxSalary').val() == null || $('#maxSalary').val() == ""){
+			allValid = validationUpdated("Maximum Salary Required","maxSalary");
+		}
+		if(obj.noPosition == null || obj.noPosition == ""){
+			allValid = validationUpdated("Position Required","noPos");
+		}
+		if(obj.designation == null || obj.designation == ""){
+			allValid = validationUpdated("Designation Required","designation");
+		}
+		
+		
+		/* FORM VALIDATION ENDS*/
+		
+		
+		if(allValid){
+			console.log(obj)
+			$('.loader').show();
+			$("body").addClass("overlay");
+			
+			$.ajax({
+				type		: "POST",
+				url 		: "view-new-requi-mstr-ajax",
+				contentType	: "application/json",
+				data		: JSON.stringify(obj),
+			
+				success		: function(response){
+					if(response.message=="Success"){
+						$('.loader').hide();
+						$("body").removeClass("overlay");
+						
+						window.location.href = "/recruitment/view-new-requi-mstr";
+					}
+				},error		: function(data){
+					
+				}
+			}) //ajax ends
+		}
+		
+	}
+	
+	function deleteReq() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var id = selectedRows[0].requisitionId;
+		$.ajax({
+			type : "POST",
+			url : "view-new-requi-mstr-delete?id=" + id,
+			success : function(response) {
+				if (response.message == "success") {
+				//location.reload();
+					agGrid.simpleHttpRequest({url: 'view-new-requi-mstr-view-data'}).then(function(data) {
+		var len = data.length;
+		$('#totalReq').find('span').html(len);
+	      gridOptions.api.setRowData(data);
+	   });
+					Cancel();
+				}
+			},
+			error : function(data) {
+				console.log(data);
+			}
+		})
+	}
+function copyBtn(){
+   var status = 1;
+     var selectedRows = gridOptions.api.getSelectedRows();
+		var selectedRowsString = '';
+		selectedRows.forEach(function(selectedRow, index) {
+		if (index == 0) {
+			selectedRowsString += selectedRow.requisitionId;
+			status = 1;
+		} else{
+			$('#modalMsg').text("");
+			$('#reqValid').modal('toggle');
+			$('#modalMsg').text("Select only one Requisition.");
+			selectedRowsString = "";
+			status = 0;
+		}
+		
+		});
+		if(status){
+			copyData(selectedRowsString);
+		}
+		
+   }
+	function copyData(selectedRowsString){
+		if (selectedRowsString){
+			$("#myGrid").hide();
+		   	$(".btn-hs").hide();
+		   	$("#hideTbl").hide();
+		    $('#reqId').val("");
+		    $('#createDate').html('');
+		    
+			$.ajax({
+				type : "GET",
+				url : "view-new-requi-mstr-edit?id=" + selectedRowsString,
+				success : function(response) {
+				if (response.message == "Success") {
+					var s1 = 0;
+					var s2 = 0;
+					for(i = 0; i< response.body.length; i++){
+						$('#jobTitle').val(response.body[i].jobTitle);
+						$('#jobType').val(response.body[i].jobType);
+						$('#location').val(response.body[i].jobLocation);
+						$('#educationReq').val(response.body[i].minEducation);
+						$('#dept').val(response.body[i].department);
+						$('#hiringManager').val(response.body[i].hiringManager);
+						$('#workHour').val(response.body[i].workHour);
+						$('#band').val(response.body[i].band);
+						$('#minSalary').val(response.body[i].minSalary);
+						$('#maxSalary').val(response.body[i].maxSalary);
+						$('#noPos').val(response.body[i].noPosition);
+						$('#designation').val(response.body[i].designation);
+						
+						var date = dateFormat(response.body[i].joinDate);
+						document.getElementById("dateReq").value = date;
+						
+						var date1 = dateFormat(response.body[i].applyStartDate);
+						document.getElementById("applyStartDate").value = date1;
+						
+						var date2 = dateFormat(response.body[i].applyEndDate);
+						document.getElementById("applyEndDate").value = date2;
+						
+						$('#txtAreaSumN').val(response.body[i].positionSummary);
+							txtLen = $('#txtAreaSumN').val().length;
+						 	var pId1 = $('#txtAreaSumN').next().attr("id");
+						 	 $('#'+pId1+' span').empty();
+						 	 $('#'+pId1+' span').append(txtLen);
+						$('#txtAreaResN').val(response.body[i].positionResponsibility);
+							txtLen = $('#txtAreaResN').val().length;
+						 	var pId2 = $('#txtAreaResN').next().attr("id");
+						 	 $('#'+pId2+' span').empty();
+						 	 $('#'+pId2+' span').append(txtLen);
+						$('#txtAreaExpN').val(response.body[i].requiredSkillExperience);
+							txtLen = $('#txtAreaExpN').val().length;
+						 	var pId3 = $('#txtAreaExpN').next().attr("id");
+						 	 $('#'+pId3+' span').empty();
+						 	 $('#'+pId3+' span').append(txtLen);
+						$("#" + response.body[i].reqBenefits).attr("checked","checked");
+						if(response.body[i].approver != null && response.body[i].approver != ""){
+							$("#approvalCheck").attr("checked","checked");
+							s1 = 1;
+						}
+						if(response.body[i].about != null && response.body[i].about != ""){
+							$(".about").attr("checked","checked");
+							s2 = 1;
+						}
+					}
+					if(s1 == 1){
+						approval();
+					}
+					if(s2 == 1){
+						about();
+					}
+				
+					$("#demo").show()
+				}
+				},
+				error : function(data) {
+				
+				}
+			})
+		} else {
+			$('#reqValid').modal('toggle');
+			$('#modalMsg').text("");
+			$('#modalMsg').text("Select an Requisition.");
+		}
+	}
+	
+//var gridOptions1 = {};
+
+ var rowData = [];
+	
+// VENDOR ALLOCATION START
+
+ var rowDataVendor = [];
+ var rowDataReq = [];
+ function vendorAllocate(){
+	 var status = 0;
+	 rowDataReq = [];
+	
+	    var selectedRows = gridOptions.api.getSelectedRows();
+		var selectedRowsString = '';
+		
+		selectedRows.forEach(function(selectedRow, index) {
+			if (index > 0) {
+				selectedRowsString += ',';
+				}
+		rowDataReq.push(selectedRow.requisitionId);
+		status = 1;
+		});
+		 
+		 agGrid.simpleHttpRequest({url: 'view-new-requi-mstr-view-data'}).then(function(data) {
+				var len = data.length;
+				$('#totalReq').find('span').html(len);
+				gridOptionsChild.api.setRowData(data);
+			   }); 
+		
+		if(status == 0){
+			$('#modalMsg').text("");
+			$('#reqValid').modal('toggle');
+			$('#modalMsg').text("Select an Requisition.");
+			selectedRowsString = "";
+		}else{
+			agGrid.simpleHttpRequest({
+				url : "/recruitment/view-new-requi-mstr-view-data-ajax"
+			  	}).then(function(data) {
+				  
+				  var len = data.length;
+					$('#totalVendor').find('span').html(len);
+				  gridOptionsVendor.api.setRowData(data);
+			  });
+			$('#myModal10').modal('show');
+		}		
+}
+
+function allocateVendor(){
+	rowDataVendor = [];
+	var listData = {};
+	
+	 var selectedRows = gridOptionsVendor.api.getSelectedRows();
+		
+		selectedRows.forEach(function(selectedRow, index) {
+
+		rowDataVendor.push(selectedRow.vendorId);
+		});
+		
+		listData.requisitionId = rowDataReq;
+		listData.vendorId = rowDataVendor;
+		
+		$.ajax({
+			type		: "POST",
+			url 		: "view-new-requi-mstr-add-vendor-ajax",
+			contentType	: "application/json",
+			data		: JSON.stringify(listData),
+			/* async 		: false, */
+			success		: function(response){
+				
+				if(response.message=="Success"){
+					
+					$('#modalMsg').text("");
+					$('#reqValid').modal('toggle');
+					$('#modalMsg').text("Vendor allocated successfully.");
+				}
+			},error		: function(data){
+				
+				
+			}
+	})
+}
+	
+
+var columnDefsChild = [
+
+	    {headerName: "Req ID", field: "requisitionId"},
+	    {headerName: "Title", field: "jobTitle"},
+	    {headerName: "# of positions", field: "noPosition"},
+	    {headerName: "Band", field: "band"},
+	    {headerName: "Department", field: "department"},
+	    {headerName: "Hiring Manager", field: "hiringManager"},
+	    {headerName: "Join Date", field: "joinDate"},
+	    {headerName: "CTC Cap", field: "minSalary"},
+	    {headerName: "Status", field: "activityStatus"}
+	]; 
+
+var gridOptionsChild = {
+		   columnDefs: columnDefsChild,
+		   rowData: rowData,
+		  defaultColDef: {
+			  sortable: true, 
+			  filter: true, 
+			  resizable: true, 
+			  width: 149,
+			  height: 10
+		   }
+            
+		 };
+		 
+	
+var columnDefsVendor = [
+	{
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true,
+		
+	}, 
+	    {headerName: "ID", field: "vendorId" },
+	    {headerName: "Name", field: "vendorName"},
+	    {headerName: "Location", field: "vendorLocation"},
+	    {headerName: "Expertize", field: ""},
+	    {headerName: "Reqs Sent (Last 12 Months)", field: ""},
+	    {headerName: "Candidates (Last 12 Months)", field: ""},
+	    {headerName: "Closed (Last 12 Months)", field: ""}
+	]; 
+	
+	var gridOptionsVendor = {
+			columnDefs: columnDefsVendor,
+			   rowData: rowData,
+			  defaultColDef: {
+				  sortable: true, 
+				  filter: true, 
+				  resizable: true, 
+				  width: 149,
+				  height: 10
+			   },
+			    rowSelection: 'multiple',
+				onSelectionChanged: onSelectionChangedCandidateVendor
+	};
+	
+	function onSelectionChangedCandidateVendor(){
+		var selectedNodes= gridOptionsVendor.api.getSelectedNodes();
+		var selectedData= selectedNodes.map(node => node.data);
+		
+		
+	}
+	
+	/* -------------------function for approve button----------------- */
+	var empid = "";
+	var empname = "";
+	function approveReq() {
+		var rqid="";
+		//var id="";
+		
+			 var selectedNodes = gridOptions.api.getSelectedNodes();
+			 var selectedData = selectedNodes.map(node => node.data);
+			  rqid= selectedData.map(node => node.requisitionId);
+		 
+			var userrole = $("#sessionRole").val();
+			var roleid = "";
+			for(var i = 6; i <= userrole.length; i=i+6){  
+			    roleid = roleid + '"' +userrole.slice(i-6, i)+ '",';
+			}
+			roleid = roleid.substring(0, roleid.length - 1); 
+			
+		empid = $("#sessionId").val();
+		empname = $("#sessionName").val();
+		comment = $("#comment").val();
+		
+		$.ajax({
+			type : "GET",
+			url : "view-new-requi-mstr-approve?approveId=" + rqid + "&name=" + empid+"&comment="+comment+"&roleid="+roleid,
+			async : false,
+			success : function(response) {
+				if (response.message == "Success") {
+					$("#messageParagraph").text("Requisition Approved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					cancelBtn();
+					$('#commentModal').modal('hide');
+					$('#approve').attr('disabled', true);
+					$('#delete').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+				}else{
+					$("#messageParagraph").text("YOU’RE ALREADY APPROVED!");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					cancelBtn();
+					$('#commentModal').modal('hide');
+					$('#approve').attr('disabled', true);
+					$('#delete').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	/*-----------------------function for reject button------------------- */
+	var rejempid = "";
+	var rejempname = "";
+	function rejectReq() {
+		var rqid="";
+		//var id="";
+		
+			 var selectedNodes = gridOptions.api.getSelectedNodes();
+			 var selectedData = selectedNodes.map(node => node.data);
+			  rqid= selectedData.map(node => node.requisitionId);
+		 
+		rejempid = $("#sessionId").val();
+		rejempname = $("#sessionName").val();
+		comment = $("#comment").val();
+		//alert(rejempname)
+		//alert(comment)
+	
+		$.ajax({
+			type : "GET",
+			url : "view-new-requi-mstr-reject?rejectId=" + rqid + "&name=" + rejempid+"&comment="+comment,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					$("#messageParagraph").text("Requisition Rejected Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					cancelBtn();
+					$('#commentModal').modal('hide');
+					$('#approve').attr('disabled', true);
+					$('#delete').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+				}else{
+					$("#messageParagraph").text("YOU’RE ALREADY REJECTED!");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					cancelBtn();
+					$('#commentModal').modal('hide');
+					$('#approve').attr('disabled', true);
+					$('#delete').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	
+	/* Function for commentModal show */
+	function reject() {
+
+	    $('#commentModal').modal('toggle');
+	    $("#approveLeaveSubmitBtn").hide();
+	    $("#rejectLeaveSubmitBtn").show();
+	}
+	function approve() {
+	    $('#commentModal').modal('toggle');
+	    $("#approveLeaveSubmitBtn").show();
+	    $("#rejectLeaveSubmitBtn").hide();
+
+	}
+	
+// setup the grid after the page has finished loading
+document.addEventListener('DOMContentLoaded', function() {
+    var gridDiv = document.querySelector('#myGrid');
+    new agGrid.Grid(gridDiv, gridOptions);
+    
+    var myVendorReq = document.querySelector('#myVendorReq');
+    new agGrid.Grid(myVendorReq, gridOptionsChild);
+    
+    var addVendor = document.querySelector('#addVendor');
+    new agGrid.Grid(addVendor, gridOptionsVendor);
+    
+	var dateFormat = localStorage.getItem("dateFormat");
+	$("#dateReqCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#dateReq').val($(this).val());
+	})
+	
+	$('#dateReq').blur(function(){
+		$("#dateReqCalendar").val($(this).val());
+	})
+    
+	var dateFormat = localStorage.getItem("dateFormat");
+	$("#applyStartCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#applyStartDate').val($(this).val());
+	})
+	
+	$('#applyStartDate').blur(function(){
+		$("#applyStartCalendar").val($(this).val());
+	})
+    
+	
+	var dateFormat = localStorage.getItem("dateFormat");
+	$("#applyEndCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#applyEndDate').val($(this).val());
+	})
+	
+	$('#applyEndDate').blur(function(){
+		$("#applyEndCalendar").val($(this).val());
+	})
+    
+	
+	
+});
+ 
+
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+
+
+						<div class="d-flex">
+
+							<div class="col-md-3 btn-hs">
+								<div class="font-design" id="totalReq">
+									REQUISITION LIST (<span></span>)
+									<!-- <i onclick="resetState()" class="ti-reload tblreset" id="btnReset"></i> -->
+								</div>
+							</div>
+							<div class="col-md-3" id="hideTbl">
+								<div>
+									<div id="searchRowDiv">
+										<div class="input-style">
+											<input type="text" placeholder="Search.." name="search"
+												class="searchboxinput" onkeyup="cancelBar()"
+												oninput="onQuickFilterChanged()" id="quickFilter"
+												autocomplete="off">
+											<div class="searchicon">
+												<a href="javascript:void(0)"><span
+													style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+													id="closeKey"
+													onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+													class="close_i"><i class="ti-close srchicon"></i></span></a><a
+													href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6 buttonsec btn-hs">
+								<!-- <input type="button" value="ALLOCATE VENDOR" class="btn2"
+									onclick="vendorAllocate()">
+								<div class="buttongap"></div>
+
+								<button class="btn2">APPROVE</button>
+								<button class="btn2">POST</button> -->
+
+								<!-- 		<div class="buttongap"></div> -->
+								<!-- 	 <input type="button" value="ALLOCATE VENDOR" class="btn2" id="vendor"
+									onclick="vendorAllocate()" th:if="${adminRole != null}"> 
+									<button class="btn2" id="post" th:if="${adminRole != null}">POST</button> 
+									<input type="button" class="btn3" value="REJECT" id="reject"
+										onclick="reject()" th:if="${hrRole != null}" readonly> 
+								<input type="button" class="btn1" value="APPROVE" id="approve"
+										onclick="approve()" th:if="${hrRole != null}" readonly> 
+								<input type="button" class="btn3" value="DELETE"
+										onclick="deleteReq()" id="delete" readonly> <input
+									type="button" class="btn2" value="COPY" id="copy" onclick="copyBtn()" th:if="${hrRole != null}"
+									readonly> <input type="button" class="btn1" value="NEW"
+									onclick="newBtn()" id="add" readonly> -->
+
+
+
+								<button class="btn2" id="vendor" onclick="vendorAllocate()"
+									th:if="${adminRole != null}">ALLOCATE VENDOR</button>
+								<button class="new-btn" id="add" onclick="newBtn()">New</button>
+								<button class="delete-btn" id="delete" onclick="deleteReq()">Delete</button>
+								<!-- <button class="btn2" id="copy" onclick="copyBtn()" th:if="${hrRole != null}">Copy</button> -->
+								<button class="approve-btn" id="approve" onclick="approve()"
+									th:if="${hrRole != null}">Approve</button>
+								<button class="reject-btn" id="reject" onclick="reject()"
+									th:if="${hrRole != null}">Reject</button>
+								<!-- <button class="btn2" id="post" th:if="${adminRole != null}">POST</button>  -->
+
+
+							</div>
+
+						</div>
+						<input type="hidden" id="sessionId" th:value="${session.USER_ID}" />
+						<input type="hidden" id="sessionName"
+							th:value="${session.USER_Name}" /> <input type="hidden"
+							id="hrRole" th:value="${hrRole}" /> <input type="hidden"
+							id="sessionRole" th:value="${userRole}" />
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+						<div class="collapse" id="demo">
+							<div class="col-md-12">
+								<div class="innerstickybg">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="hr2"></div>
+											<div class="main-div">
+												<div class="section2">
+													<div class="grey-box" id="createdDiv">
+														<div class="" id="divCreate">CREATED</div>
+														<div class="date" id="createDate"></div>
+													</div>
+												</div>
+												<div class="section3">
+													<div class="grey-box">
+														<div class="">ACTIVE</div>
+														<div class="date"></div>
+													</div>
+												</div>
+												<div class="section4">
+													<div class="grey-box">
+														<div>CLOSED</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3">
+											<!-- <button class="btn2">Approve</button>
+											<button class="btn2">Post</button> -->
+										</div>
+										<div class="col-md-3 padding-0" align="right">
+											<button class="cancel-btn" type="button"
+												data-bs-dismiss="modal" id="cancelBtn" onclick="cancelBtn()">CANCEL</button>
+											<!-- <button class="delete-btn">DELETE</button> -->
+											<button class="approve-btn" onclick="addNewReq()">SAVE</button>
+										</div>
+									</div>
+								</div>
+								<div class="innercontent">
+									<div class="row">
+										<div class="col-md-12 padding-0">
+											<div class="row">
+												<!-- REQUISITION ID -->
+												<input type="hidden" id="reqId">
+
+												<div class="newgrid">
+													<div class="box border-line" align="center">
+
+														<div class="number1" id="appliedId">0</div>
+														<div class="text1">APPLIED</div>
+
+													</div>
+												</div>
+												<div class="newgrid">
+													<div class="box border-line" align="center">
+
+														<div class="number1" id="shortlistId">0</div>
+														<div class="text1">SHORTLISTED</div>
+
+													</div>
+												</div>
+												<div class="newgrid">
+													<div class="box border-line" align="center">
+
+														<div class="number1" id="interviewedId">0</div>
+														<div class="text1">INTERVIEWED</div>
+
+													</div>
+												</div>
+												<div class="newgrid">
+													<div class="box border-line" align="center">
+
+														<div class="number1">0</div>
+														<div class="text1">OFFERED</div>
+
+													</div>
+												</div>
+
+
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="row">
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Job Title</label> <input type="text"
+														class="form-control" id="jobTitle"
+														placeholder="Type Job Title">
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Job Type</label>
+													<div class="select">
+														<select id="jobType">
+															<option value="">Select Job Type</option>
+															<option th:each="c,iter:${jobTypeList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Job Location</label>
+													<div class="select">
+														<select id="location">
+															<option value="">Select Location</option>
+															<option th:each="c,iter:${jobLocationList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Minimum Education Required</label>
+													<div class="select">
+														<select id="educationReq">
+															<option value="">Select Education</option>
+															<option th:each="c,iter:${educationList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Annual Salary Range (Minimum)</label> <input
+														type="text" data-type="currency" class="form-control"
+														id="minSalary" onblur="salaryCheck(event)"
+														onclick="salaryBack(event)" placeholder="Annual Salary">
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Annual Salary Range (Maximum)</label> <input
+														type="text" class="form-control" id="maxSalary"
+														placeholder="Annual Salary" onblur="salaryCheck(event)"
+														onclick="salaryBack(event)">
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Department</label>
+													<div class="select">
+														<select id="dept">
+															<option value="">Select Department</option>
+															<option th:each="c,iter:${DepartmentList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Hiring Manager</label>
+													<div class="select">
+														<select id="hiringManager">
+															<option value="">Select Manager</option>
+															<option th:each="c,iter:${managerList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Number of Position</label> <input type="text"
+														class="form-control" id="noPos"
+														placeholder="Number of Position">
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Excepted Work hours</label>
+													<div class="select">
+														<select id="workHour">
+															<option value="">Select Work Hour</option>
+															<option th:each="c,iter:${workHourList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Band</label>
+													<div class="select">
+														<select id="band">
+															<option value="">Select Band</option>
+															<option th:each="c,iter:${bandList}" th:value="${c.key}"
+																th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Designation</label>
+													<div class="select">
+														<select id="designation">
+															<option value="">Select Designation</option>
+															<option th:each="c,iter:${designationList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group calendar_box">
+													<label>Joining Date</label><input type="text" id="dateReq"
+														class="form-control"
+														th:attr="onkeyup=|formatDate('dateReq','${session.DATEFORMAT_JS}')|"
+														readonly> <i class="ti-calendar picker_calendar"
+														id="dateReqCalendar"></i>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group calendar_box">
+													<label>Apply Start Date</label><input type="text"
+														class="form-control" id="applyStartDate"
+														th:attr="onkeyup=|formatDate('applyStartDate','${session.DATEFORMAT_JS}')|"
+														readonly> <i class="ti-calendar picker_calendar"
+														id="applyStartCalendar"></i>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group calendar_box">
+													<label>Apply End Date</label><input type="text"
+														class="form-control" id="applyEndDate"
+														th:attr="onkeyup=|formatDate('applyEndDate','${session.DATEFORMAT_JS}')|"
+														readonly> <i class="ti-calendar picker_calendar"
+														id="applyEndCalendar"></i>
+												</div>
+											</div>
+
+
+										</div>
+
+										<div class="row">
+											<div class="col-md-12">
+												<div class="modal-inrheading">Position Summary</div>
+												<div class="position-text">
+													<textarea rows="4" cols="100" id="txtAreaSumN"
+														onkeyup="textCount(event)"></textarea>
+													<div id="charNumSN" class="txtcounter" align="right">
+														<span>0</span> characters
+													</div>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="modal-inrheading">Position Responsibility</div>
+												<div class="position-text">
+													<textarea rows="4" cols="100" id="txtAreaResN"
+														onkeyup="textCount(event)"></textarea>
+													<div id="charNumRN" class="txtcounter" align="right">
+														<span>0</span> characters
+													</div>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="modal-inrheading">Required Skills and
+													Experience</div>
+												<div class="position-text">
+													<textarea rows="4" cols="100" id="txtAreaExpN"
+														onkeyup="textCount(event)"></textarea>
+													<div id="charNumEN" class="txtcounter" align="right">
+														<span>0</span> characters
+													</div>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="modal-inrheading">Benefits</div>
+												<div class="row">
+													<th:block th:each="c,iter:${benefitsList}">
+														<div class="col-md-3">
+															<label class="checkbox"> <input type="checkbox"
+																class="benefitChk" value="" th:id="${c.key}"
+																th:value='${c.key}' name="benefits"><span
+																th:text="${c.name}"></span> <span class="checkmark"></span></label>
+														</div>
+												</div>
+												</th:block>
+											</div>
+										</div>
+										<!-- <div class="clearfix"></div>
+										<div class="mrt_25 gapping">
+											<div class="row">
+												<div class="col-md-6">
+													<label class="checkbox"><input type="checkbox"
+														id="approvalCheck" onclick="approval()">Need
+														Approval <span class="checkmark"></span></label>
+												</div>
+												<div class="col-md-6" id="approvalName">
+													<div class="form-group">
+														<label for="approvalName">Approver</label>
+														<div class="select">
+															<select id="approver">
+																<option>Pinaki Datta</option>
+															</select>
+														</div>
+													</div>
+												</div>
+
+											</div>
+										</div> -->
+										<div class="clearfix"></div>
+										<div class="row fullwidth">
+											<div class="col-md-12 mrt_25 gapping">
+
+												<label class="checkbox"><input type="checkbox"
+													class="about" onclick="about()">Include about
+													company <span class="checkmark"></span></label>
+											</div>
+											<div class="col-md-12" id="aboutCompany"
+												style="display: none;">
+												<div class="position-text">
+													<textarea rows="4" cols="100" id="aboutComp"
+														th:value="${aboutComapany[0].key}"
+														th:text="${aboutComapany[0].name}"></textarea>
+												</div>
+											</div>
+										</div>
+										<!-- <div class="row fullwidth">
+											<div class="col-md-12 mrt_25 gapping">
+												<div class="modal-inrheading" id="activityId">Activity
+													History</div>
+												<div id="myGrid1" style="width: 100%; height: 200px;"
+													class="ag-theme-alpine"></div>
+											</div>
+										</div> -->
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal fade" id="myModal10">
+							<div class="modal-dialog modal-lg" style="max-width: 1100px">
+								<div class="modal-content" style="width: 100%">
+
+									<!-- Modal Header -->
+									<div class="modal-header">
+										<h4 class="modal-title" style="font-size: 16px">
+											<b>Allocate Vendor for Requisition: <span></span></b>
+										</h4>
+										<button type="button" class="close" data-bs-dismiss="modal"
+											style="font-size: 25px">
+											<i class="ti-close"></i>
+										</button>
+									</div>
+									<!-- Modal body -->
+									<div class="modal-body"
+										style="height: 500px; overflow-y: scroll;">
+										<div class="vertical-line">
+
+											<div class="row">
+												<div id="myVendorReq" style="width: 100%; height: 100px;"
+													class="ag-theme-alpine"></div>
+											</div>
+
+											<div class="row mt-20">
+												<div class="col-md-9 padding-0">
+													<div class="modal-inrheading">
+														Vendor List (<span></span>)
+													</div>
+												</div>
+
+												<div class="col-md-3 mrt_btm padding-0" align="right">
+													<button class="btn1" onclick="allocateVendor()">Allocate</button>
+												</div>
+												<div class="col-md-12 padding-0">
+													<div id="addVendor" style="width: 100%; height: 300px;"
+														class="ag-theme-alpine"></div>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- The Modal For Delete-->
+						<div class="modal fade" id="delete">
+							<div class="modal-dialog modal-confirm">
+								<div class="modal-content">
+									<div class="modal-header flex-column">
+									</div>
+									<div class="modal-body">
+										<p>Do you really want to delete these records? This
+											process cannot be undone.</p>
+									</div>
+									<div class="modal-footer justify-content-center">
+										<button type="button" class="btn1" data-bs-dismiss="modal"
+											aria-hidden="true">Cancel</button>
+										<button type="button" class="btn3" id="deleteModalBtn"
+											onclick="deleteReq()">Delete</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- The Modal For Validation-->
+						<div class="modal fade" id="reqValid">
+							<div class="modal-dialog modal-confirm">
+								<div class="modal-content">
+									<div class="modal-header flex-column">
+									</div>
+									<div class="modal-body">
+										<p id="modalMsg"></p>
+									</div>
+									<div class="modal-footer justify-content-center">
+										<button type="button" class="btn1" data-bs-dismiss="modal"
+											aria-hidden="true">Ok</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div id="commentModal" class="modal fade">
+							<div class="modal-dialog">
+								<!-- Modal content-->
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 class="modal-title">Comment</h4>
+										<button type="button" class="close" data-bs-dismiss="modal"
+											aria-label="Close">
+											<i class="ti-close"></i>
+										</button>
+									</div>
+									<div class="modal-body">
+										<!-- text input -->
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Comment</label> <input class="form-control"
+														type="text" autocomplete="off" id="comment">
+												</div>
+											</div>
+
+										</div>
+									</div>
+									<div class="modal-footer justify-content-left">
+										<button type="button" class="approve-btn"
+											data-bs-dismiss="modal" aria-hidden="true"
+											id="approveLeaveSubmitBtn" onclick="approveReq()">Submit</button>
+										<button type="button" class="reject-btn"
+											data-bs-dismiss="modal" aria-hidden="true"
+											id="rejectLeaveSubmitBtn" onclick="rejectReq()">Submit</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

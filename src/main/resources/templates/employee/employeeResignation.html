@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+
+<!-- ck editor slim selector CDN -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.js"></script>
+<!-- <script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.css"></script> -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.js"></script>
+<!-- <script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.css"></script> -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.mjs"></script>
+
+<script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+<head>
+<script>
+	$(document).ready(function() {
+		
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+		
+		var gridDivDraft = document.querySelector('#myGridDraft');
+		new agGrid.Grid(gridDivDraft, gridOptionsDraft);
+		
+		var userid = $("#sessionId").val();
+		var userrole = $("#sessionRole").val();
+		var roleid = "reg";
+ 
+		gridOptions.api.setRowData();
+		agGrid.simpleHttpRequest({
+			url : "employee-resignation-view?userid=" + userid+"&roleid="+roleid,
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			if(len>0){
+				gridOptions.api.setRowData(data);
+			}else{
+				gridOptions.api.setRowData();
+			}
+		})
+		
+		gridOptionsDraft.api.setRowData();
+		agGrid.simpleHttpRequest({
+			url : "employee-resignation-draft-view?userid=" + userid+"&roleid="+roleid,
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			if(len>0){
+				gridOptionsDraft.api.setRowData(data);
+			}else{
+				gridOptionsDraft.api.setRowData();
+			}
+		})
+		
+		$('#new').show();
+		$('#delete').attr('disabled', true);
+		$('#delete1').attr('disabled', true);
+		$('#approve').attr('disabled', true);
+		$('#reject').attr('disabled', true);
+		//Slim Select fromatte 
+/* 		var autocomplete = new SlimSelect({
+			select: '#multiple8',
+		       multiple: true,
+		       autocomplete: true,
+		       icon: "fa fa-times",
+		       onChange: key => { 
+		    	   var data = [];
+		    	   for(var i = 0; i < key.length; i++) {
+		        	
+		        	data.push(key[i].value);
+		    	   }
+		        	
+		        	 $("#toHiddenIdCC").val(data);
+		        	   },	      	
+		      }); */
+		//CKEDITOR fromatte 
+	     CKEDITOR.replace('commentck', {
+	     	height: 150,
+	     	removePlugins: 'wsc',
+	     	scayt_autoStartup: true,
+	     	scayt_maxSuggestions: 3,
+	     	autoParagraph : false,
+	     	});
+		
+		var dateFormat = localStorage.getItem("dateFormat");
+
+		//Date fromatter for TO DATE 
+
+		$("#resignDateCalendar").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			minDate:0,
+		}).on("change", function() {
+			$('#resignDate').val($(this).val());
+			dateChange();
+		})
+
+		$('#resignDate').blur(function() {
+			$("#resignDateCalendar").val($(this).val());
+		})
+ 
+		//Date fromatter for FROM DATE
+
+		$("#releaseDateCalendar").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			minDate:0,
+		}).on("change", function() {
+			$('#releaseDate').val($(this).val());
+			dateChange();
+		})
+
+		$('#releaseDate').blur(function() {
+			$("#releaseDateCalendar").val($(this).val());
+		})
+ 
+	$('#multiple8').chosen(); 
+	$('#multiple7').chosen(); 
+ 
+});
+ 
+	
+	/* -------------------search bar for mygrid1------------------------ */
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+
+	/* ------------ag grid for Resigation apply(parent table)----------------------- */
+	//Exit Management
+	const columnDefs = [
+ 
+			{
+				headerName : 'Exit Id',
+				field : "employeeExit",
+				width : 130,
+			}, {
+				headerName : 'Employee Id',
+				field : "empID",
+				width : 130,
+			}, {
+				headerName : 'Employee Name',
+				field : "empName",
+				width : 150,
+			}, {
+				field : "designationId",
+				hide : true
+			}, {
+				headerName : 'Designation',
+				field : "designation"
+			}, {
+				headerName : 'Department',
+				field : "deptName",
+			}, {
+				headerName : 'Employee status',
+				field : "empStatus",
+				cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					if (params.data.empStatus == "Active") { 
+						return '<div style="color:#0642f5">Active</div>';
+					} else if (params.data.empStatus == "Inactive") {
+						return '<div style="color:#ff8242">Inactive</div>';
+					} else {
+					}	
+				}
+			}, {
+				headerName : 'Clearance Status',
+				field : "empClrncStatus",
+				cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					if (params.data.empClrncStatus == "Pending") { 
+						return '<div style="color:#a9a9a9">Pending</div>';
+					}  else if (params.data.empClrncStatus == "Clear") {
+						return '<div style="color:#0642f5">Clear</div>';
+					} else {
+					}	
+				}
+			}, {
+				headerName : 'Resign status',
+				field : "regStatus",
+				cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					if (params.data.regStatus == "Pending") { 
+						return '<div style="color:#a9a9a9">Pending</div>';
+					} else if (params.data.regStatus == "Under Notice Period") {
+						return '<div style="color:#ffa500">Under Notice Period</div>';
+					} else if (params.data.regStatus == "Release") {
+						return '<div style="color:#0642f5">Release</div>';
+					} else {
+					}	
+				}
+			}, {
+				headerName : 'Notice Period',
+				field : "noticePeriod",
+				width : 150,
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Resign Date',
+				field : "resignDate",
+				width : 130,
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Release Date',
+				field : "releaseDate",
+				width : 130,
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Reason',
+				field : "reason"
+			}, {
+				headerName : 'Salary',
+				field : "salary",
+				width : 150,
+				//valueFormatter : currencyFormatter,
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Bonus',
+				field : "bonus",
+				//valueFormatter : currencyFormatter,
+				width : 150,
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Recovery',
+				field : "recovery",
+				//valueFormatter : currencyFormatter,
+				width : 150,
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Other',
+				field : "other",
+				//valueFormatter : currencyFormatter,
+				width : 150,
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Finanace Status',
+				field : "financeStatus",
+				hide : true
+			}, {
+				field : "deptId",
+				hide : true
+			}, {
+				field : "managerId",
+				hide : true
+			}, {
+				field : "managerName",
+				hide : true
+			}, {
+				field : "initId",
+				hide : true
+			
+			}, ];
+	//Exit management
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 170,
+			height : 10
+		},
+		rowSelection : 'single',
+		//onSelectionChanged : initiateExit,
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.empID;
+		}
+	};
+/* 	const columnDefs = 
+	[
+			{
+				headerName : 'Resignation ID',
+				field : "resignationId",
+ 
+			}, {
+				headerName : 'Employee ID',
+				field : "empId",
+				hide : true
+			}, {
+				headerName : 'Employee Name',
+				field : "empName"
+			}, {
+				headerName : 'Resign Date',
+				field : "resignDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Release Date',
+				field : "releaseDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Resign Status',
+				field : "status",
+				cellRenderer : function(params) {
+					if (params.data.status == "Pending") {
+						return 'Pending';
+					} else if (params.data.status == "Forwarded") {
+						return 'Forwarded';
+					} else if (params.data.status == "Approved") {
+						return 'Approved';
+					} else {
+						return 'Rejected';
+					}
+				}
+			}, {
+				headerName : 'Reason',
+				field : "reason",
+				cellRenderer : function(params) {
+					var reason=params.data.reason;
+					//reason=reason.split('<p>');
+				
+					return reason;
+			},
+				width : 325,
+			} ]; 
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 200,
+			height : 10
+		},
+		rowSelection : 'single',
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.resignationId;
+		}
+
+	}; */
+
+	/* ------------ag grid for Resignation apply Draft(Draft table)----------------------- */
+
+	const columnDefsDraft = 
+	[
+			{
+				headerCheckboxSelection : false,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+			{
+				headerName : 'Draft ID',
+				field : "resignationDraftId",
+				cellRenderer : function(params) {
+						return '<a onclick=editResignationApplyDraft("'
+								+ params.data.resignationDraftId
+								+ '") href="javascript:void(0)">'
+								+ params.data.resignationDraftId + '</a>';
+				}
+			}, {
+				headerName : 'Employee ID',
+				field : "empId",
+				hide : true
+			}, {
+				headerName : 'Employee Name',
+				field : "empName"
+			}, {
+				headerName : 'Resign Date',
+				field : "resignDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Release Date',
+				field : "releaseDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Resign Status',
+				field : "status",
+				cellRenderer : function(params) {
+					if (params.data.status == 0) {
+						return 'InActive';
+					} else {
+						return 'Active';
+					}
+				}
+			}, {
+				headerName : 'Reason',
+				field : "reason",
+				cellRenderer : function(params) {
+					var reason=params.data.reason;
+					//reason=reason.split('<p>');
+				
+					return reason;
+			},
+				width : 305,
+			} ]; 
+	const gridOptionsDraft = {
+		columnDefs : columnDefsDraft,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 200,
+			height : 10
+		},
+		rowSelection : 'single',
+		onSelectionChanged : rowSelectResignApplyDraft,
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.resignationDraftId;
+		}
+
+	};
+
+	/* ----------function for rowselection for Draft apply parent table----------- */
+	var id="";
+	function rowSelectResignApplyDraft() {
+		var id="";
+		var selectedRows = gridOptionsDraft.api.getSelectedRows();
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			id = id + '"' + selectedRows[i].resignationDraftId + '",';
+			
+		}
+		id = id.substring(0, id.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function(i) {
+			rowCount = rowCount + 1;
+		});
+		
+		 var selectedNodes = gridOptionsDraft.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		 var empID= selectedData.map(node => node.empId);
+		 var uid=$("#sessionId").val();
+		 
+		if (rowCount > 0) {
+			$('#new').attr("disabled", true);
+			if(empID!=uid){
+				$('#delete').attr("disabled", true);
+			}else{
+				$('#delete').attr("disabled", false);
+			}
+
+		} else {
+			$('#delete').attr("disabled", true);
+			$('#new').attr("disabled", false);
+		}
+
+	}
+	/*---------------function for edit reasignation apply------------ */
+
+	function editResignationApplyDraft(id) {
+		
+		$('.chosen-choices').closest('div').find('.search-choice1').hide();
+		$.ajax({
+			type : "GET",
+			url : "employee-resignation-draft-edit?id=" + id,
+			async : false,
+			success : function(response) {
+				if (response.message == "Success") {
+					newBtn(0);
+					$("#resignationDraftId").val(response.body[0].resignationDraftId);
+					$("#regTo").val("");
+					$("#multiple7").prop('disabled',true).trigger("chosen:updated");
+					$("#resignDate").val(response.body[0].resignDate);
+					$("#releaseDate").val(response.body[0].releaseDate);
+					$("#subject").val(response.body[0].subject);
+					CKEDITOR.instances['commentck'].setData(response.body[0].reason);
+
+					 if(response.body[0].regTo){
+			            var str1 =response.body[0].regTo;
+			            var str_array1 = str1.split(',');
+			            for (var i = 0; i < str_array1.length; i++) {
+
+			                str_array1[i] = str_array1[i].replace(/^\s*/, "").replace(/\s*$/, "");
+			            }
+			            console.log("new array  " + str_array1);
+			            $("#regTo").val(str_array1);
+			            for (var i = 0; i < str_array1.length; i++) {
+			                name = [];
+			                var x;
+			                $.ajax({
+			                    type: 'GET',
+			                    url: 'employee-resignation-getempname?id=' + str_array1[i],
+			                    contentType: false,
+			                    async: false,
+			                    success: function(response) {
+			                    	console.log(response);
+			                        if (response.message == "success") {
+			                            name = response.body.key;
+			                            x = name.split('"');
+			                        }
+			                    },
+			                    error: function(e) {
+			                        console.log("error");
+			                    }
+			                });
+			                var div = '<li class="search-choice search-choice1 default"><span>' + x + ' </span></li>';
+			                $("#multiple7").closest('div').find(".chosen-choices").first().append(div);
+
+			                $('#multiple7').on('change', function() {
+			                    $('.chosen-choices').closest('div').find('.search-choice1').hide();
+			                    $("#regTo").val('');
+			                })
+			                $('.search-choice-close').on('click', function() {
+			                    $('.chosen-choices').closest('div').find('.search-choice1').hide();
+			                    $("#regTo").val('');
+			                })
+			            }
+			            }else{
+			            	 $('.search-choice-close').on('click', function() {
+			                     $('.chosen-choices').closest('div').find('.search-choice1').hide();
+			                     $("#regTo").val('');
+			                 })
+			            }
+					//for cc
+		            if(response.body[0].regCC){
+		            var str1 =response.body[0].regCC;
+		            var str_array1 = str1.split(',');
+		            for (var i = 0; i < str_array1.length; i++) {
+
+		                str_array1[i] = str_array1[i].replace(/^\s*/, "").replace(/\s*$/, "");
+		            }
+		            console.log("new array  " + str_array1);
+		            $("#toHiddenIdCC").val(str_array1);
+		            for (var i = 0; i < str_array1.length; i++) {
+		                name = [];
+		                var y;
+		                $.ajax({
+		                    type: 'GET',
+		                    url: 'employee-resignation-getempname?id=' + str_array1[i],
+		                    contentType: false,
+		                    async: false,
+		                    success: function(response) {
+		                    	console.log(response);
+		                        if (response.message == "success") {
+		                            name = response.body.key;
+		                            y = name.split('"');
+		                        }
+		                    },
+		                    error: function(e) {
+		                        console.log("error");
+		                    }
+		                });
+		                var div = '<li class="search-choice search-choice1 default"><span>' + y + ' </span><a class="search-choice-close" data-option-array-index="' + i + '"></a></li>';
+		                $("#multiple8").closest('div').find(".chosen-choices").first().append(div);
+
+		                $('#multiple8').on('change', function() {
+		                    $('.chosen-choices').closest('div').find('.search-choice1').hide();
+		                    $("#toHiddenIdCC").val('');
+		                })
+		                $('.search-choice-close').on('click', function() {
+		                    $('.chosen-choices').closest('div').find('.search-choice1').hide();
+		                    $("#toHiddenIdCC").val('');
+		                })
+		            }
+		            }else{
+		            	 $('.search-choice-close').on('click', function() {
+		                     $('.chosen-choices').closest('div').find('.search-choice1').hide();
+		                     $("#toHiddenIdCC").val('');
+		                 })
+		            }
+					
+				  		
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+
+	}
+	function deleteInterviewer(event){
+		var id = event.target.id;
+		$("#deleteEmp_"+id).remove();
+		$("#toHiddenIdCC").val("");
+		}
+	/*------------- Function for delete Resignation apply ----------- */
+
+	function deleteResignationApply() {
+		 var selectedNodes = gridOptionsDraft.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		 var resignationDraftId= selectedData.map(node => node.resignationDraftId);
+		if(resignationDraftId){
+			$.ajax({
+				type : "GET",
+				url : "employee-resignation-delete?deleteId=" + resignationDraftId,
+				async : false,
+				success : function(response) {
+					if (response.message == "Success") {
+						$("#messageParagraph").text(
+						"Data Deleted Successfully");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+						cancelBtn();
+						
+					}
+
+				},
+				error : function(data) {
+				}
+			});
+		}
+	}
+ 
+	/* ------------------function for new button----------------- */
+
+	function newBtn(id) {
+		$("#regTo").val("");
+	var sm=$("#sessionManager").val();
+		$("#new").hide();
+		$("#downloadBtn").hide();
+		$("#cancel").show();
+		$("#myGrid").hide();
+		$("#myGridDraft").hide();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#totalReq1").hide();
+		$("#delete").hide();
+		$("#idDiv").show();
+		$("#idDiv1").show();
+		$("#demo").show();
+		$("#regTo").attr('disabled', true);
+		$(".formValidation").remove();
+		var date = (new Date()).toISOString().split('T')[0];
+		var newDate = changeDateFormat(date);
+		$("#leaveApplyDate").val(newDate);
+		$("#empID").val($("#sessionId").val());
+		$("#empName").val($("#sessionName").val());
+		if(id=="1"){
+			$("#regTo").val("");
+			$("#multiple7").prop('disabled',true).trigger("chosen:updated");
+			 if(sm){
+		            var str1 =sm;
+		            var str_array1 = str1.split(',');
+		            for (var i = 0; i < str_array1.length; i++) {
+
+		                str_array1[i] = str_array1[i].replace(/^\s*/, "").replace(/\s*$/, "");
+		            }
+		            console.log("new array  " + str_array1);
+		            $("#regTo").val(str_array1);
+		            for (var i = 0; i < str_array1.length; i++) {
+		                name = [];
+		                var x;
+		                $.ajax({
+		                    type: 'GET',
+		                    url: 'employee-resignation-getempname?id=' + str_array1[i],
+		                    contentType: false,
+		                    async: false,
+		                    success: function(response) {
+		                    	console.log(response);
+		                        if (response.message == "success") {
+		                            name = response.body.key;
+		                            x = name.split('"');
+		                        }
+		                    },
+		                    error: function(e) {
+		                        console.log("error");
+		                    }
+		                });
+		                var div = '<li class="search-choice search-choice1 default"><span>' + x + ' </span></li>';
+		                $("#multiple7").closest('div').find(".chosen-choices").first().append(div);
+
+		                $('#multiple7').on('change', function() {
+		                    $('.chosen-choices').closest('div').find('.search-choice1').hide();
+		                    $("#regTo").val('');
+		                })
+		                $('.search-choice-close').on('click', function() {
+		                    $('.chosen-choices').closest('div').find('.search-choice1').hide();
+		                    $("#regTo").val('');
+		                })
+		            }
+		            }else{
+		            	 $('.search-choice-close').on('click', function() {
+		                     $('.chosen-choices').closest('div').find('.search-choice1').hide();
+		                     $("#regTo").val('');
+		                 })
+		            }
+		}
+
+	}
+	function changeDateFormat(inputDate){  // expects Y-m-d
+	    var splitDate = inputDate.split('-');
+	    if(splitDate.count == 0){
+	        return null;
+	    }
+
+	    var year = splitDate[0];
+	    var month = splitDate[1];
+	    var day = splitDate[2]; 
+
+	    return day + '-' + month + '-' + year;
+	}
+	/*----------------------- function for main cancel button----------- */
+
+	function cancelBtn() {
+		$("#totalReq").show();
+		$("#downloadBtn").show();
+		$("#totalReq1").show();
+		$("#myGrid").show();
+		$("#myGridDraft").show();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+		$('#new').show();
+		$('#delete').show();
+		$("#resignationDraftId").val("");
+		$("#resignationId").val("");
+		$("#regTo").val("");
+		$("#toHiddenIdCC").val("");
+		$("#multiple8").val("");
+		$("#subject").val("");
+		$("#commentck").val("");
+		CKEDITOR.instances.commentck.setData("");
+		$("#resignDate").val("");
+		$("#releaseDate").val("");
+ 
+		$('#new').attr("disabled", false);
+		$('#delete').attr("disabled", true);
+		
+		var userid = $("#sessionId").val();
+		var userrole = $("#sessionRole").val();
+		var roleid = "reg";
+ 
+		gridOptions.api.setRowData();
+		agGrid.simpleHttpRequest({
+			url : "employee-resignation-view?userid=" + userid+"&roleid="+roleid,
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			if(len>0){
+				gridOptions.api.setRowData(data);
+			}else{
+				gridOptions.api.setRowData();
+			}
+		})
+		
+	gridOptionsDraft.api.setRowData();
+		agGrid.simpleHttpRequest({
+			url : "employee-resignation-draft-view?userid=" + userid+"&roleid="+roleid,
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq1').find('span').html(len);
+			if(len>0){
+				gridOptionsDraft.api.setRowData(data);
+			}else{
+				gridOptionsDraft.api.setRowData();
+			}
+		})
+	}
+ 
+
+
+	/* ------------function for main save both parent and child table data---------- */
+	var data = [];
+	function saveResignApply(){
+		$(".formValidation").remove();
+		obj = {};
+		 var reason = CKEDITOR.instances.commentck.getData();
+
+		    var participants = [];
+		    
+		    $("#toHiddenIdCC").each(function () {
+		    	regCC=$(this).val();
+			});
+		    obj['resignationDraftId'] = $('#resignationDraftId').val();
+		    obj['resignationId'] = $('#resignationId').val();
+		    obj['regTo'] = $("#regTo").val();
+		    obj['regCC'] = regCC;
+		    obj['subject'] = $('#subject').val();
+		    obj['reason'] = reason;
+		    obj['resignDate'] = $('#resignDate').val();
+		    obj['releaseDate'] = $('#releaseDate').val();
+			 if (obj['regTo'] == null || obj['regTo'] == "") {
+					validation = validationUpdated("To Required", "regTo");
+				}
+	/* 		 	if (regCC == null || regCC == "") {
+					validation = validationUpdated("Cc Required", "toHiddenIdCC");
+				} */ 
+			 	if (reason == null || reason == "") {
+					validation = validationUpdated("Reason", "commentckdreason");
+				} 
+			 if (obj['subject'] == null || obj['subject'] == "") {
+					validation = validationUpdated("Subject Required", "subject");
+				}
+			 if (obj['resignDate'] == null || obj['resignDate'] == "") {
+					validation = validationUpdated("Resign Date Required", "resignDate");
+				}
+			 if (obj['releaseDate'] == null || obj['releaseDate'] == "") {
+					validation = validationUpdated("Release Date Required", "releaseDate");
+				}
+			 if (validation) {
+				    data.push(obj);
+					saveResignApplyDetails(data);
+					 console.log(JSON.stringify(data));
+			 }
+
+	}
+	function saveResignApplyDetails(data) {
+
+		$.ajax({
+			type : "POST",
+			url : "employee-resignation-apply",
+			contentType : "application/json",
+			data : JSON.stringify(data),
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					$("#messageParagraph").text(
+					"Data Saved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					$("#myGrid").show();
+					$("#demo").hide();
+					$("#new").show();
+
+					cancelBtn();
+				}
+			},
+			error : function(datas) {
+			}
+		})
+
+	}
+	/* ------------function for main submit both parent and child table data---------- */
+	var datas = [];
+	function saveResignApplyDraft(){
+		$(".formValidation").remove();
+		obj = {};
+		var validation = true;
+		 var reason = CKEDITOR.instances.commentck.getData();
+
+		    var participants = [];
+		    
+		    $("#toHiddenIdCC").each(function () {
+		    	regCC=$(this).val();
+			});
+		    obj['resignationDraftId'] = $('#resignationDraftId').val();
+		    obj['regTo'] = $("#regTo").val();
+		    obj['regCC'] = regCC;
+		    obj['subject'] = $('#subject').val();
+		    obj['reason'] = reason;
+		    obj['resignDate'] = $('#resignDate').val();
+		    obj['releaseDate'] = $('#releaseDate').val();
+			
+		 if (obj['regTo'] == null || obj['regTo'] == "") {
+				validation = validationUpdated("To Required", "regTo");
+			}
+/* 		 	if (regCC == null || regCC == "") {
+				validation = validationUpdated("Cc Required", "toHiddenIdCC");
+			} */ 
+		 	if (reason == null || reason == "") {
+				validation = validationUpdated("Reason", "commentckdreason");
+			} 
+		 if (obj['subject'] == null || obj['subject'] == "") {
+				validation = validationUpdated("Subject Required", "subject");
+			}
+		 if (obj['resignDate'] == null || obj['resignDate'] == "") {
+				validation = validationUpdated("Resign Date Required", "resignDate");
+			}
+		 if (obj['releaseDate'] == null || obj['releaseDate'] == "") {
+				validation = validationUpdated("Release Date Required", "releaseDate");
+			}
+		 if (validation) {
+			 datas.push(obj);
+			 console.log(JSON.stringify(datas));
+			saveResignApplyDetailsdraft(datas);
+		 }
+	}
+	function saveResignApplyDetailsdraft(datas) {
+
+		$.ajax({
+			type : "POST",
+			url : "employee-resignation-draft-apply",
+			contentType : "application/json",
+			data : JSON.stringify(datas),
+			success : function(response) {
+				if (response.message == "Success") {
+					$("#messageParagraph").text("Data Saved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					$("#myGrid").show();
+					$("#demo").hide();
+					$("#new").show();
+					cancelBtn();
+				}else{
+					$("#messageParagraph").text(
+					"You Are Already Apply For Resignation");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					cancelBtn();
+				}
+			},
+			error : function(datas) {
+			}
+		})
+
+	}
+
+
+	/* ------------function for showing the modal(delete record from my grid1)------------ */
+
+	function deleteDetail() {
+		$('#deleteDetails').modal('show');
+	}
+
+	/* -------------------function for cancel button in modal1------------------ */
+
+	function cancelModalBtn() {
+		$("#deleteModalBtn").removeAttr("disabled");
+	}
+
+	/* -------------------for closeing modal box for delete---------------- */
+
+	function cancelModalDeleteBtn() {
+		$('#deleteDetails').modal('hide');
+		$('#alertModal').modal('hide');
+
+	}
+  
+
+	/* --------------------function for header status----------------- */
+
+	function headerStatus(rejectStatus) {
+
+		$("#statusDiv").show();
+		var createdDate = $("#createdDate").text();
+		//var approveDate = $("#approveDate").text();
+		var rejectDate = $("#rejectDate").text();
+
+		if (createdDate) {
+			$('#createdDiv').addClass('green-box');
+			$('#createdDiv').removeClass('grey-box');
+		} else {
+			$('#createdDiv').removeClass('green-box');
+			$('#createdDiv').addClass('grey-box');
+		}
+
+		if (rejectStatus == "2") {
+			$('#rejectDiv').removeClass('grey-box');
+			$('#rejectDiv').addClass('green-box');
+		} else {
+			$('#rejectDiv').removeClass('green-box');
+			$('#rejectDiv').addClass('grey-box');
+		}
+
+		if (rejectStatus == "3") {
+			$('#approveDiv').removeClass('grey-box');
+			$('#approveDiv').addClass('green-box');
+		} else {
+			$('#approveDiv').removeClass('green-box');
+			$('#approveDiv').addClass('grey-box');
+
+		}
+		if (rejectStatus == "0") {
+			$('#pendingDiv').removeClass('grey-box');
+			$('#pendingDiv').addClass('green-box');
+		} else {
+			$('#pendingDiv').removeClass('green-box');
+			$('#pendingDiv').addClass('grey-box');
+
+		}
+	}
+function downloadDetails() { 
+		  var dataset = [];
+		  gridOptions.api.forEachNodeAfterFilterAndSort(function(rowNode, index) {
+		        dataset.push(rowNode.data);
+		    });
+		  gridOptions.api.exportDataAsCsv(dataset);
+		}
+		
+function setFromToDate() {
+	$("#messageParagraph").text("Please choose release date greater than or equal to resign date ");
+	$("#msgOkModal").removeClass("btn3");
+	$("#msgOkModal").addClass("btn1");
+	$("#msgModal").modal('show');
+	$("#resignDate").val("");
+	$("#releaseDate").val("");
+}
+
+function dateChange() {
+	var fromdate = $('#resignDate').val();
+	var todate = $('#releaseDate').val();
+	var fd = fromdate.split("-");
+	var td = todate.split("-");
+	
+	if (fromdate != '' && todate != '') {
+		
+		if(fd[2]<=td[2]){
+			if(fd[1]==td[1]){
+				if(fd[0]<=td[0]){
+				}else{
+					setFromToDate();
+				}
+			}else if(fd[1]<td[1]){
+				
+			}else{
+				setFromToDate();
+			}
+		}else{
+			setFromToDate();
+		}
+	}else{
+		
+	}
+}
+ 
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+					<div class="d-flex justify-content-between">
+						<div class="btn-hs">
+							<div class="font-design" id="totalReq">Resignation Apply</div>
+						</div>
+						<div id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter"
+									autocomplete="off">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+						</div>
+						<div class="buttonsec btn-hs">
+							<button class="btn4" onclick="downloadDetails()" id="downloadBtn">Download</button>
+						</div>
+					</div>
+					<input type="hidden" id="sessionId" th:value="${userId}" /> <input
+						type="hidden" id="sessionName" th:value="${userName}" /> <input
+						type="hidden" id="hrRole" th:value="${hrRole}" /> <input
+						type="hidden" id="sessionRole" th:value="${userRole}" /><input
+						type="hidden" id="sessionManager" th:value="${userManager}" />
+					<!------------- parent table my grid ---------------------->
+
+					<div id="myGrid" style="width: 100%; height: 200px;"
+						class="ag-theme-alpine"></div>
+
+					<div class="d-flex justify-content-between mt-4">
+						<div class="btn-hs">
+							<div class="font-design" id="totalReq1">Resignation Apply In Draft</div>
+						</div>
+		 
+						<div class="buttonsec btn-hs">
+							<input type="button" class="new-btn" id="new" value="NEW"
+								onclick="newBtn(1)" readonly>
+							<button class="delete-btn" id="delete"
+								onclick="deleteResignationApply()">Delete</button>
+						</div>
+					</div>
+
+					<div id="myGridDraft" style="width: 100%; height: 200px;"
+						class="ag-theme-alpine"></div>
+
+					<div class="collapse" id="demo">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="row">
+
+									<div class="col-md-4" id="idDiv">
+										Resignation Apply <span id=""></span>
+									</div>
+									<div class="col-md-4">
+										<div id="statusDiv">
+											<div class="hr4"></div>
+											<div class="main-div">
+
+												<div id="createdDiv" class="grey-box green-box">
+													<div class="green-box-heading">CREATED</div>
+													<div class="date" id="createdDate"></div>
+												</div>
+
+												<div id="pendingDiv" class="grey-box">
+													<div class="green-box-heading">PENDING</div>
+													<div class="date" id="pendingDate"></div>
+												</div>
+
+												<div id="rejectDiv" class="grey-box">
+													<div class="green-box-heading">Release</div>
+													<div class="date" id="rejectDate"></div>
+												</div>
+
+
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<button class="new-btn" id="mainsave" onclick="saveResignApply()">Submit</button>
+										<button class="save-btn" id="mainsave" onclick="saveResignApplyDraft()">Save</button>
+										<button class="cancel-btn" id="cancel" onclick="cancelBtn()">Cancel</button>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<input type="hidden" id="resignationDraftId">
+								<input type="hidden" id="resignationId">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<div>To :</div>
+											<select id="multiple7" multiple onblur="removeValid(event)" >
+												<option th:each="c,iter:${emplists}" th:value='${c.key}'
+													th:text="${c.name}"></option>
+											</select> <input type="hidden" id="regTo" readonly>
+											
+									<!-- 			<select class="form-control" id="regTo" onblur="removeValid(event)">
+													<option value="">Select</option>
+													<option th:each="c,iter:${emplists}" th:value="${c.key}"
+														th:text="${c.name}"></option>
+												</select> -->
+ 
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="form-group">
+											<div>CC :</div>
+											<select id="multiple8" multiple onblur="removeValid(event)">
+												<option th:each="c,iter:${emplistscc}" th:value='${c.key}'
+													th:text="${c.name}"></option>
+											</select> <input type="hidden" id="toHiddenIdCC">
+
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label>Subject</label>
+											<textarea id="subject" autocomplete="off" onblur="removeValid(event)"></textarea>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="form-group">
+											<label>Reason</label>
+											<textarea id="commentck" onblur="removeValid(event)"></textarea>
+										</div>
+										<input type="hidden" id="commentckdreason">
+									</div>
+
+									<div class="col-md-6">
+										<div class="form-group calendar_box">
+											<label>Resign Date</label> <input type="text" id="resignDate"  value=""
+												 class="form-control" 
+												th:attr="onkeyup=|formatDate('resignDate','${session.DATEFORMAT_JS}')|"  readonly> 
+												<i class="ti-calendar picker_calendar" id="resignDateCalendar"></i>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="form-group calendar_box">
+											<label>Release Date</label> <input type="text"
+												id="releaseDate" class="form-control" onblur="removeValid(event)"
+												th:attr="onkeyup=|formatDate('releaseDate','${session.DATEFORMAT_JS}')|"
+												readonly> <i class="ti-calendar picker_calendar"
+												id="releaseDateCalendar"></i>
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+
+							<!------------- delete product modal start -------------------->
+
+							<div id="deleteDetails" class="modal fade show" aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-header flex-column">
+											<button type="button" class="close" data-bs-dismiss="modal"
+												aria-hidden="true" onclick="cancelModalDeleteBtn()">
+												<i class="ti-close modal-close"></i>
+											</button>
+										</div>
+										<div class="modal-body">
+											<p>Do you really want to delete these records? This
+												process cannot be undone.</p>
+										</div>
+										<div class="modal-footer justify-content-center"
+											style="margin-top: -30px;">
+
+											<button type="button" class="btn1" data-bs-dismiss="modal"
+												onclick="cancelModalBtn();">Cancel</button>
+											<button type="button" class="btn3"
+												onclick="deleteDetailsOnclick()">Delete</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+
+
+<head>
+  
+   
+     <script>
+     
+  /*    function tabView(type){
+  	   alert("GGG")
+  	    if(type=="compliance"){
+  	    	compliance();
+  	    }   
+   }  */
+   $(document).ready(function () {
+	  // compliance(); 
+   });
+   function tabView(type){
+	   console.log(type)
+	   if (type=="performance"){	
+		   performanceHighChat();
+	   }else if(type=="kpi"){
+		   kpiHighChat();
+	   }else if(type=="conversion"){
+		conversionHighChat();
+	   }else if(type=="cycle"){
+		 cycleHighChat();
+	   }else if(type=="analysis"){
+		 analysisHighChat();
+	   }else if(type=="operational"){
+		   operationalHighChat();  
+		   }else{
+			   oppourtunityHighChat();    
+		   }
+		   
+   } 
+ 
+  
+</script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script> -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <!-- <script src="https://code.highcharts.com/modules/series-label.js"></script> -->
+
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <!-- maps -->
+    <!-- <script src="https://code.highcharts.com/maps/highmaps.js"></script> -->
+
+    
+      <script src="../assets/highchart/*.js"></script>
+   <script src="../assets/highchart/compliancePD.js"></script>
+   <script src="../assets/highchart/qualityPD.js"></script>
+    <!-- <script src="../assets/highchart/conversion.js"></script>
+     <script src="../assets/highchart/cycle.js"></script>
+     <script src="../assets/highchart/analisys.js"></script>
+     <script src="../assets/highchart/opportunity.js"></script> -->
+   <link rel="stylesheet" href="../assets/css/extend/purchase-dashboard.css" /> 
+   <link rel="stylesheet" href="../extend/css/dashboard.css" />
+  
+</head>
+
+<body>
+<div layout:fragment="content" class="maincontent">
+    <section>
+        <div class="">
+            <!-- Tabs -->
+            <div class="card card-nav-tabs card-plain">
+                <div class="card-header card-header-primary">
+                    <h3 class="dashboard-header"></h3>
+                    <div class="nav-tabs-navigation">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#operational" data-toggle="tab">Operational</a>
+                                </li>
+                                <li class="nav-item" >
+                                    <a class="nav-link" href="#compliance" data-toggle="tab">Compliance</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#quality" data-toggle="tab">Quality</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#delivery" data-toggle="tab">Delivery</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#cost" data-toggle="tab">Cost</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#kpiScorecard" data-toggle="tab">kpi scorecard</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <div class="tab-content text-center">
+                        <!-- operational tab -->
+                        <div class="tab-pane active" id="operational">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="d-box d-box-1">
+                                            <p>Indents</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-box d-box-2">
+                                            <p>po scheduled</p>
+                                            <p>(2)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-box d-box-3">
+                                            <p>po released</p>
+                                            <p>(10)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-box d-box-4">
+                                            <p>transit</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-box d-box-5">
+                                            <p>Received</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-box d-box-6">
+                                            <p>returned</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane active" id="operational">
+                                <div class="row mt-10">
+                                    <div class="col-md-2">
+                                        <h3 class="kpi-heading">KPIs</h3>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Number of Suppliers</p>
+                                                <p class="numbers">120</p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Value Indented</p>
+                                                <p class="numbers">11,88,888<span class="profit">(+1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Value Ordered</p>
+                                                <p class="numbers">88,888<span class="profit">(+1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Value Scheduled</p>
+                                                <p class="numbers">11,88,888<span class="loss">(-1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Value In Transit</p>
+                                                <p class="numbers">11,88,888<span class="loss">(-1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Value Returned</p>
+                                                <p class="numbers">11,88,888<span class="loss">(-1%)</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h3 class="kpi-heading">Value Received</h3>
+                                        <table class="indents-table mt-10">
+                                            <tr>
+                                                <th>Indent ID</th>
+                                                <th>Indent Date</th>
+                                                <th>Indent By</th>
+                                                <th>Department/Project</th>
+                                                <th>Item/Services</th>
+                                                <th>Quantity</th>
+                                                <th>UoM</th>
+                                                <th>Approved By</th>
+                                                <th>Required By</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">IND/23/001</td>
+                                                <td class="right-align">01-Jun-23</td>
+                                                <td class="left-align">Tushar</td>
+                                                <td class="left-align">Project Site 1</td>
+                                                <td class="left-align">Flat Bar 2x2</td>
+                                                <td class="right-align">20</td>
+                                                <td class="right-align">No</td>
+                                                <td class="left-align">Biraja</td>
+                                                <td class="right-align">26-Jun-23</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">IND/23/001</td>
+                                                <td class="right-align">01-Jun-23</td>
+                                                <td class="left-align">Tushar</td>
+                                                <td class="left-align">Project Site 1</td>
+                                                <td class="left-align">Flat Bar 2x2</td>
+                                                <td class="right-align">20</td>
+                                                <td class="right-align">No</td>
+                                                <td class="left-align">Biraja</td>
+                                                <td class="right-align">26-Jun-23</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">IND/23/001</td>
+                                                <td class="right-align">01-Jun-23</td>
+                                                <td class="left-align">Tushar</td>
+                                                <td class="left-align">Project Site 1</td>
+                                                <td class="left-align">Flat Bar 2x2</td>
+                                                <td class="right-align">20</td>
+                                                <td class="right-align">No</td>
+                                                <td class="left-align">Biraja</td>
+                                                <td class="right-align">26-Jun-23</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">IND/23/001</td>
+                                                <td class="right-align">01-Jun-23</td>
+                                                <td class="left-align">Tushar</td>
+                                                <td class="left-align">Project Site 1</td>
+                                                <td class="left-align">Flat Bar 2x2</td>
+                                                <td class="right-align">20</td>
+                                                <td class="right-align">No</td>
+                                                <td class="left-align">Biraja</td>
+                                                <td class="right-align">26-Jun-23</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">IND/23/001</td>
+                                                <td class="right-align">01-Jun-23</td>
+                                                <td class="left-align">Tushar</td>
+                                                <td class="left-align">Project Site 1</td>
+                                                <td class="left-align">Flat Bar 2x2</td>
+                                                <td class="right-align">20</td>
+                                                <td class="right-align">No</td>
+                                                <td class="left-align">Biraja</td>
+                                                <td class="right-align">26-Jun-23</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">IND/23/001</td>
+                                                <td class="right-align">01-Jun-23</td>
+                                                <td class="left-align">Tushar</td>
+                                                <td class="left-align">Project Site 1</td>
+                                                <td class="left-align">Flat Bar 2x2</td>
+                                                <td class="right-align">20</td>
+                                                <td class="right-align">No</td>
+                                                <td class="left-align">Biraja</td>
+                                                <td class="right-align">26-Jun-23</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">IND/23/001</td>
+                                                <td class="right-align">01-Jun-23</td>
+                                                <td class="left-align">Tushar</td>
+                                                <td class="left-align">Project Site 1</td>
+                                                <td class="left-align">Flat Bar 2x2</td>
+                                                <td class="right-align">20</td>
+                                                <td class="right-align">No</td>
+                                                <td class="left-align">Biraja</td>
+                                                <td class="right-align">26-Jun-23</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- compliance tab -->
+                        <div class="tab-pane" id="compliance">
+                            <div class="compliance-dashboard-heading">
+                                <h2>Supplier Compliance Dashboard</h2>
+                                <div class="compliance-dds">
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Year</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Subsidiary</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Manager</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-separator mt-10"></div>
+                            <div class="row mt-10">
+                                <div class="col-md-12">
+                                    <div class="kpi-card-container">
+                                        <div class="row w-100">
+                                            <div class="col-md-5 brdr-right">
+                                                <div class="supp-cont">
+                                                    <div id="suppliers"></div>
+                                                    <div id="contracted"></div>
+                                                    <div id="unlisted"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 brdr-right d-flex justify-content-center flex-column">
+                                                <div class="medals-cont">
+                                                    <i class="fa-solid fa-medal gold"></i>
+                                                    <p class="medal-num">8</p>
+                                                    <p class="medal-text">Gold Partner</p>
+                                                </div>
+                                                <div class="medals-cont mt-10">
+                                                    <i class="fa-solid fa-medal silver"></i>
+                                                    <p class="medal-num">55</p>
+                                                    <p class="medal-text">Silver Partner</p>
+                                                </div>
+                                                <div class="medals-cont mt-10">
+                                                    <i class="fa-solid fa-medal bronze"></i>
+                                                    <p class="medal-num">100</p>
+                                                    <p class="medal-text">Bronze Partner</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <table class="table five-year-trend-table">
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th class="text-center">5 year trend</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="left-align">Total Spending</td>
+                                                        <td class="left-align"><span>&#8364;</span>15634</td>
+                                                        <td class="right-align">
+                                                            <div id="fiveYearTrend"></div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="left-align">Savings</td>
+                                                        <td class="left-align"><span>&#8364;</span>15634</td>
+                                                        <td class="right-align">
+                                                            <div id="fiveYearTrend1"></div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="left-align">Foregone Savings</td>
+                                                        <td class="left-align"><span>&#8364;</span>15634</td>
+                                                        <td class="right-align">
+                                                            <div id="fiveYearTrend2"></div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-10">
+                                <div class="col-md-6">
+                                    <div class="kpi-card-container">
+                                        <h3 class="supplier-comp-heading">rate of contract compliance by supplier
+                                            category</h3>
+                                        <table class="table1 five-year-trend-table">
+                                            <tr>
+                                                <th style="width: 20%">Category & Top Supplier</th>
+                                                <th style="width: 12%"># Suppliers</th>
+                                                <th class="text-center" style="width: 68%">Share of Managed Suppliers
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Category 1<br><span>Supplier 0056</span></td>
+                                                <td class="text-center" style="width: 12%">610</td>
+                                                <td style="width: 68%">
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar"
+                                                            style="width: 75%; background-color: #1fca9e;"
+                                                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Category 1<br><span>Supplier 0056</span></td>
+                                                <td class="text-center" style="width: 12%">610</td>
+                                                <td style="width: 68%">
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar"
+                                                            style="width: 47%; background-color: #ef9737;"
+                                                            aria-valuenow="47" aria-valuemin="0" aria-valuemax="100">47%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Category 1<br><span>Supplier 0056</span></td>
+                                                <td class="text-center" style="width: 12%">610</td>
+                                                <td style="width: 68%">
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar"
+                                                            style="width: 74%; background-color: #97d1fa;"
+                                                            aria-valuenow="74" aria-valuemin="0" aria-valuemax="100">74%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Category 1<br><span>Supplier 0056</span></td>
+                                                <td class="text-center" style="width: 12%">610</td>
+                                                <td style="width: 68%">
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar"
+                                                            style="width: 74%; background-color: #a45f6e;"
+                                                            aria-valuenow="74" aria-valuemin="0" aria-valuemax="100">74%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Category 1<br><span>Supplier 0056</span></td>
+                                                <td class="text-center" style="width: 12%">610</td>
+                                                <td style="width: 68%">
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar"
+                                                            style="width: 9%; background-color: #d14f57;"
+                                                            aria-valuenow="9" aria-valuemin="0" aria-valuemax="100">9%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Category 1<br><span>Supplier 0056</span></td>
+                                                <td class="text-center" style="width: 12%">610</td>
+                                                <td style="width: 68%">
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar"
+                                                            style="width: 33%; background-color: #fae377;"
+                                                            aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">33%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="kpi-card-container">
+                                        <h3 class="supplier-comp-heading">avg procurement cycle time (in days)</h3>
+                                        <div class="d-flex justify-content-center align-items-center w-100" style="margin-top:24px">
+                                            <div class="d-flex flex-column align-items-center mx-2">
+                                                <div class="small-circle">
+                                                    <div class="blue-circle"></div>
+                                                </div>
+                                            </div>
+                                            <div class="big-circle-cont">
+                                                <div class="big-circle">
+                                                    <div class="circle-text">0.7 d</div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center mx-2">
+                                                <div class="small-circle">
+                                                    <div class="blue-circle"></div>
+                                                </div>
+                                            </div>
+                                            <div class="big-circle-cont">
+                                                <div class="big-circle">
+                                                    <div class="circle-text">0.7 d</div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center mx-2">
+                                                <div class="small-circle">
+                                                    <div class="blue-circle"></div>
+                                                </div>
+                                            </div>
+                                            <div class="big-circle-cont">
+                                                <div class="big-circle">
+                                                    <div class="circle-text">0.7 d</div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center mx-2">
+                                                <div class="small-circle">
+                                                    <div class="blue-circle"></div>
+                                                </div>
+                                            </div>
+                                            <div class="big-circle-cont">
+                                                <div class="big-circle">
+                                                    <div class="circle-text">0.7 d</div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center mx-2">
+                                                <div class="small-circle">
+                                                    <div class="blue-circle"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex w-100 justify-content-center">
+                                            <h6 class="order-conf">Order<br>Placement</h6>
+                                            <h6 class="order-conf">Confirmation</h6>
+                                            <h6 class="order-conf">Delivery</h6>
+                                            <h6 class="order-conf">Invoicing</h6>
+                                            <h6 class="order-conf">Payment</h6>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h3 class="supplier-comp-heading">avg procurement cycle (supplier
+                                            classification)</h3>
+                                        <div class="row w-100">
+                                            <div class="col-md-8">
+                                                <h6 class="w-100 text-center avg-pro-head">Number of Suppliers</h6>
+                                                <div id="nrOfSuppliers"></div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <h6 class="w-100 text-center avg-pro-head">% of Suppliers</h6>
+                                                <div class="d-flex avg-pro-bg">
+                                                    <div class="round short"></div>
+                                                    <div class="">Short</div>
+                                                    <div class="avg-pro-cyl-perc">48%</div>
+                                                </div>
+                                                <div class="d-flex avg-pro-bg mt-10">
+                                                    <div class="round medium"></div>
+                                                    <div class="">Medium</div>
+                                                    <div class="avg-pro-cyl-perc">48%</div>
+                                                </div>
+                                                <div class="d-flex avg-pro-bg mt-10">
+                                                    <div class="round long"></div>
+                                                    <div class="">Long</div>
+                                                    <div class="avg-pro-cyl-perc">48%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- quality tab -->
+                        <div class="tab-pane" id="quality">
+                            <div class="compliance-dashboard-heading">
+                                <h2>Procurement Quality Dashboard</h2>
+                                <div class="compliance-dds">
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Project</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Category</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Supplier</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>This Month</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-separator mt-10"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Quality KPIs (MTD vs. Previous Month)</h6>
+                                            <i class="fa-solid fa-chart-pie"></i>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="row" style="padding: 0px 13px;">
+                                                <div class="col-md-5">
+                                                    <div class="row">
+                                                        <div class="col-md-12 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Number of Suppliers</p>
+                                                                <p>114</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Val. Ordered</p>
+                                                                <p>114</p>
+                                                                <p class="loss"><span><i
+                                                                            class="fa-solid fa-caret-down"></i></span> 4
+                                                                    %</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Val. Rejected</p>
+                                                                <p>114</p>
+                                                                <p class="loss"><span><i
+                                                                            class="fa-solid fa-caret-down"></i></span> 4
+                                                                    %</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Purchases in time and budget
+                                                                </p>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar" role="progressbar"
+                                                                        style="width: 75%; background-color: #1fca9e;"
+                                                                        aria-valuenow="75" aria-valuemin="0"
+                                                                        aria-valuemax="100">75%
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <div class="row" style="margin-left: -5px;">
+                                                        <div class="col-md-6 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Vendor rejection rate</p>
+                                                                <p class="mt-114">114</p>
+                                                                <p class="loss mt-114"><span><i
+                                                                            class="fa-solid fa-caret-down"></i></span> 4
+                                                                    %</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Number of Suppliers</p>
+                                                                <p class="mt-114">114</p>
+                                                                <p class="loss mt-114"><span><i
+                                                                            class="fa-solid fa-caret-down"></i></span> 4
+                                                                    %</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Number of Suppliers</p>
+                                                                <p class="mt-114">114</p>
+                                                                <p class="loss mt-114"><span><i
+                                                                            class="fa-solid fa-caret-down"></i></span> 4
+                                                                    %</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 mt-10">
+                                                            <div class="quality-box">
+                                                                <p class="quality-box-head">Number of Suppliers</p>
+                                                                <p class="mt-114">114</p>
+                                                                <p class="loss mt-114"><span><i
+                                                                            class="fa-solid fa-caret-down"></i></span> 4
+                                                                    %</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Return Cost Analysis (Top 5 Suppliers)</h6>
+                                            <i class="fa-solid fa-filter"></i>
+                                        </div>
+                                        <div id='returnCostAnalysis'></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Project Analysis</h6>
+                                            <i class="fa-solid fa-file-lines"></i>
+                                        </div>
+                                        <div id="spendUnderManagement"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Supplier Quality Rating (Top 5 Suppliers)</h6>
+                                            <i class="fa-solid fa-medal"></i>
+                                        </div>
+                                        <table class="top-supplier-table mt-10">
+                                            <tr>
+                                                <th>Supplier</th>
+                                                <th>Ordered (<span>&#8364;</span>)</th>
+                                                <th>% Returned (<span>&#8364;</span>)</th>
+                                                <th>Availability</th>
+                                                <th>Defect Rate</th>
+                                                <th>Quality Score</th>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="plus">+</span> Global Shipping</td>
+                                                <td><span>&#8364;</span>19M</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="plus">+</span> Global Shipping</td>
+                                                <td><span>&#8364;</span>19M</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="plus">+</span> Global Shipping</td>
+                                                <td><span>&#8364;</span>19M</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="plus">+</span> Global Shipping</td>
+                                                <td><span>&#8364;</span>19M</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="plus">+</span> Global Shipping</td>
+                                                <td><span>&#8364;</span>19M</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td><span>&#8364;</span>19M</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                                <td>0.019%</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- delivery tab -->
+                        <div class="tab-pane" id="delivery">
+                            <div class="compliance-dashboard-heading">
+                                <h2>Supplier Delivery Dashboard</h2>
+                                <div class="compliance-dds">
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Category</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Supplier</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>This Month</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-separator mt-10"></div>
+                            <div class="row mt-10">
+                                <div class="col-md-2">
+                                    <div class="kpi-card-container">
+                                        <div id="availability"></div>
+                                    </div>
+                                    <div class="kpi-card-container delivery-card-cont mt-10">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                        <div class="delivery-num-cont">
+                                            <h2>1.9%</h2>
+                                            <p>Defect Rate</p>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container delivery-card-cont mt-10">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                        <div class="delivery-num-cont">
+                                            <h2>1.9%</h2>
+                                            <p>Defect Rate</p>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container delivery-card-cont mt-10">
+                                        <i class="fa-regular fa-circle-check"></i>
+                                        <div class="delivery-num-cont">
+                                            <h2>1.9%</h2>
+                                            <p>Defect Rate</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="kpi-card-container delivery-card-cont mt-10">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        <div class="delivery-num-cont">
+                                            <h2>1.9%</h2>
+                                            <p>Defect Rate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="row ">
+                                        <div class="col-md-4">
+                                            <div class="kpi-card-container">
+                                                <div id="supplierDefectRate"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="kpi-card-container">
+                                                <div id="supplierAvailability"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="kpi-card-container">
+                                                <div id="leadTime"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-10">
+                                        <div class="col-md-6">
+                                            <div class="kpi-card-container">
+                                                <div class="defect-rate-head">
+                                                    Supplier Defect Rate & Defect Type
+                                                </div>
+                                                <div class="defect-rate-cont">
+                                                    <div class="defect-rate-text">
+                                                        Defect Rate
+                                                    </div>
+                                                    <table class="defect-rate-table mt-10">
+                                                        <tr>
+                                                            <td>1.9%</td>
+                                                            <td>1.9%</td>
+                                                            <td>1.9%</td>
+                                                            <td>1.9%</td>
+                                                            <td>1.9%</td>
+                                                            <td>1.9%</td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                <div id="supplierDefectType"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="kpi-card-container">
+                                                <div class="delivery-time-head">Delivery Time</div>
+                                                <div class="delivery-time-cont">
+                                                    <div class="row w-100">
+                                                        <div class="col-md-7">
+                                                            <div id="deliveryTime"></div>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <table class="table delivery-time-table">
+                                                                <tr>
+                                                                    <th>Actual</th>
+                                                                    <th>Target</th>
+                                                                    <th>Ranking</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width:30%">92%</td>
+                                                                    <td style="width:30%">90%</td>
+                                                                    <td style="width:40%">
+                                                                        <div>Acceptable<span class="early"><i
+                                                                                    class="fa-solid fa-circle"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width:30%">92%</td>
+                                                                    <td style="width:30%">90%</td>
+                                                                    <td style="width:40%">
+                                                                        <div>Acceptable<span class="early"><i
+                                                                                    class="fa-solid fa-circle"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width:30%">92%</td>
+                                                                    <td style="width:30%">90%</td>
+                                                                    <td style="width:40%">
+                                                                        <div>Acceptable<span class="early"><i
+                                                                                    class="fa-solid fa-circle"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width:30%">92%</td>
+                                                                    <td style="width:30%">90%</td>
+                                                                    <td style="width:40%">
+                                                                        <div>Acceptable<span class="early"><i
+                                                                                    class="fa-solid fa-circle"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width:30%">92%</td>
+                                                                    <td style="width:30%">90%</td>
+                                                                    <td style="width:40%">
+                                                                        <div>Acceptable<span class="on-time"><i
+                                                                                    class="fa-solid fa-circle"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width:30%">92%</td>
+                                                                    <td style="width:30%">90%</td>
+                                                                    <td style="width:40%">
+                                                                        <div>Acceptable<span class="late"><i
+                                                                                    class="fa-solid fa-circle"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- cost tab -->
+                        <div class="tab-pane" id="cost">
+                            <div class="compliance-dashboard-heading">
+                                <h2>Procurement Quality Dashboard</h2>
+                                <div class="compliance-dds">
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Project</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Category</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Supplier</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>This Month</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-separator mt-10"></div>
+                            <div class="row mt-10">
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container">
+                                        <div class="row w-100">
+                                            <div class="col-md-2 cost-icon"><i class="fa-solid fa-bag-shopping"></i>
+                                            </div>
+                                            <div class="col-md-10" style="border-radius: 6px;background: #f0f8ff;">
+                                                <div class="row">
+                                                    <div class="col-md-4 cost-text">
+                                                        <span>&#8364;</span>12342<br>
+                                                        <span class="cost-card-num">This Year</span>
+                                                    </div>
+                                                    <div class="col-md-8 cost-chart">
+                                                        <div id="costFiveYearTrend"></div>
+                                                        <div class="cost-card-num">5 Year Trend</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="mt-10 cost-card-head">Cost Reduction</h6>
+                                    <div class="kpi-card-container">
+                                        <div class="row w-100">
+                                            <div class="col-md-2 cost-icon"><i class="fa-solid fa-socks"></i></div>
+                                            <div class="col-md-10" style="border-radius: 6px;background: #f0f8ff;">
+                                                <div class="row">
+                                                    <div class="col-md-4 cost-text">
+                                                        <span>&#8364;</span>12342<br>
+                                                        <span class="cost-card-num">This Year</span>
+                                                    </div>
+                                                    <div class="col-md-8 cost-chart">
+                                                        <div id="costFiveYearTrend1"></div>
+                                                        <div class="cost-card-num">5 Year Trend</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="mt-10 cost-card-head">Cost Savings</h6>
+                                    <div class="kpi-card-container">
+                                        <div class="row w-100">
+                                            <div class="col-md-2 cost-icon"><i
+                                                    class="fa-solid fa-piggy-bank fa-flip-horizontal"></i></div>
+                                            <div class="col-md-10" style="border-radius: 6px;background: #f0f8ff;">
+                                                <div class="row">
+                                                    <div class="col-md-4 cost-text">
+                                                        <span>&#8364;</span>12342<br>
+                                                        <span class="cost-card-num">This Year</span>
+                                                    </div>
+                                                    <div class="col-md-8 cost-chart">
+                                                        <div id="costFiveYearTrend2"></div>
+                                                        <div class="cost-card-num">5 Year Trend</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="mt-10 cost-card-head">Cost Avoidance</h6>
+                                    <div class="kpi-card-container">
+                                        <div class="row w-100">
+                                            <div class="col-md-2 cost-icon"><i
+                                                    class="fa-solid fa-triangle-exclamation"></i></div>
+                                            <div class="col-md-10" style="border-radius: 6px;background: #f0f8ff;">
+                                                <div class="row">
+                                                    <div class="col-md-4 cost-text">
+                                                        <span>&#8364;</span>12342<br>
+                                                        <span class="cost-card-num">This Year</span>
+                                                    </div>
+                                                    <div class="col-md-8 cost-chart">
+                                                        <div id="costFiveYearTrend3"></div>
+                                                        <div class="cost-card-num">5 Year Trend</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="mt-10 cost-card-head">Procurement ROI</h6>
+                                    <div class="kpi-card-container">
+                                        <div class="row w-100">
+                                            <div class="col-md-2 cost-icon"><i class="fa-solid fa-chart-line"></i></div>
+                                            <div class="col-md-10" style="border-radius: 6px;background: #f0f8ff;">
+                                                <div class="row">
+                                                    <div class="col-md-4 cost-text">
+                                                        <span>&#8364;</span>12342<br>
+                                                        <span class="cost-card-num">This Year</span>
+                                                    </div>
+                                                    <div class="col-md-8 cost-chart">
+                                                        <div id="costFiveYearTrend4"></div>
+                                                        <div class="cost-card-num">5 Year Trend</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container">
+                                        <h6 class="cost-card-head">Cost Reduction By Supplier Category</h6>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="d-flex">
+                                                    <div id="costReductionBySupplier"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <table class="table delivery-time-table table3">
+                                                    <tr>
+                                                        <td style="width:60%">
+                                                            <div><span style="color:#2caffe; font-size: 9px"><i
+                                                                        class="fa-solid fa-circle"></i></span>
+                                                                Transistors</div>
+                                                        </td>
+                                                        <td style="width:40%"><span>&#8364;</span>543254</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width:60%">
+                                                            <div><span style="color: #544fc5;font-size: 9px"><i
+                                                                        class="fa-solid fa-circle"></i></span> Switches
+                                                            </div>
+                                                        </td>
+                                                        <td style="width:40%"><span>&#8364;</span>543254</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width:60%">
+                                                            <div><span style="color: #00e272;font-size: 9px"><i
+                                                                        class="fa-solid fa-circle"></i></span> Sensors
+                                                            </div>
+                                                        </td>
+                                                        <td style="width:40%"><span>&#8364;</span>543254</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width:60%">
+                                                            <div><span style="color: #fe6a35;font-size: 9px"><i
+                                                                        class="fa-solid fa-circle"></i></span> Battery
+                                                            </div>
+                                                        </td>
+                                                        <td style="width:40%"><span>&#8364;</span>543254</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width:60%">
+                                                            <div><span
+                                                                    style="color: #6b8abc;font-size: 9px !important"><i
+                                                                        class="fa-solid fa-circle"></i></span> Display
+                                                            </div>
+                                                        </td>
+                                                        <td style="width:40%"><span>&#8364;</span>543254</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width:60%">
+                                                            <div><span style="color: #d568fb;font-size: 9px"><i
+                                                                        class="fa-solid fa-circle"></i></span> Other
+                                                            </div>
+                                                        </td>
+                                                        <td style="width:40%"><span>&#8364;</span>543254</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="d-flex justify-content-between align-items-center w-100">
+                                            <h6 style="font-size: 12px;">Procurement ROI</h6>
+                                            <h6 style="font-size: 12px;">Cost of Procurement: <span
+                                                    style="font-size: 17px;">&#8364;45454</span></h6>
+                                        </div>
+                                        <div id="procurementROI"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container">
+                                        <h6 class="cost-card-head">Cost Reduction By Supplier Category</h6>
+                                        <div id="costSavings"></div>
+                                        <div id="costAvoidance"></div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h6 class="cost-card-head">Top & Bottom 5 Supplier by Cost Reduction</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <table class="top-bottom-supplier-table">
+                                                    <tr>
+                                                        <th>Top</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <table class="top-bottom-supplier-table">
+                                                    <tr>
+                                                        <th>Bottom</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Supplier 0726</td>
+                                                        <td><span>&#8364;</span>423232</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- kpi scorecard tab -->
+                        <div class="tab-pane" id="kpiScorecard">
+                            <div class="compliance-dashboard-heading">
+                                <h2>Purchasing KPI Scorecard</h2>
+                                <div class="compliance-dds">
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Quarter</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-separator mt-10"></div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Cost Savings</h6>
+                                            <i class="fa-solid fa-piggy-bank fa-flip-horizontal"></i>
+                                        </div>
+                                        <table class="table kpi-table">
+                                            <tr>
+                                                <th></th>
+                                                <th>This quarter</th>
+                                                <th>vs last quarter</th>
+                                                <th class="text-center">Quarterly trend</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Total Spending</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="kpiCostSaving1"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="kpiCostSaving2"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="kpiCostSaving3"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="kpiCostSaving4"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Department KPIs</h6>
+                                            <i class="fa-solid fa-user-group"></i>
+                                        </div>
+                                        <table class="table kpi-table">
+                                            <tr>
+                                                <th></th>
+                                                <th>This quarter</th>
+                                                <th>vs last quarter</th>
+                                                <th class="text-center">Quarterly trend</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Total Spending</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="departmentKPIs1"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="departmentKPIs2"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="departmentKPIs3"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="departmentKPIs4"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Supplier Performance</h6>
+                                            <i class="fa-solid fa-truck fa-flip-horizontal"></i>
+                                        </div>
+                                        <table class="table kpi-table">
+                                            <tr>
+                                                <th></th>
+                                                <th>This quarter</th>
+                                                <th>vs last quarter</th>
+                                                <th class="text-center">Quarterly trend</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Total Spending</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="supplierPerformance1"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="supplierPerformance2"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="supplierPerformance3"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="supplierPerformance4"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Operational KPIs</h6>
+                                            <i class="fa-solid fa-gear"></i>
+                                        </div>
+                                        <table class="table kpi-table">
+                                            <tr>
+                                                <th></th>
+                                                <th>This quarter</th>
+                                                <th>vs last quarter</th>
+                                                <th class="text-center">Quarterly trend</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Total Spending</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="operationalKPIs1"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="operationalKPIs2"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="operationalKPIs3"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="operationalKPIs4"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Spend Under Management</h6>
+                                            <i class="fa-solid fa-tag fa-rotate-90"></i>
+                                        </div>
+                                        <table class="table kpi-table">
+                                            <tr>
+                                                <th></th>
+                                                <th>This quarter</th>
+                                                <th>vs last quarter</th>
+                                                <th class="text-center">Quarterly trend</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Total Spending</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="spendUnderManagement1"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="spendUnderManagement2"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="spendUnderManagement3"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="spendUnderManagement4"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <div class="quality-heading-cont w-100">
+                                            <h6>Maverick Spend By Main Area</h6>
+                                            <i class="fa-solid fa-flag fa-flip-horizontal"></i>
+                                        </div>
+                                        <table class="table kpi-table">
+                                            <tr>
+                                                <th></th>
+                                                <th>This quarter</th>
+                                                <th>vs last quarter</th>
+                                                <th class="text-center">Quarterly trend</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Total Spending</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="maverick1"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="maverick2"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="maverick3"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="left-align">Foregone Savings</td>
+                                                <td class="left-align"><span>&#8364;</span>15634</td>
+                                                <td>
+                                                    <div><span>&#8364;</span>156<br><span>(+1%)</span></div>
+                                                </td>
+                                                <td class="right-align">
+                                                    <div id="maverick4"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End Tabs on plain Card -->
+        </div>
+    </section>
+     </div>
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+        integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+        integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+        crossorigin="anonymous"></script>
+    <script> -->
+       
+</body>
+
+</html>

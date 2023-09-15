@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+
+<style>
+
+.hvrbox .hvrbox-layer_top {
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 25%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	color: #fff;
+	padding: 15px;
+}
+
+.btn1 {
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    background-color: #5784c4;
+    color: #fff!important;
+    margin-left: 5px;
+    margin-bottom: 8px;
+    width: 105px;
+    height: 28px;
+    line-height: 12px;
+    float: right;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.taskInfo{
+	padding-left: 10px;
+    color: #45166a;
+}
+
+.rating {
+	float: left;
+}
+
+.rating:not(:checked)>input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0, 0, 0, 0);
+}
+
+.alnright { 
+	text-align: right !important;
+}
+
+.rating:not(:checked)>label {
+	float: right;
+	width: 1em;
+	padding: 0 .1em;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	font-size: 200%;
+	line-height: 1.2;
+	color: rgba(0, 0, 0, 0.6);
+	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:before {
+	content: '★ ';
+}
+
+.rating>input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:hover, .rating:not(:checked)>label:hover ~
+	label {
+	color: black;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
+	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
+	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>label:active {
+	position: relative;
+	top: 2px;
+	left: 2px;
+}
+
+.btn-outline-primary {
+	color: #007bff;
+	background-color: rgb(240 243 241/ 90%);
+	background-image: none;
+	border-color: #007bff;
+	cursor: pointer;
+}
+.picker_calendar5 {
+ cursor: pointer;
+    position: absolute;
+    bottom: 361px;
+    left: 742px;
+}
+.picker_calendar6 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 361px;
+    left: 1132px;
+}
+</style>
+<script>
+	
+	
+	
+	$(function() {
+		$("#shtable").show();
+	
+		
+		$("#fromDate").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+		})
+		
+		$("#toDate").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+		})
+	
+		getTrialBalance();
+	
+	
+	
+	
+	})
+	
+
+	
+	function getTrialBalance() {
+		
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#toDate").val();
+
+		$.ajax({
+			type : "GET",
+			url : "trial-balance-report?fromDate" + fromDate + "&toDate=" + toDate,
+			async : false,
+			success : function(response) {
+				if (response.code == "Success") {
+					
+					
+					var rows='';
+					var totalDebitAmnt=0;
+					var totalCreditAmnt=0;
+					for(var i=0;i<response.body.length;i++){
+						
+					
+						var debitAmount=0;
+						debitAmount=response.body[i].debitAmount;
+						var creditAmount=0;
+						creditAmount=response.body[i].creditAmount;
+						
+					    totalDebitAmnt = (parseFloat(totalDebitAmnt + parseFloat(debitAmount)).toFixed(2));
+						totalCreditAmnt=  (totalCreditAmnt + parseFloat(creditAmount));
+						
+						
+						
+						var debBal='';
+						var creBal='';
+						if(response.body[i].debitAmount =='0'){
+							debBal='';
+						}else{
+							debBal=''+response.body[i].debitAmount+'';
+							debBal='₹'.concat(debBal);
+						}
+						if(response.body[i].creditAmount =='0'){
+							creBal='';
+						}else{
+							creBal=''+response.body[i].creditAmount+'';
+							creBal='₹'.concat(creBal);
+						}
+						
+						rows='<tr align="left" valign="top">'
+							+'<td>'+response.body[i].ledgerName+'</td>'
+							+'<td class="alnright">'+debBal+'</td>'
+							+'<td class="alnright">'+creBal+'</td>'
+							+'</tr>';
+						$("#trialBalanceList").append(rows);
+						
+						
+						$("#totalDebitAmount").text(totalCreditAmnt.toFixed(2));
+						$("#totalCreditAmount").text(totalCreditAmnt.toFixed(2));
+					}
+					
+					
+				}
+			}
+		})
+		
+		
+	}
+</script>
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+					
+					
+						
+				<div class="innercontent">
+					<div class="row">
+					<div class="ledgertable">
+					
+					
+					<!-- Start -->
+					<div class="row d-flex justify-content-between mb-2">
+						<div class="col-md-2  btn-hs">
+						<h2 class="font-design">Trial Balance:</h2>
+						</div>
+						
+					<div class="col-md-3">
+						<div class="form-group d-flex">
+								<div class="col-md-4"><label>Fiscal Year</label> </div>
+								<div class="col-md-8">
+								<div class="select">
+									<select id="orderStatusFilter" class="form-control" >
+										<option  value="">--Select--</option>
+										<option th:each="c,iter:${fiscalList}" th:value="${c.key}"
+											th:text="${c.name}"></option>
+									</select>
+								</div>
+								</div>
+							</div>
+						
+				     </div>
+					
+					
+					<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="fromDate" placeholder="From Date" class="form-control"> 
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="toDate" placeholder="To Date" class="form-control">
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-1">
+						<input type="button" id="filter" value="Filter" class="fltbtn" onclick="viewDayBook()" readonly>
+					   </div>
+					
+					
+					  <div class="col-md-2  btn-hs">
+							<button type="button" class="d-inline-flex align-items-center btn btn-primary rounded  mb-2 float-end">
+									<i class="ti-printer"></i>&nbsp Print Order
+								</button>
+						</div>
+					</div>	
+					
+					<!-- End -->
+					
+					
+					<!-- <div class="d-flex justify-content-between">
+					<h2 class="font-design" >Ledger Monthly Summary:</h2>
+					
+							<button type="button" class="d-inline-flex align-items-center btn btn-primary rounded  mb-2">
+									<i class="ti-printer"></i>&nbsp Print Order
+								</button>
+					</div> -->	
+					
+							
+								
+				<!-- 	<div class="d-flex justify-content-between">
+					<div><p> <strong>Trial Balance</strong></p></div>
+					
+					<div>
+						<input type="text" id="fromDate" placeholder="From Date"> to
+						<input type="text" id="toDate" placeholder="To Date">
+						<input type="button" id="filter" value="Filter" onclick="viewDayBook()" readonly>
+					</div>
+					
+					</div> -->
+					
+					
+					<table  class="table table-bordered table-striped" id="shtable">
+								
+								<thead>
+								<tr align="center" style="background:#f5f6f7;" valign="middle">
+									<!-- <th width="10%"><strong>Date </strong> </th> -->
+									<th width="50%"><strong>Particulars </strong></th>
+
+									
+									
+									<th width="15%"><strong>Debit Amount</strong></th>
+									<th width="20%"><strong>Credit Amount</strong></th>
+								
+								</tr>
+							</thead>
+
+								<tbody id="trialBalanceList">
+
+								</tbody>
+								<tbody>
+								<tr align="left" valign="top">
+
+									<td>Total Balance</td>
+					
+									<td class="alnright">₹<span id="totalDebitAmount"></span></td>
+									<td class="alnright">₹<span id="totalCreditAmount"></span></td>
+									</tr>
+								
+								
+								</tbody>
+
+
+								</table>
+					
+							</div>
+							</div>
+					
+					
+					    	</div>
+
+
+
+				<!-- Right Sec End -->
+
+
+					
+
+					
+					
+				
+				
+				
+				
+			</div>
+		</div>
+	</div>
+		                         
+		                         <!-- Modal -->
+		                        <!--  <div class="modal fade show" id="myModal" >
+			                            <div class="modal-dialog modal-xl">
+			                         	<div class="modal-content">
+
+												Modal Header
+											<div class="modal-header">
+													<h4 class="modal-title">Modal Heading</h4>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+											</div>
+
+												Modal body
+												<div class="modal-body">Modal body..</div>
+
+												Modal footer
+												<div class="modal-footer">
+												<button type="button" class="btn btn-danger"
+											data-bs-dismiss="modal" onclick="closeModel()">Close</button>
+										</div> 
+
+									</div>
+								</div>
+								</div> -->
+								 <!-- Modal -->
+	</div>						
+		</body>
+</html>

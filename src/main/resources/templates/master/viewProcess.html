@@ -1,0 +1,1097 @@
+	
+	<!DOCTYPE html>
+	<html xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:th="http://www.thymeleaf.org"
+		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+		layout:decorate="~{layout/master}">
+	<head>
+	<style>
+	.picker_calendar {
+		cursor: pointer;
+		position: absolute;
+		top: 10px;
+		right: 18px;
+	}
+	
+	.blueClsWT {
+		background: #0076ba !important;
+		color: #fff !important;
+	}
+	
+	.blueCls {
+		background: #0076ba;
+		color: #fff;
+	}
+	
+	.blueClsWT::before {
+		font-size: 8px;
+		color: #FFF;
+		content: '\e64c';
+		font-family: 'themify';
+		padding-right: 7px;
+	}
+	
+	.tptCls {
+		background: transparnt;
+	}
+	</style>
+	<script>
+		$(document).ready(function() {
+			getCurrentDateMonthYear();
+			getApproverStatus();
+			getCurrentFY();
+	
+			var gridDiv = document.querySelector('#myGrid');
+			new agGrid.Grid(gridDiv, gridOptions);
+			viewAllProcessData();
+		})
+	
+		var columnDefs = [
+				/* 			{
+				 headerCheckboxSelection : true,
+				 headerCheckboxSelectionFilteredOnly : true,
+				 checkboxSelection : true,
+				 width : 10,
+				 sortable : false,
+				 filter : false,
+				 resizable : true,
+				 pinned: 'left',
+				 }, */
+				{
+					headerName : "Employee ID",
+					field : "empId",
+					pinned : 'left',
+					width : 130,
+					cellClass : function(params) {
+						if (params.data.approveStatus === '3') {
+	
+							return (params.data.approveStatus === '3' ? 'blueClsWT'
+									: 'tptCls');
+						}
+					}
+				}, {
+					headerName : "Name",
+					field : "empName",
+					pinned : 'left',
+					cellStyle : {
+						textAlign : 'left'
+					},
+					width : 150,
+				}, {
+					headerName : "Father Name",
+					field : "fatherName",
+					pinned : 'left',
+					cellStyle : {
+						textAlign : 'left'
+					},
+					width : 150,
+				}, {
+					headerName : "DepartMent",
+					field : "dept",
+					cellStyle : {
+						textAlign : 'left'
+					},
+					width : 150,
+				}, {
+					headerName : "Sub Department",
+					field : "subDept",
+					cellStyle : {
+						textAlign : 'left'
+					},
+					width : 160,
+				}, {
+					headerName : "Workdays",
+					field : "workDay",
+					cellStyle : {
+						textAlign : 'center'
+					},
+					width : 120,
+				}, {
+					headerName : "Effective Workdays",
+					field : "workingDay",
+					cellStyle : {
+						textAlign : 'center'
+					},
+					width : 180,
+				}, {
+					headerName : "Basic",
+					field : "basic",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Hra",
+					field : "hra",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Additional Allowance",
+					field : "addAll",
+					width : 200,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "LTA",
+					field : "lta",
+					cellStyle : {
+						textAlign : 'left'
+					},
+					width : 120,
+				}, {
+					headerName : "Medical Allowance",
+					field : "medical",
+					cellStyle : {
+						textAlign : 'left'
+					},
+					width : 180,
+				}, {
+					headerName : "Conveyance Allowance",
+					field : "conve",
+					width : 220,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Washing Allowance",
+					field : "washAllow",
+					width : 190,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Skill Development",
+					field : "skillDev",
+					width : 180,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Other",
+					field : "other",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Bonus",
+					field : "bonus",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Reward",
+					field : "reward",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Food Reimbursement",
+					field : "foodReim",
+					width : 200,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Arear",
+					field : "arear",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Over Time",
+					field : "overTime",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Total Earning",
+					field : "totalEarning",
+					width : 170,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Income Tax",
+					field : "incTax",
+					width : 150,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+	
+					headerName : "Epf",
+					field : "empEPF",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Esi",
+					field : "empESI",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Professional Tax",
+					field : "profTax",
+					width : 170,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Advance",
+					field : "advance",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "total Deduction",
+					field : "totalDeduction",
+					width : 180,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Net Pay",
+					field : "netPay",
+					width : 120,
+					cellStyle : {
+						textAlign : 'right'
+					},
+				}, {
+					headerName : "Employer Epf",
+					field : "compEPF",
+					width : 150,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				}, {
+					headerName : "Employer Esi",
+					field : "empESI",
+					width : 150,
+					cellStyle : {
+						textAlign : 'right'
+					},
+	
+				} ];
+		var gridOptions = {
+			columnDefs : columnDefs,
+			defaultColDef : {
+				sortable : true,
+				filter : true,
+				resizable : true,
+				width : 410,
+				height : 20
+			},
+			rowSelection : 'multiple',
+			rowMultiSelectWithClick : true,
+		};
+		/* -------------------search bar for mygrid------------------------ */
+	
+		function onQuickFilterChanged() {
+			gridOptions.api
+					.setQuickFilter(document.getElementById('quickFilter').value);
+		}
+	
+		function cancelBar() {
+			var id = document.getElementById("closeKey");
+			id.style.display = "block";
+	
+			if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+				id.style.display = "none";
+			}
+		}
+		function getCurrentDateMonthYear() {
+			var curdate = new Date();
+			var date = curdate.getDate();
+			var mnth = curdate.getMonth();
+			$("#attndyear").val(curdate.getFullYear())
+			var sday = $("#startDayForAtten").val();
+			if (parseInt(sday) > 1) {
+				if (parseInt(date) > parseInt(sday)) {
+					var month = (curdate.getMonth() + 1);
+					var year = curdate.getFullYear();
+				} else {
+					var month = curdate.getMonth();
+					if (month == 0) {
+						var year = curdate.getFullYear() - 1;
+						month = 12;
+					} else {
+						var month = curdate.getMonth();
+						var year = curdate.getFullYear();
+					}
+				}
+			} else {
+				var month = (curdate.getMonth() + 1);
+				var year = curdate.getFullYear();
+			}
+			var nextmonth = month + 1;
+			if (parseInt(sday) > 1) {
+				$("#attndmonth").val(month + 1);
+			} else {
+				$("#attndmonth").val(month);
+			}
+			var fromdate = sday + "-" + String(month).padStart(2, '0') + "-" + year;
+			const lastDayOfMonth = new Date(year, month, 0).getDate();
+			if (sday > 1) {
+				if (month == "12") {
+					var todate = (parseInt(sday) - 1) + "-"
+							+ String(1).padStart(2, '0') + "-" + (year + 1);
+				} else {
+					var todate = (parseInt(sday) - 1) + "-"
+							+ String(nextmonth).padStart(2, '0') + "-" + year;
+				}
+			} else {
+				var todate = lastDayOfMonth + "-" + String(month).padStart(2, '0')
+						+ "-" + year;
+			}
+	
+			$("#fromDate").val(fromdate);
+			$("#fromDateCalendar").val(fromdate);
+			$("#endDate").val(todate);
+			$("#endDateCalendar").val(todate);
+		}
+		//Process
+		function Process() {
+	
+			var curdate = new Date();
+			var date = curdate.getDate();
+			if (date > 15) {
+				var month = (curdate.getMonth() + 1);
+				var year = curdate.getFullYear();
+			} else {
+				var month = curdate.getMonth();
+				if (month == 0) {
+					var year = curdate.getFullYear() - 1;
+					month = 12;
+				} else {
+					var year = curdate.getFullYear();
+				}
+			}
+	
+			var dataset = [];
+			var fromDate = $("#fromDate").val();
+			var toDate = $("#endDate").val();
+			var bandid = $("#designation").val();
+			var financialYr = $("#financialYr").val();
+			var userrole = $("#sessionRole").val();
+			var roleid = "";
+			for (var i = 6; i <= userrole.length; i = i + 6) {
+				roleid = roleid + '"' + userrole.slice(i - 6, i) + '",';
+			}
+			roleid = roleid.substring(0, roleid.length - 1);
+	
+			var emplist = "";
+			gridOptions.api.forEachNodeAfterFilterAndSort(function(rowNode, index) {
+	
+				var obj = {};
+				obj.empId = rowNode.data.empId;
+				obj.bandId = rowNode.data.bandId;
+				obj.dept = rowNode.data.deptId;
+				obj.subDept = rowNode.data.subDeptId;
+				obj.componetId = 'EEM001';
+				obj.amount = rowNode.data.basic;
+				obj.fromDate = fromDate;
+				obj.toDate = toDate;
+				obj.financialYr = financialYr;
+				dataset.push(obj)
+	
+				var obj1 = {};
+				obj1.empId = rowNode.data.empId;
+				obj1.bandId = rowNode.data.bandId;
+				obj1.dept = rowNode.data.deptId;
+				obj1.subDept = rowNode.data.subDeptId;
+				obj1.componetId = 'EEM002';
+				obj1.amount = rowNode.data.hra;
+				obj1.fromDate = fromDate;
+				obj1.toDate = toDate;
+				obj1.financialYr = financialYr;
+				dataset.push(obj1)
+				
+				var obj2 = {};
+				obj2.empId = rowNode.data.empId;
+				obj2.bandId = rowNode.data.bandId;
+				obj2.dept = rowNode.data.deptId;
+				obj2.subDept = rowNode.data.subDeptId;
+				obj2.componetId = 'EEM003';
+				obj2.amount = rowNode.data.addAll;
+				obj2.fromDate = fromDate;
+				obj2.toDate = toDate;
+				obj2.financialYr = financialYr;
+				dataset.push(obj2)
+				
+				var obj3 = {};
+				obj3.empId = rowNode.data.empId;
+				obj3.bandId = rowNode.data.bandId;
+				obj3.dept = rowNode.data.deptId;
+				obj3.subDept = rowNode.data.subDeptId;
+				obj3.componetId = 'EEM004';
+				obj3.amount = rowNode.data.lta;
+				obj3.fromDate = fromDate;
+				obj3.toDate = toDate;
+				obj3.financialYr = financialYr;
+				dataset.push(obj3)
+				
+				var obj4 = {};
+				obj4.empId = rowNode.data.empId;
+				obj4.bandId = rowNode.data.bandId;
+				obj4.dept = rowNode.data.deptId;
+				obj4.subDept = rowNode.data.subDeptId;
+				obj4.componetId = 'EEM005';
+				obj4.amount = rowNode.data.medical;
+				obj4.fromDate = fromDate;
+				obj4.toDate = toDate;
+				obj4.financialYr = financialYr;
+				dataset.push(obj4) 
+				
+				var obj05 = {};
+				obj05.empId = rowNode.data.empId;
+				obj05.bandId = rowNode.data.bandId;
+				obj05.dept = rowNode.data.deptId;
+				obj05.subDept = rowNode.data.subDeptId;
+				obj05.componetId = 'EEM022';
+				obj05.amount = rowNode.data.conve;
+				obj05.fromDate = fromDate;
+				obj05.toDate = toDate;
+				obj05.financialYr = financialYr;
+				dataset.push(obj05)
+				
+				var obj015 = {};
+				obj015.empId = rowNode.data.empId;
+				obj015.bandId = rowNode.data.bandId;
+				obj015.dept = rowNode.data.deptId;
+				obj015.subDept = rowNode.data.subDeptId;
+				obj015.componetId = 'EEM024';
+				obj015.amount = rowNode.data.washAllow;
+				obj015.fromDate = fromDate;
+				obj015.toDate = toDate;
+				obj015.financialYr = financialYr;
+				dataset.push(obj015)
+				
+				var obj016 = {};
+				obj016.empId = rowNode.data.empId;
+				obj016.bandId = rowNode.data.bandId;
+				obj016.dept = rowNode.data.deptId;
+				obj016.subDept = rowNode.data.subDeptId;
+				obj016.componetId = 'EEM025';
+				obj016.amount = rowNode.data.overTime;
+				obj016.fromDate = fromDate;
+				obj016.toDate = toDate;
+				obj016.financialYr = financialYr;
+				dataset.push(obj016)
+				
+				var obj017 = {};
+				obj017.empId = rowNode.data.empId;
+				obj017.bandId = rowNode.data.bandId;
+				obj017.dept = rowNode.data.deptId;
+				obj017.subDept = rowNode.data.subDeptId;
+				obj017.componetId = 'EEM026';
+				obj017.amount = rowNode.data.skillDev;
+				obj017.fromDate = fromDate;
+				obj017.toDate = toDate;
+				obj017.financialYr = financialYr;
+				dataset.push(obj017)
+				
+				var obj018 = {};
+				obj018.empId = rowNode.data.empId;
+				obj018.bandId = rowNode.data.bandId;
+				obj018.dept = rowNode.data.deptId;
+				obj018.subDept = rowNode.data.subDeptId;
+				obj018.componetId = 'EEM028';
+				obj018.amount = rowNode.data.reward;
+				obj018.fromDate = fromDate;
+				obj018.toDate = toDate;
+				obj018.financialYr = financialYr;
+				dataset.push(obj018)
+				
+				var obj019 = {};
+				obj019.empId = rowNode.data.empId;
+				obj019.bandId = rowNode.data.bandId;
+				obj019.dept = rowNode.data.deptId;
+				obj019.subDept = rowNode.data.subDeptId;
+				obj019.componetId = 'EEM027';
+				obj019.amount = rowNode.data.foodReim;
+				obj019.fromDate = fromDate;
+				obj019.toDate = toDate;
+				obj019.financialYr = financialYr;
+				dataset.push(obj019)
+				
+				var obj020 = {};
+				obj020.empId = rowNode.data.empId;
+				obj020.bandId = rowNode.data.bandId;
+				obj020.dept = rowNode.data.deptId;
+				obj020.subDept = rowNode.data.subDeptId;
+				obj020.componetId = 'EEM023';
+				obj020.amount = rowNode.data.arear;
+				obj020.fromDate = fromDate;
+				obj020.toDate = toDate;
+				obj020.financialYr = financialYr;
+				dataset.push(obj020)
+				
+				var obj5 = {};
+				obj5.empId = rowNode.data.empId;
+				obj5.bandId = rowNode.data.bandId;
+				obj5.dept = rowNode.data.deptId;
+				obj5.subDept = rowNode.data.subDeptId;
+				obj5.componetId = 'EEM012';
+				obj5.amount = rowNode.data.other;
+				obj5.fromDate = fromDate;
+				obj5.toDate = toDate;
+				obj5.financialYr = financialYr;
+				dataset.push(obj5)
+				
+				var obj018 = {};
+				obj018.empId = rowNode.data.empId;
+				obj018.bandId = rowNode.data.bandId;
+				obj018.dept = rowNode.data.deptId;
+				obj018.subDept = rowNode.data.subDeptId;
+				obj018.componetId = 'EEM016';
+				obj018.amount = rowNode.data.bonus;
+				obj018.fromDate = fromDate;
+				obj018.toDate = toDate;
+				obj018.financialYr = financialYr;
+				dataset.push(obj018)
+				
+				/* 	var obj6 = {};
+					obj6.empId = rowNode.data.empId;
+					obj6.bandId = bandid;
+					obj6.totalEarning = rowNode.data.totalEarning;
+					obj6.fromDate = fromDate;
+					obj6.toDate = toDate;
+					dataset.push(obj6) */
+				var obj7 = {};
+				obj7.empId = rowNode.data.empId;
+				obj7.bandId = rowNode.data.bandId;
+				obj7.dept = rowNode.data.deptId;
+				obj7.subDept = rowNode.data.subDeptId;
+				obj7.componetId = 'EEM009';
+				obj7.amount = rowNode.data.incTax;
+				obj7.fromDate = fromDate;
+				obj7.toDate = toDate;
+				obj7.financialYr = financialYr;
+				dataset.push(obj7)
+	
+				var obj8 = {};
+				obj8.empId = rowNode.data.empId;
+				obj8.bandId = rowNode.data.bandId;
+				obj8.dept = rowNode.data.deptId;
+				obj8.subDept = rowNode.data.subDeptId;
+				obj8.componetId = 'EEM007';
+				obj8.amount = rowNode.data.empEPF;
+				obj8.fromDate = fromDate;
+				obj8.toDate = toDate;
+				obj8.financialYr = financialYr;
+				dataset.push(obj8)
+	
+				var obj9 = {};
+				obj9.empId = rowNode.data.empId;
+				obj9.bandId = rowNode.data.bandId;
+				obj9.dept = rowNode.data.deptId;
+				obj9.subDept = rowNode.data.subDeptId;
+				obj9.componetId = 'EEM008';
+				obj9.amount = rowNode.data.empESI;
+				obj9.fromDate = fromDate;
+				obj9.toDate = toDate;
+				obj9.financialYr = financialYr;
+				dataset.push(obj9)
+	
+				var obj10 = {};
+				obj10.empId = rowNode.data.empId;
+				obj10.bandId = rowNode.data.bandId;
+				obj10.dept = rowNode.data.deptId;
+				obj10.subDept = rowNode.data.subDeptId;
+				obj10.componetId = 'EEM010';
+				obj10.amount = rowNode.data.compEPF;
+				obj10.fromDate = fromDate;
+				obj10.toDate = toDate;
+				obj10.financialYr = financialYr;
+				dataset.push(obj10)
+	
+				var obj11 = {};
+				obj11.empId = rowNode.data.empId;
+				obj11.bandId = rowNode.data.bandId;
+				obj11.dept = rowNode.data.deptId;
+				obj11.subDept = rowNode.data.subDeptId;
+				obj11.amount = rowNode.data.compESI;
+				obj11.componetId = 'EEM011';
+				obj11.fromDate = fromDate;
+				obj11.toDate = toDate;
+				obj11.financialYr = financialYr;
+				dataset.push(obj11)
+	
+				var obj12 = {};
+				obj12.empId = rowNode.data.empId;
+				obj12.bandId = rowNode.data.bandId;
+				obj12.dept = rowNode.data.deptId;
+				obj12.subDept = rowNode.data.subDeptId;
+				obj12.componetId = 'EEM006';
+				obj12.amount = rowNode.data.profTax;
+				obj12.fromDate = fromDate;
+				obj12.toDate = toDate;
+				obj12.financialYr = financialYr;
+				dataset.push(obj12)
+	
+				var obj13 = {};
+				obj13.empId = rowNode.data.empId;
+				obj13.bandId = rowNode.data.bandId;
+				obj13.dept = rowNode.data.deptId;
+				obj13.subDept = rowNode.data.subDeptId;
+				obj13.componetId = 'EEM013';
+				obj13.amount = rowNode.data.advance;
+				obj13.fromDate = fromDate;
+				obj13.toDate = toDate;
+				obj13.financialYr = financialYr;
+				dataset.push(obj13)
+	
+				emplist = emplist + '"' + rowNode.data.empId + '",';
+				emplist = emplist.substring(0, emplist.length - 1);
+	
+				var obj14 = {};
+				obj14.emplist = emplist;
+				obj14.roleid = roleid;
+				dataset.push(obj14)
+	
+				/*		var obj15 = {};
+						obj15.empId = rowNode.data.empId;
+						obj15.bandId = bandid;
+						obj15.netPay = rowNode.data.netPay;
+						obj15.fromDate = fromDate;
+						obj15.toDate = toDate;
+						dataset.push(obj15) */
+	
+				/*   	obj.hra = rowNode.data.hra;
+					obj.addAll = rowNode.data.addAll;
+					obj.lta = rowNode.data.lta;
+					obj.medical = rowNode.data.medical;
+					obj.other = rowNode.data.other;
+					obj.totalEarning = rowNode.data.totalEarning;
+					obj.incTax = rowNode.data.incTax;
+					obj.empEPF = rowNode.data.empEPF;
+					obj.empESI = rowNode.data.empESI;
+					obj.compEPF = rowNode.data.compEPF;
+					obj.compESI = rowNode.data.compESI;
+					obj.advance = rowNode.data.advance;
+					obj.totalDeduction = rowNode.data.totalDeduction;
+					obj.netPay = rowNode.data.netPay;
+					obj.remarks = rowNode.data.remarks; */
+	
+			})
+	
+			console.log(dataset)
+			if (dataset.length > 0) {
+				var isApprove = $("#isApprove").val();
+				if (isApprove == "" || isApprove == null) {
+					$.ajax({
+						type : "POST",
+						url : "view-process-approve-details",
+						dataType : "json",
+						contentType : "application/json",
+						data : JSON.stringify(dataset),
+						success : function(response) {
+							if (response.message == "success") {
+	
+								$("#messageParagraph")
+										.text("Approved Successfully");
+								$("#msgOkModal").removeClass("btn3");
+								$("#msgOkModal").addClass("btn1");
+								$("#msgModal").modal('show');
+								viewAllProcessData();
+								$("#save").attr("disabled", "disabled");
+							} else {
+								$("#messageParagraph").text(
+										"Duplicate Employee Entry");
+								$("#msgOkModal").removeClass("btn3");
+								$("#msgOkModal").addClass("btn1");
+								$("#msgModal").modal('show');
+								viewAllProcessData();
+								$("#save").attr("disabled", "disabled");
+							}
+						},
+						error : function(response) {
+							console.log(response)
+						}
+					});
+				} else {
+					$("#messageParagraph").text("YOU’RE ALREADY APPROVED!");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+	
+				}
+			} else {
+				$("#messageParagraph").text("NO DATA AVAILABLE FOR APPROVE!");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+			}
+		}
+	
+		function changeBand() {
+			viewAllProcessData();
+		}
+	
+		function getprocessYrMtData() {
+	
+			var curdate = new Date();
+			var month = $("#attndmonth").val();
+			var sday = $("#startDayForAtten").val();
+			var attnyear = $("#attndyear").val();
+			var financial_year = "";
+			if ((month) <= 3) {
+				financial_year = (parseInt(attnyear) - 1) + "-"
+						+ parseInt(attnyear)
+			} else {
+				financial_year = parseInt(attnyear) + "-"
+						+ (parseInt(attnyear) + 1)
+			}
+	
+			$("#financialYr").val(financial_year)
+	
+			if (parseInt(sday) > 1) {
+				if (month == 1) {
+					var year = attnyear - 1;
+					month = 12;
+				} else {
+					var year = attnyear;
+					month = month - 1;
+				}
+			} else {
+				var year = attnyear;
+			}
+	
+			var nextmonth = parseInt(month) + 1;
+	
+			var fromdate = sday + "-" + String(month).padStart(2, '0') + "-" + year;
+			const lastDayOfMonth = new Date(year, month, 0).getDate();
+			if (sday > 1) {
+				if (month == "12") {
+					var todate = (parseInt(sday) - 1) + "-"
+							+ String(1).padStart(2, '0') + "-" + (year + 1);
+				} else {
+					var todate = (parseInt(sday) - 1) + "-"
+							+ String(nextmonth).padStart(2, '0') + "-" + year;
+				}
+			} else {
+				var todate = lastDayOfMonth + "-" + String(month).padStart(2, '0')
+						+ "-" + year;
+			}
+	
+			$("#fromDate").val(fromdate);
+			$("#fromDateCalendar").val(fromdate);
+			$("#endDate").val(todate);
+			$("#endDateCalendar").val(todate);
+		}
+		function changeMonthYear() {
+			var curdate = new Date();
+			var attnyear = $("#attndyear").val();
+			var sday = $("#startDayForAtten").val();
+			var date = curdate.getDate();
+			var mnth = curdate.getMonth();
+	
+			if (attnyear > curdate.getFullYear()) {
+				$("#messageParagraph").text(
+						"Please Choose Current Year Or Previous Year!");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+				$("#attndyear").val(curdate.getFullYear())
+				getCurrentFY();
+				getCurrentDateMonthYear();
+				viewAllProcessData();
+			} else {
+				if (attnyear == curdate.getFullYear()) {
+					var month = $("#attndmonth").val();
+					var mt = month - 1;
+					if (mt > curdate.getMonth()) {
+						$("#messageParagraph").text(
+								"Please Choose Current month Or Previous Month!");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+						if (parseInt(sday) > 1) {
+							if (parseInt(date) > parseInt(sday)) {
+								var month = (curdate.getMonth() + 1);
+								var year = attnyear;
+							} else {
+								var month = curdate.getMonth();
+								if (month == 0) {
+									var year = attnyear - 1;
+									month = 12;
+								} else {
+									var month = curdate.getMonth();
+									var year = attnyear;
+								}
+							}
+						} else {
+							var month = (curdate.getMonth() + 1);
+							var year = attnyear;
+						}
+						var nextmonth = month + 1;
+						if (parseInt(sday) > 1) {
+							$("#attndmonth").val(month + 1);
+						} else {
+							$("#attndmonth").val(month);
+						}
+						var fromdate = sday + "-" + String(month).padStart(2, '0')
+								+ "-" + year;
+						const lastDayOfMonth = new Date(year, month, 0).getDate();
+						if (sday > 1) {
+							if (month == "12") {
+								var todate = (parseInt(sday) - 1) + "-"
+										+ String(1).padStart(2, '0') + "-"
+										+ (year + 1);
+							} else {
+								var todate = (parseInt(sday) - 1) + "-"
+										+ String(nextmonth).padStart(2, '0') + "-"
+										+ year;
+							}
+						} else {
+							var todate = lastDayOfMonth + "-"
+									+ String(month).padStart(2, '0') + "-" + year;
+						}
+	
+						$("#fromDate").val(fromdate);
+						$("#fromDateCalendar").val(fromdate);
+						$("#endDate").val(todate);
+						$("#endDateCalendar").val(todate);
+					} else {
+						getprocessYrMtData();
+						getApproverStatus();
+						viewAllProcessData();
+					}
+				} else {
+					getprocessYrMtData();
+					getApproverStatus();
+					viewAllProcessData();
+				}
+			}
+		}
+		//downloadProcessCSV
+		function downloadProcessCSV() {
+			var dataset = [];
+			gridOptions.api.forEachNodeAfterFilterAndSort(function(rowNode, index) {
+				dataset.push(rowNode.data);
+			});
+			gridOptions.api.exportDataAsCsv(dataset);
+		}
+		//getCurrentFY
+		function getCurrentFY() {
+			var financial_year = "";
+			var today = new Date();
+			if ((today.getMonth() + 1) <= 3) {
+				financial_year = (today.getFullYear() - 1) + "-"
+						+ today.getFullYear()
+			} else {
+				financial_year = today.getFullYear() + "-"
+						+ (today.getFullYear() + 1)
+			}
+			$("#financialYr").val(financial_year)
+		}
+		//view All Process Data
+		function viewAllProcessData() {
+			var band = $("#designation").val();
+			var fromDate = $("#fromDate").val();
+			var toDate = $("#endDate").val();
+			agGrid.simpleHttpRequest(
+					{
+						url : "view-process-view-details?fromDate=" + fromDate
+								+ "&toDate=" + toDate + "&band=" + band
+					}).then(function(data) {
+				console.log(data)
+				var len = data.length;
+				$('#totalReq').find('span').html(len);
+				gridOptions.api.setRowData(data);
+			});
+	
+		}
+		//get Approver Status
+		function getApproverStatus() {
+			var fromDate = $("#fromDate").val();
+			var userId = $("#sessionId").val();
+			if (fromDate) {
+				$.ajax({
+					type : 'GET',
+					url : 'view-process-getApproverStatus?fromDate=' + fromDate
+							+ "&userId=" + userId,
+					contentType : false,
+					success : function(response) {
+						if (response.message == "success") {
+							$("#isApprove").val(response.body.key);
+						}
+					},
+					error : function(e) {
+						alert("error");
+					}
+				});
+			}
+		}
+	</script>
+	
+	</head>
+	
+	<body>
+	
+		<div layout:fragment="content">
+			<div class="content-wrap">
+				<div class="container-fluid">
+					<div class="maincontent">
+						<div class="row">
+	
+							<div class="maincontentsec">
+								<div class="content_padding">
+	
+									<div id="main_content">
+	
+										<div class="panel-body">
+	
+											<div class="row">
+												<input type="hidden" id="sessionId" th:value="${userId}" />
+												<input type="hidden" id="hrRole" th:value="${hrRole}" /> <input
+													type="hidden" id="sessionRole" th:value="${userRole}" /> <input
+													type="hidden" id="isApprove" /> <input type="hidden"
+													id="startDayForAtten" th:value="${startDayForAtten}" />
+												<div class="col-md-2">
+													<div class="form-group">
+														<label>Grade/Band Name</label>
+														<div class="select">
+															<select id=designation class="form-control"
+																onchange="changeBand()">
+																<option value="">--SELECT--</option>
+																<option th:each="c,iter:${bandType}" th:value="${c.key}"
+																	th:text="${c.name}"></option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-md-2">
+													<div class="form-group">
+														<label>Year</label>
+														<div class="select">
+															<select id="attndyear" class="form-control"
+																onchange="changeMonthYear()">
+																<option th:each="c,iter:${yearList}" th:value="${c.name}"
+																	th:text="${c.name}"></option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-md-2">
+													<div class="form-group">
+														<label>Month Name</label>
+														<div class="select">
+															<select id="attndmonth" class="form-control"
+																onchange="changeMonthYear()">
+																<!-- <option value="">--SELECT--</option> -->
+																<option value="1">JANUARY</option>
+																<option value="2">FEBRUARY</option>
+																<option value="3">MARCH</option>
+																<option value="4">APRIL</option>
+																<option value="5">MAY</option>
+																<option value="6">JUNE</option>
+																<option value="7">JULY</option>
+																<option value="8">AUGUST</option>
+																<option value="9">SEPTEMBER</option>
+																<option value="10">OCTOBER</option>
+																<option value="11">NOVEMBER</option>
+																<option value="12">DECEMBER</option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-md-2">
+													<label>From Date</label>
+													<div class="form-group calendar_box">
+														<input type="text" id="fromDate" value=""
+															class="form-control"
+															th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|"
+															readonly>
+														<!-- <i class="ti-calendar picker_calendar"
+															id="fromDateCalendar"></i> -->
+													</div>
+												</div>
+												<div class="col-md-2">
+													<label>To Date</label>
+													<div class="form-group calendar_box">
+														<input type="text" id="endDate" value=""
+															class="form-control"
+															th:attr="onkeyup=|formatDate('endDate','${session.DATEFORMAT_JS}')|"
+															readonly>
+														<!-- <i class="ti-calendar picker_calendar"
+															id="endDateCalendar"></i> -->
+													</div>
+												</div>
+												<div class="col-md-2">
+													<label>Financial Year</label>
+													<div class="form-group">
+														<input type="text" name="financialYr" value=""
+															placeholder="Financiyal Year" class="form-control"
+															id="financialYr" readonly>
+													</div>
+												</div>
+	
+											</div>
+											<div class="d-flex justify-content-between mt-4">
+												<div class="btn-hs">
+													<div class="font-design" id="totalReq">
+														Employee Process Details(<span></span>)
+													</div>
+												</div>
+												<div id="searchRowDiv">
+													<div class="input-style">
+														<input type="text" placeholder="Search.." name="search"
+															class="searchboxinput" onkeyup="cancelBar()"
+															oninput="onQuickFilterChanged()" id="quickFilter"
+															autocomplete="off">
+														<div class="searchicon">
+															<a href="javascript:void(0)"><span
+																style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+																id="closeKey"
+																onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+																class="close_i"><i class="ti-close srchicon"></i></span></a><a
+																href="javascript:void(0)"><i
+																class="ti-search srchicon"></i></a>
+														</div>
+													</div>
+												</div>
+												<div class="buttonsec btn-hs" id="btndiv">
+													<button class="btn1" id="save" onclick="Process()">Approve</button>
+													<button class="btn4" onclick="downloadProcessCSV()">Download</button>
+												</div>
+											</div>
+											<div id="myGrid" style="width: 100%; height: 500px;"
+												class="ag-theme-alpine"></div>
+	
+										</div>
+									</div>
+	
+								</div>
+	
+	
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</html>

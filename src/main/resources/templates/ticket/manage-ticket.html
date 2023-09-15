@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<meta charset="ISO-8859-1">
+<script type="text/javascript">
+	$(function() {
+		$("#raiseTcktSession").hide();
+		$("#latitudeAdd").hide();
+		$("#longitudeAdd").hide();
+		$("#add").hide();
+		$('#reqDltBtn').attr("disabled", true);
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		var data = []
+		gridOptions.api.setRowData(data);
+		agGrid.simpleHttpRequest({
+			url : "view-agentTicket-data-view"
+		}).then(function(data) {
+			var jsonData = JSON.parse(data.body[0]);
+			var allData = jsonData.viewTicket;
+			var len = allData.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(allData);
+
+		});
+
+		/* 
+		$('#docTbl').on('click', '.rmv1', function() {
+			openDeleteConfirm();
+			var value = $(this).parent("div").attr("id");
+
+			$("#dltValue").val(value);
+		});
+		var tbl = '<tr> <td style="display:none" align="center" class="pdb-24"><input class="checkCls" type="checkbox" id="check2"><label for="check2"></label></td>'
+				+ '<td style="display:none"><div class="form-group"> <select class="form-control documentclss" id="docid_0" onblur="removeValid(event);"> <option value="">Select</option> </select> </div></td>'
+				+ '<td><div class="form-group"> <input type="text" value="" class="form-control docNoclss" id="docnoid_0"  onblur="checkForDuplicateEntry(event)"></div></td>'
+				+ '<td> <div class="control-group position-r"> <label class="custom-file-upload" for="uploadDoc_0" id="uploadFor_0"> <i class="ti-plus" id="clickImg_0"></i> </label>'
+				+ '<div class="controls"> <input type="file" class="document" id="uploadDoc_0" name="userImage" onchange="saveMultiFile(event)" /></div> </div> <input type="hidden" id="uploadHidden_0" class="uploadHidCls">'
+				+ '<div id="uploadedBillDiv_0" align="center" class="uploadedBillCls"></div> <div id="imageName_0" class="imageName"></div><div id="dltImage_0" class="dltImage"></div><input type="hidden" id="editId_0></td>'
+				+ '</tr>';
+		$("#doctbodyData").append(tbl);999596 */
+	});
+
+	//column Defs
+	const columnDefs = [
+			{
+				//headerCheckboxSelection : true,
+				checkboxSelection : true,
+				width : 25,
+				sortable : false,
+				filter : false,
+				resizable : true,
+				pinned : 'left',
+
+			},
+			{
+				headerName : 'Ticket No',
+				field : "tcktNo",
+				pinned : 'left',
+				cellRenderer : function(params) {
+					return '<a onclick=editTicket("' + params.data.tcktNo
+							+ '") href="javascript:void(0)">'
+							+ params.data.tcktNo + '</a>';
+				}
+			}, {
+				headerName : "Priority",
+				field : "ticketPriority",
+
+			}, {
+				headerName : "Raise Date",
+				field : "riseDate",
+
+			}, {
+				headerName : "Assign Date",
+				field : "companyName",
+
+			}, {
+				headerName : "Assign Status",
+				field : "companyName",
+			}, {
+				headerName : "Status",
+				field : "cusEmail",
+			}, {
+				headerName : "Log",
+				field : "custMobile",
+			} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 187,
+			height : 10
+		},
+		rowSelection : 'single',
+		suppressRowClickSelection : true,
+		onSelectionChanged : onSelectionChanged,
+	};
+	var id = "";
+	var apstatus="";
+	function onSelectionChanged() {
+		var selectedNodes = gridOptions.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		 id= selectedData.map(node => node.tcktNo);
+		
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var rowCount = 0;
+		selectedRows.forEach(function(i) {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#reqDltBtn').attr("disabled", false);
+		}else {
+			$('#reqDltBtn').attr("disabled", true);
+			$('#assignBtn').attr("disabled", true);
+			$('#newBtn').attr('disabled', false);
+		}
+	}
+	//function to get current date time 
+	function getDateTime() {
+		var currentdate = new Date();
+
+		month = '' + (currentdate.getMonth() + 1);
+		day = '' + currentdate.getDate();
+		year = currentdate.getFullYear();
+
+		hour = '' + currentdate.getHours();
+		minute = '' + currentdate.getMinutes();
+		second = currentdate.getSeconds();
+
+		if (month.length < 2) {
+			month = '0' + month;
+		}
+		if (day.length < 2) {
+			day = '0' + day;
+		}
+		if (hour.length < 2) {
+			day = '0' + hour;
+		}
+		if (minute.length < 2) {
+			day = '0' + minute;
+		}
+		if (second.length < 2) {
+			day = '0' + second;
+		}
+
+		//var datetime =year+"-"+month+"-"+day+" "+ hour + ":"+ minute + ":" + second;
+
+		var datetime = day + "-" + month + "-" + year + " ";
+
+		return datetime
+	}
+	function raiseTicket() {
+		$("#myGrid").hide();
+		$("#startPagebtn").hide();
+		$("#raiseTcktSession").show();
+
+		var emp = $("#sessionEId").val();
+		var empName = $("#sessionEName").val();
+		const currentDate = new Date();
+
+		// Get the date, month, and year components
+		const year = currentDate.getFullYear();
+		const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1 to get the correct month
+		const day = currentDate.getDate();
+
+		var cdate = getDateTime();
+		$("#empId").val(emp);
+		$("#empName").val(empName);
+		$("#currentDate").val(cdate);
+
+		$('#docTbl').on('click', '.rmv1', function() {
+			openDeleteConfirm();
+			var value = $(this).parent("div").attr("id");
+
+			$("#dltValue").val(value);
+		});
+		var tbl = '<tr> <td style="display:none" align="center" class="pdb-24"><input class="checkCls" type="checkbox" id="check2"><label for="check2"></label></td>'
+				+ '<td style="display:none"><div class="form-group"> <select class="form-control documentclss" id="docid_0" onblur="removeValid(event);"> <option value="">Select</option> </select> </div></td>'
+				+ '<td><div class="form-group"> <input type="text" value="" class="form-control docNoclss" id="docnoid_0"  onblur="checkForDuplicateEntry(event)"></div></td>'
+				+ '<td> <div class="control-group position-r"> <label class="custom-file-upload" for="uploadDoc_0" id="uploadFor_0"> <i class="ti-plus" id="clickImg_0"></i> </label>'
+				+ '<div class="controls"> <input type="file" class="document" id="uploadDoc_0" name="userImage" onchange="saveMultiFile(event)" /></div> </div> <input type="hidden" id="uploadHidden_0" class="uploadHidCls">'
+				+ '<div id="uploadedBillDiv_0" align="center" class="uploadedBillCls"></div> <div id="imageName_0" class="imageName"></div><div id="dltImage_0" class="dltImage"></div><input type="hidden" id="editId_0></td>'
+				+ '</tr>';
+		$("#doctbodyData").append(tbl);
+		999596
+
+		agGrid.simpleHttpRequest({
+			url : "manage-ticket-empdetails",
+		}).then(function(data) {
+			console.log(data.body, 'dataaaa')
+
+			var dataEmp = JSON.stringify(data.body[0])
+			console.log(dataEmp, 'dataEmp')
+			console.log(dataEmp[0].EmployeeDetails, 'dataEmp')
+
+			//$("#dept").val();
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			$('.loader').hide();
+		})
+
+	}
+
+	//Document upload section 
+
+	function saveMultiFile(event) {
+		var AssignItemQty = event.currentTarget.value;
+		var currentFldId = event.currentTarget.getAttribute('id');
+		var l = currentFldId.split("_");
+		var counter = l[1];
+		var currentFldId = "#" + currentFldId;
+
+		var uFile = $(currentFldId)[0].files[0];
+		var fileName = event.currentTarget.value;
+		var lastIndex = fileName.lastIndexOf("\\");
+		if (lastIndex >= 0) {
+			fileName = fileName.substring(lastIndex + 1);
+		}
+		var extension = fileName.split(".");
+
+		var iURL = URL.createObjectURL(uFile);
+		$("#uploadedBillDiv_" + counter).html("");
+		if (extension[1] != null && extension[1] != "") {
+			$("#uploadHidden_" + counter).val('');
+		}
+		if (extension[1] == "jpg" || extension[1] == "png"
+				|| extension[1] == "jpeg") {
+			var LightImg = "<span class='uploadicon position-l'><a class='example-image-link' href='" + iURL + "' title='" + fileName + "' target='_balnk'><i class='fa fa-picture-o'></i></a></span>";
+		} else if (extension[1] == "pdf") {
+			var LightImg = "<span class='uploadicon position-l'><a class='example-image-link' href='" + iURL + "' title='" + fileName + "' target='_balnk'><i class='fa fa-file-pdf-o'></i> </a></span>";
+		} else if (extension[1] == "xls" || extension[1] == "xlsx") {
+			var LightImg = "<span class='uploadicon position-l'><a class='example-image-link' href='" + iURL + "' title='" + fileName + "' target='_balnk'><i class='fa fa-file-excel-o'></i></a></span>";
+		} else if (extension[1] == "doc" || extension[1] == "dox"
+				|| extension[1] == "docx") {
+			var LightImg = "<span class='uploadicon position-l'><a class='example-image-link' href='" + iURL + "' title='" + fileName + "' target='_balnk'><i class='fa fa-file-word-o'></i></a></span>";
+		} else {
+			var LightImg = "<span class='uploadicon position-l '> </div>";
+		}
+		var dltImg = "<i class='ti-close position-l rmv1' onclick='openDeleteConfirm()'></i>";
+		$("#uploadedBillDiv_" + counter).html(LightImg);
+		$("#imageName_" + counter).html(fileName);
+		$("#dltImage_" + counter).html(dltImg);
+		$("#dltImage_" + counter).addClass("custom-file-delete");
+
+		$("#clickImg_" + counter).removeClass("ti-plus");
+		$("#clickImg_" + counter).addClass("ti-pencil");
+
+	}
+	//checkEmpty()  
+
+	function checkEmpty() {
+		var infofileName = true;
+		$(".formValidation").remove();
+		$('.docNoclss').each(function() {
+			if ($(this).val() == null || $(this).val() == "") {
+				infofileName = false;
+				validationModal("Document Name Required", $(this).attr('id'));
+			}
+		});
+
+		var mulDocInfo = true;
+		if (infofileName) {
+			$('#doctbodyData > tr').each(function() {
+				if ($(this).closest('tr').find('.imageName').text()) {
+					mulDocInfo = true;
+				} else {
+					mulDocInfo = false;
+					$("#messageParagraph").text("Please Choose a File ");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					return false;
+				}
+
+			});
+		}
+		if (infofileName && mulDocInfo) {
+			addMore1()
+		}
+	}
+
+	//function to check duplicate entry of document name
+	function checkForDuplicateEntry(event) {
+		var document = event.currentTarget.value;
+		var currentFldId = event.currentTarget.getAttribute('id');
+		var l = currentFldId.split("_");
+		var counter = l[1];
+		var count = 0;
+
+		$(".docNoclss").each(function() {
+			if (document == $(this).val()) {
+				count++;
+			}
+		})
+		console.log(count, 'count')
+		if (count >= 2) {
+			$("#messageParagraph").text("Document Name Already Entered");
+			$("#msgOkModal").removeClass("btn3");
+			$("#msgOkModal").addClass("btn1");
+			$("#msgModal").modal('show');
+
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+	//addmore doc fun for notice
+	function addMore1() {
+
+		var lengthOfTableRow = $("#doctbodyData").children('tr').length;
+		var cloneHtml = $("#docTbl tbody tr:first").clone();
+
+		$("#docTbl tbody").append($("#docTbl tbody tr:first").clone());
+		$("#myTable tbody tr td:last").html("");
+		//var addMore = '<button type="button" class="btn btn-primary tr_clone_add" name="add" onclick="addMore1();"><span class="ti-plus"></span></button>&nbsp;'
+
+		$("#docTbl tbody tr:last").find(".documentclss").val("");
+		$("#docTbl tbody tr:last").find(".docNoclss").val("");
+		$("#docTbl tbody tr:last").find(".documentclssup").val("");
+		$("#docTbl tbody tr:last").find(".uploadedBillCls").empty();
+		$("#docTbl tbody tr:last").find(".uploadHidCls").empty();
+		$("#docTbl tbody tr:last").find(".uploadHidCls").val('');
+		$("#docTbl tbody tr:last").find(".imageName").empty();
+		$("#docTbl tbody tr:last").find(".dltImage").empty();
+
+		var j = 0;
+		$("#docTbl > #doctbodyData > tr").each(function(i) {
+
+			var selectInput = $(this).find('select');
+			var textInput = $(this).find('input');
+			var fileInput = $(this).find('file');
+			var divInput = $(this).find('div');
+			var label = $(this).find('label');
+			var iInput = $(this).find('i');
+
+			selectInput.eq(0).attr('id', "docid_" + i);
+			textInput.eq(1).attr('id', "docnoid_" + i);
+			label.eq(1).attr('for', "uploadDoc_" + i);
+			iInput.eq(0).attr('id', "clickImg_" + i);
+			textInput.eq(2).attr('id', "uploadDoc_" + i);
+			textInput.eq(3).attr('id', "uploadHidden_" + i);
+			divInput.eq(4).attr('id', "uploadedBillDiv_" + i);
+			divInput.eq(5).attr('id', "imageName_" + i);
+			divInput.eq(6).attr('id', "dltImage_" + i);
+
+			j++;
+		})
+		$("#clickImg_" + (j - 1)).removeClass("ti-pencil");
+		$("#clickImg_" + (j - 1)).addClass("ti-plus");
+
+	}
+
+	function openDeleteConfirm() {
+		$("#dltValue").val("");
+		$('#deleteAttachment').modal('show');
+	}
+
+	//for closing modal box for dlt Notice 
+
+	function closeDeleteConfirm() {
+		$("#dltValue").val("");
+		$('#deleteAttachment').modal('hide');
+	}
+
+	//Delete doc for Notice
+
+	function deleteAttachmentRow() {
+		var lengthOfTableRow1 = 0;
+		$("#docTbl > #doctbodyData > tr").each(function() {
+			lengthOfTableRow1 = lengthOfTableRow1 + 1;
+		})
+		var id = $("#dltValue").val();
+		$("#" + id).closest('tr').remove();
+		closeDeleteConfirm();
+		if (lengthOfTableRow1 == 1) {
+			var tbl = '<tr> <td style="display:none" align="center" class="pdb-24"><input class="checkCls" type="checkbox" id="check2"><label for="check2"></label></td>'
+					+ '<td style="display:none"><div class="form-group"> <select class="form-control documentclss" id="docid_0"  onblur="removeValid(event);"> <option value="">Select</option> </select> </div></td>'
+					+ '<td><div class="form-group"> <input type="text" value="" class="form-control docNoclss" id="docnoid_0" onblur="checkForDuplicateEntry(event)"></div></td>'
+					+ '<td> <div class="control-group position-r"> <label class="custom-file-upload" for="uploadDoc_0" id="uploadFor_0"> <i class="ti-plus" id="clickImg_0"></i> </label>'
+					+ '<div class="controls"> <input type="file" class="document" id="uploadDoc_0" name="userImage" onchange="saveMultiFile(event)" /></div> </div> <input type="hidden" id="uploadHidden_0" class="uploadHidCls">'
+					+ '<div id="uploadedBillDiv_0" align="center" class="uploadedBillCls"></div> <div id="imageName_0" class="imageName"></div><div id="dltImage_0" class="dltImage"  ></div> </td>'
+					+ '</tr>';
+			$("#doctbodyData").append(tbl);
+		}
+	}
+
+	function addAddress(value) {
+		
+		var dropdown;
+		if(value == "" || value == null){
+			dropdown = $("#locType").val();
+		}else{
+			dropdown = value;
+		} 
+
+		console.log(dropdown, 'dropdown')
+		switch (dropdown) {
+		case "geoTag":
+			$("#latitudeAdd").show();
+			$("#longitudeAdd").show();
+			$("#add").show();
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(showPosition);//here "showPosition" is a function which is declared outside this document.ready
+			} else {
+				console.log("browser not supported");
+			}
+			break;
+
+		case "other":
+			$("#add").show();
+			$("#latitudeAdd").hide();
+			$("#longitudeAdd").hide();
+			var isReadOnly = false;
+			$("#empAddress").prop("readonly", isReadOnly);
+			$("#empAddress").val("");
+			break;
+
+		case "":
+			$("#empAddress").val("");
+			$("#latitudeAdd").val("");
+			$("#longitudeAdd").val("");
+			$("#latitudeAdd").hide();
+			$("#longitudeAdd").hide();
+			$("#add").hide();
+			break;
+		}
+	}
+
+	//show position
+	function showPosition(position) {
+		$("#latitude").val("");
+		$("#longitude").val("");
+		var latitude = position.coords.latitude;
+		var longitude = position.coords.longitude;
+		$("#latitude").val(latitude);
+		$("#longitude").val(longitude);
+
+		var locAPI = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
+				+ latitude
+				+ ","
+				+ longitude
+				+ "&key=AIzaSyD-o-8txzrqCvKZaf35i-zILm2ooG851uE";
+
+		$("#latitude").val(latitude);
+		var lat1 = $("#latitude").val();
+		$("#longitude").val(longitude);
+		var lon1 = $("#longitude").val();
+		var lat2 = $("#latitude2").val();
+		var lon2 = $("#longitude2").val();
+
+		if (lon2 == "" || lat2 == "") {
+			$.get({
+				url : locAPI,
+				success : function(data) {
+					console.log("data===1==" + data);
+					console.log(data);
+					var loc = $("#location1").val();
+					var city = loc.split(',');
+					var plc = data.results[0].formatted_address;
+					var isReadOnly = true;
+					$("#empAddress").prop("readonly", isReadOnly);
+					$("#empAddress").val(plc);
+
+				}
+
+			});
+		} else {
+
+			$.get({
+				url : locAPI,
+				success : function(data) {
+					console.log(data);
+					var place = data.results[0].formatted_address;
+					var isReadOnly = true;
+					$("#empAddress").prop("readonly", isReadOnly);
+					$("#empAddress").val(place);
+				}
+
+			});
+		}
+	}
+
+	function cancel() {
+		$("#myGrid").show();
+		$("#startPagebtn").show();
+		$("#raiseTcktSession").hide();
+
+		agGrid.simpleHttpRequest({
+			url : "view-agentTicket-data-view"
+		}).then(function(data) {
+			var jsonData = JSON.parse(data.body[0]);
+			var allData = jsonData.viewTicket;
+			var len = allData.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(allData);
+
+		});
+		
+		$("#editTktId").val('');
+
+		$("#empId").val('');
+		$("#currentDate").val('');
+		$("#empName").val('');
+		$("#dept").val('');
+
+		$("#ticketType").val('');
+		$("#ticketCategory").val('');
+		$("#ticketSubCategory").val('');
+		$("#ticketPriority").val('');
+
+		$("#description").val('');
+		$("#locType").val('');
+		$("#latitude").val('');
+		$("#longitude").val('');
+		$("#empAddress").val('');
+
+		$("#doctbodyData").html("");
+
+	}
+
+	function masterSaveData() {
+		var obj = {};
+		var valid = true;
+		var uploadList = [];
+		var datas = [];
+		if (valid) {
+			$("#doctbodyData > tr").each(
+					function(i) {
+						var uFile = $(this).find(".document")[0].files[0];
+						var fileName = $(this).find(".document").val();
+						var data = [];
+						var x = [];
+						if (fileName != '' && fileName != 'undefined'
+								&& fileName != null) {
+							var lastIndex = fileName.lastIndexOf("\\");
+							if (lastIndex >= 0) {
+								fileName = fileName.substring(lastIndex + 1);
+							}
+							var reader = new FileReader();
+							reader.readAsDataURL(uFile);
+
+							reader.onload = function() {
+								data = reader.result.split(",");
+								x.push(data[1]);
+							};
+						}
+						uploadData = {};
+						uploadData['documnentName'] = $("#docnoid_" + i).val();
+						uploadData['documentFile'] = x;
+						uploadData['fileName'] = fileName;
+						uploadData['imageNameEdit'] = $(this).find(
+								".uploadHidCls").val();
+						uploadList.push(uploadData);
+
+					});
+
+			setTimeout(function() {
+
+				obj.ticketId = $("#editTktId").val();
+				obj.empId = $("#empId").val();
+				obj.date = $("#currentDate").val();
+				obj.empName = $("#empName").val();
+				obj.dept = $("#dept").val();
+				obj.ticketType = $("#ticketType").val();
+				obj.ticketCategory = $('#ticketCategory').val();
+				obj.ticketSubCategory = $("#ticketSubCategory").val();
+				obj.ticketPriority = $("#ticketPriority").val();
+				obj.description = $("#description").val();
+				obj.locType = $("#locType").val();
+				obj.latitude = $("#latitude").val();
+				obj.longitude = $("#longitude").val();
+				obj.address = $("#address").val();
+				obj.empAddress = $("#empAddress").val();
+
+				/* if (obj.materialStatus == undefined) {
+					obj.materialStatus = "0";
+				} else {
+					obj.materialStatus = "1";
+				} */
+
+				obj.documentList = uploadList;
+				datas.push(obj);
+				console.log(datas);
+				//$('.loader').show();
+				//$("body").removeClass("overlay");
+				saveTicket(datas);
+			}, 1000)
+
+		}
+
+	}
+
+	function saveTicket(data) {
+		$.ajax({
+			type : "POST",
+			url : "view-agentTicket-save-data",
+			dataType : "json",
+			contentType : "application/json",
+			data : JSON.stringify(data),
+			success : function(response) {
+				if (response.message == "Success") {
+					cancel();
+					$('.loader').hide();
+					$("body").removeClass("overlay");
+					$("#messageParagraph").text("Data Saved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+
+					/* $("#textDescription").val("");
+					$("#textHeading").val("");
+					$("#materialStatus").prop("checked", true);
+					CKEDITOR.instances.commentck.setData(''); */
+
+				} else {
+					$('.loader').hide();
+					$("body").removeClass("overlay");
+					$("#messageParagraph").text("Something Went Wrong");
+					$("#msgOkModal").removeClass("btn1");
+					$("#msgOkModal").addClass("btn3");
+					$("#msgModal").modal('show');
+
+				}
+			},
+			error : function(response) {
+				$('.loader').hide();
+				$("body").removeClass("overlay");
+				$("#messageParagraph").text("Something Went Wrong");
+				$("#msgOkModal").removeClass("btn1");
+				$("#msgOkModal").addClass("btn3");
+				$("#msgModal").modal('show');
+			}
+		})
+	}
+
+	function editTicket(ticketId) {
+
+		agGrid.simpleHttpRequest({
+			url : 'view-agentTicket-edit?id=' + ticketId
+		}).then(function(data) {
+			//console.log("allDATA", data);
+			var jsonData = JSON.parse(data.body);
+			var allData = jsonData.editTicket;
+			console.log(allData);
+			
+			$("#myGrid").hide();
+			$("#startPagebtn").hide();
+			$("#raiseTcktSession").show();
+			
+			$('#docTbl').on('click', '.rmv1', function() {
+				openDeleteConfirm();
+				var value = $(this).parent("div").attr("id");
+
+				$("#dltValue").val(value);
+			});
+			var tbl = '<tr> <td style="display:none" align="center" class="pdb-24"><input class="checkCls" type="checkbox" id="check2"><label for="check2"></label></td>'
+					+ '<td style="display:none"><div class="form-group"> <select class="form-control documentclss" id="docid_0" onblur="removeValid(event);"> <option value="">Select</option> </select> </div></td>'
+					+ '<td><div class="form-group"> <input type="text" value="" class="form-control docNoclss" id="docnoid_0"  onblur="checkForDuplicateEntry(event)"></div></td>'
+					+ '<td> <div class="control-group position-r"> <label class="custom-file-upload" for="uploadDoc_0" id="uploadFor_0"> <i class="ti-plus" id="clickImg_0"></i> </label>'
+					+ '<div class="controls"> <input type="file" class="document" id="uploadDoc_0" name="userImage" onchange="saveMultiFile(event)" /></div> </div> <input type="hidden" id="uploadHidden_0" class="uploadHidCls">'
+					+ '<div id="uploadedBillDiv_0" align="center" class="uploadedBillCls"></div> <div id="imageName_0" class="imageName"></div><div id="dltImage_0" class="dltImage"></div><input type="hidden" id="editId_0></td>'
+					+ '</tr>';
+			$("#doctbodyData").append(tbl);
+			999596
+			
+			$("#editTktId").val(allData[0].ticketId);
+			$("#empId").val(allData[0].empId);
+			$("#currentDate").val(allData[0].tktDate);
+			$("#empName").val(allData[0].empName);
+			$("#dept").val(allData[0].dept);
+
+			$("#ticketType").val(allData[0].tktType);
+			$("#ticketCategory").val(allData[0].tktCategory);
+			$("#ticketSubCategory").val(allData[0].tktSubCategory);
+			$("#ticketPriority").val(allData[0].tktPriority);
+
+			$("#description").val(allData[0].tktDesc);
+			$("#locType").val(allData[0].tktLocType);
+			addAddress(allData[0].tktLocType);
+			$("#latitude").val(allData[0].tktLatitude);
+			$("#longitude").val(allData[0].tktLongitude);
+			$("#empAddress").val(allData[0].tktAddress);
+
+		});
+
+	}
+	
+	function deleteFun() {
+		$('#delete').modal('show');
+	}
+	
+	function deleteOnclick() {
+		if (id) {
+				$.ajax({
+		type : "GET",
+		url : "view-agentTicket-delete?id="+ id,
+		success : function(response) {
+		 if (response.code == "success") {
+			 cancel();
+				$("#messageParagraph").text("Ticket Deleted Sucessfully");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+				$('#delete').modal('hide');
+				
+				
+				$('#reqDltBtn').attr('disabled', true);
+				
+				
+				agGrid.simpleHttpRequest({
+					url : "view-agentTicket-data-view"
+				}).then(function(data) {
+					var jsonData = JSON.parse(data.body[0]);
+					var allData = jsonData.viewTicket;
+					var len = allData.length;
+					$('#totalReq').find('span').html(len);
+					gridOptions.api.setRowData(allData);
+
+				});
+				
+			} else {
+				$("#messageParagraph").text("Something went to wrong!");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+			}
+		},
+		error : function(data) {
+			console.log(data)
+		}
+	})
+		} 
+
+}
+	
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+					<div class="row" id="startPagebtn">
+						<div class="col-md-4">
+							<div class="font-design" id="totalReq">
+								TOTAL TICKETS (<span></span>)
+							</div>
+						</div>
+						<div class="buttonsec btn-hs">
+							<button class="btn1" id="raiseTckt" onclick="raiseTicket()">Raise
+								Ticket</button>
+								<button class="delete-btn" id="reqDltBtn" onclick="deleteFun()">DELETE</button>
+						</div>
+					</div>
+
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+
+					<div class="row" id="raiseTcktSession">
+						<div class="col-lg-12">
+							<div class="form-group">
+								<input type="hidden" class="form-control" id="editTktId">
+							</div>
+						</div>
+						<div class="innerstickybg">
+							<div class="row">
+								<div align="right">
+									<button class="cancel-btn" id="cancelBtn" onclick="cancel()">Cancel</button>
+									<button class="approve-btn" id="save"
+										onclick="masterSaveData()">Save</button>
+								</div>
+							</div>
+						</div>
+						<input type="hidden" id="sessionEId" th:value="${session.USER_ID}" />
+						<input type="hidden" id="sessionEName"
+							th:value="${session.USER_NAME}" />
+						<div class="row mt-4">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Employee Id: </label> <input type="text"
+										name="Employee Id" value="" id="empId" class="form-control"
+										readonly>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Date:</label> <input type="text" name="Date" value=""
+										id="currentDate" class="form-control" readonly>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Employee Name: </label> <input type="text"
+										name="Employee Name" value="" id="empName"
+										class="form-control" readonly>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Department: </label> <input type="text"
+										name="Department" value="" id="dept" class="form-control"
+										readonly>
+								</div>
+							</div>
+							<div class="col-md-3 mt-3">
+								<div class="form-group">
+									<label>Ticket Type</label>
+									<div class="select" onchange="getCategoryId()">
+										<select id="ticketType">
+											<option value="">Select</option>
+											<option th:each="c:${ticketTypeList}" th:value='${c.key}'
+												th:text="${c.name}"></option>
+										</select> <span class="focus"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3 mt-3">
+								<div class="form-group">
+									<label>Category</label>
+									<div class="select" onchange="getSubCategoryId()">
+										<select id="ticketCategory">
+											<option value="">Select</option>
+											<option th:each="c:${categoryList}" th:value='${c.key}'
+												th:text="${c.name}"></option>
+										</select> <span class="focus"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3 mt-3">
+								<div class="form-group">
+									<label>Sub Category</label>
+									<div class="select">
+										<select id="ticketSubCategory">
+											<option value="">Select</option>
+											<option th:each="c:${subCategoryList}" th:value='${c.key}'
+												th:text="${c.name}"></option>
+										</select> <span class="focus"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3 mt-3">
+								<div class="form-group">
+									<label>Priority</label>
+									<div class="select">
+										<select id="ticketPriority">
+											<option value="">Select</option>
+											<option th:each="c:${priorityList}" th:value='${c.key}'
+												th:text="${c.name}"></option>
+										</select> <span class="focus"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Description</label>
+									<textarea name="Description" id="description"
+										class="form-control"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6 mt-2">
+								<input type="hidden" id="latitude2" /> <input type="hidden"
+									id="longitude2" /> <input type="hidden" id="location1" />
+								<!-- <input type="text" id="punchInLocation"/>
+							<input type="text" id="punchOutLocation"/> -->
+								<div class="form-group">
+									<label>Location Type</label>
+									<div class="select">
+										<select id="locType" onchange="addAddress('')">
+											<option value="">Select</option>
+											<option value="geoTag">Geo Tag</option>
+											<option value="other">Other</option>
+										</select> <span class="focus"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3 mt-2" id="latitudeAdd">
+								<div class="form-group">
+									<label>Latitude</label> <input type="text" id="latitude"
+										class="form-control" maxLength="50" readonly>
+								</div>
+							</div>
+							<div class="col-lg-3 mt-2" id="longitudeAdd">
+								<div class="form-group">
+									<label>Longitude</label> <input type="text" id="longitude"
+										class="form-control" maxLength="50" readonly>
+								</div>
+							</div>
+							<div class="col-md-12" id="add">
+								<div class="form-group">
+									<label>Address</label>
+									<textarea name="Description" id="empAddress"
+										class="form-control"></textarea>
+								</div>
+							</div>
+							<div class="col-md-12" style="display: none;">
+								<div class="form-group">
+									<label>Address</label>
+									<textarea name="Description" id="empAddress"
+										class="form-control"></textarea>
+								</div>
+							</div>
+							<!-- Document Section -->
+
+							<!--accordion start-->
+							<div class="mt-4" id="accordionExample2">
+								<div class="accordion-item" id="documentDetails">
+									<h2 class="accordion-header" id="headingOne">
+										<button class="accordion-button" type="button"
+											data-bs-toggle="collapse" data-bs-target="#collapseOne"
+											aria-expanded="false" aria-controls="collapseOne">
+											Attach Images</button>
+									</h2>
+									<div id="collapseOne" class="accordion-collapse collapse show"
+										aria-labelledby="headingOne"
+										data-bs-parent="#accordionExample">
+										<div class="accordion-body">
+
+
+											<div class="row">
+												<div class="col-md-4 btn-hs1">
+													<div class="font-design"></div>
+												</div>
+												<div class="col-md-8 butttonsec">
+													<!--   <button class="download-btn" onclick="rfqCSV()">Download</button> -->
+													<button class="new-btn" id="saveAttachmentBtn"
+														onclick="checkEmpty();">Add Document</button>
+
+												</div>
+											</div>
+
+											<table id="docTbl" cellspacing="7" cellpadding="7">
+												<thead>
+													<tr class="tr_clone">
+														<!-- <th align="center"></th> -->
+														<th width="620">Document Name</th>
+														<th width="480">Attachment</th>
+													</tr>
+												</thead>
+												<tbody id="doctbodyData"></tbody>
+											</table>
+
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--accordion end-->
+
+							<!-- delete attachment modal for Document Upload -->
+							<div id="deleteAttachment" class="modal fade show"
+								aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-body">
+											<p>Do you really want to delete these records? This
+												process cannot be undone.</p>
+											<input type="hidden" id="dltValue">
+										</div>
+										<div class="modal-footer justify-content-center">
+
+											<button type="button" class="btn4" data-dismiss="modal"
+												onclick="closeDeleteConfirm();">Cancel</button>
+											<button type="button" class="btn3"
+												onclick="deleteAttachmentRow();">Delete</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- delete modal start -->
+			<div id="delete" class="modal fade show" aria-modal="true">
+				<div class="modal-dialog modal-confirm">
+					<div class="modal-content">
+						<div class="modal-header flex-column"></div>
+						<div class="modal-body">
+							<p>Do you really want to delete these records? This process
+								cannot be undone.</p>
+						</div>
+						<div class="modal-footer justify-content-center"
+							style="margin-top: 0px;">
+
+							<button type="button" class="cancel-btn" data-bs-dismiss="modal"
+								onclick="cancelModalBtn();">Cancel</button>
+							<button type="button" class="delete-btn"
+								onclick="deleteOnclick()">Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+
+	</div>
+</body>
+</html>

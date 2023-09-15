@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+<style>
+ body{
+	width:330px;
+	margin:0 auto;
+} 
+  .cardbg
+  {  	
+    background: url(classpath:static/assets/employee-id/card-bg.jpg) no-repeat;
+    height:500px;
+    width:330px;
+  }
+  .card-container
+  {
+    padding: 20px  30px 20px 30px ;
+    margin: 0 auto;
+    width: 290px;
+  }
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  width: 75px;
+  height: 100px;
+  margin: 30px auto;
+}
+.card img{
+	width: 100px;
+  	height: 100px;
+  	border:2px solid #FFF;
+}
+.company img{
+	width: 200px;
+  	height: 50px;
+  	margin:0 auto;
+}
+.name
+{
+  background-color: #03b8d7;
+  color: #FFF;
+  text-align: center;
+  font-size:16px;
+  padding: 6px;
+  border-radius: 20px;
+  width: 250px;
+  margin: 5px auto;
+}
+.eid {
+
+  background-color: #0E4C92;
+  color: #FFF;
+  text-align: center;
+  font-size:13px;
+  padding: 6px;
+  border-radius: 20px;
+  width: 200px;
+  margin-left: 20px;
+}
+
+.container {
+  padding: 10px 16px;
+  text-align:center;
+  margin-top:20px;
+}
+#namec {
+  color:white;
+}
+.company{
+	text-align:center;
+	width:270px;
+	margin:10px 0px;
+}
+.qrcode{
+	margin-top:20px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    width: 75px;
+    height: 100px;
+	margin: 0 auto;
+	
+	
+}
+.qrcode img{
+	width: 100px;
+  	height: 100px;
+}
+</style>
+</head>
+<body>
+
+<div class="cardbg">
+ 
+  <div class="card-container">
+   <div class="company">
+     <div><img src="classpath:static/assets/employee-id/shaakhya.png" alt="Avatar"></img></div>
+    <div id="namec" th:text="${idcard[0].organization}"></div>
+  </div>
+  <div class="card">
+    <img th:src="${idcard[0].fileEmployeeimg}" alt="Avatar"></img>
+  </div>
+    <div class="container">
+      <div class="name" th:text="${idcard[0].firstName}">Name</div>
+      <div class="eid" th:text="${idcard[0].employeeId}">ID</div> 
+    </div>
+    
+
+    <div class="qrcode"><img th:src="${idcard[0].qrCode}"/></div>
+</div>
+
+</div>
+</body>
+</html> 

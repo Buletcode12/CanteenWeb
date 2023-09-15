@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+
+<style>
+
+.hvrbox .hvrbox-layer_top {
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 25%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	color: #fff;
+	padding: 15px;
+}
+
+.btn1 {
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    background-color: #5784c4;
+    color: #fff!important;
+    margin-left: 5px;
+    margin-bottom: 8px;
+    width: 105px;
+    height: 28px;
+    line-height: 12px;
+    float: right;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.taskInfo{
+	padding-left: 10px;
+    color: #45166a;
+}
+
+.rating {
+	float: left;
+}
+
+.rating:not(:checked)>input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0, 0, 0, 0);
+}
+
+.rating:not(:checked)>label {
+	float: right;
+	width: 1em;
+	padding: 0 .1em;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	font-size: 200%;
+	line-height: 1.2;
+	color: rgba(0, 0, 0, 0.6);
+	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:before {
+	content: '★ ';
+}
+
+.rating>input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:hover, .rating:not(:checked)>label:hover ~
+	label {
+	color: black;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
+	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
+	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>label:active {
+	position: relative;
+	top: 2px;
+	left: 2px;
+}
+
+.btn-outline-primary {
+	color: #007bff;
+	background-color: rgb(240 243 241/ 90%);
+	background-image: none;
+	border-color: #007bff;
+	cursor: pointer;
+}
+.picker_calendar5 {
+ cursor: pointer;
+    position: absolute;
+    bottom: 361px;
+    left: 742px;
+}
+.picker_calendar6 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 361px;
+    left: 1132px;
+}
+</style>
+<script>
+	
+	
+	
+	$(function() {
+	$("#demo").hide();
+	
+	})
+	
+
+
+	
+	/* function dataModel(){
+		
+		//$("#myModal").show();
+		$("#myModal").modal('show');
+	}
+    function closeModel(){
+		
+		$("#myModal").hide();
+	} */
+    
+  function editPage(){
+		
+		$("#demo").show();
+		$("#shtable").hide();
+	}
+	
+</script>
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+					
+					
+						
+				<div class="innercontent">
+					<div class="row">
+					<div class="ledgertable">
+					<!-- Start -->
+					<div class="row d-flex justify-content-between mb-2">
+						<div class="col-md-2  btn-hs">
+						<h2 class="font-design" >Balance Sheet:</h2>
+						</div>
+						
+					<div class="col-md-3">
+						<div class="form-group d-flex">
+								<div class="col-md-4"><label>Fiscal Year</label> </div>
+								<div class="col-md-8">
+								<div class="select">
+									<select id="orderStatusFilter" class="form-control" >
+										<option  value="">--Select--</option>
+										<option th:each="c,iter:${fiscalList}" th:value="${c.key}"
+											th:text="${c.name}"></option>
+									</select>
+								</div>
+								</div>
+							</div>
+						
+				     </div>
+					
+					
+					<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="fromDate" placeholder="From Date" class="form-control"> 
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="toDate" placeholder="To Date" class="form-control">
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-1">
+						<input type="button" id="filter" value="Filter" class="fltbtn" onclick="viewDayBook()" readonly>
+					   </div>
+					
+					
+				
+					
+					
+					  <div class="col-md-2  btn-hs">
+							<button type="button" class="d-inline-flex align-items-center btn btn-primary rounded  mb-2 float-end">
+									<i class="ti-printer"></i>&nbsp Print Order
+								</button>
+						</div>
+					</div>	
+					
+					<!-- End -->		
+								
+				<!-- 	<div class="d-flex justify-content-between">
+					<div><p> <strong>Balance Sheet:</strong></p></div>
+					
+					<div><p> <strong>1st April <span id="thisYear">2023</span> to 31 March <span id="nextYear">2024</span></strong></p></div>
+					</div> -->
+					
+					
+					<table  class="table table-bordered table-striped">
+								
+							<thead>
+								<tr align="center" style="background:#f5f6f7;">
+									<th width="30%"><strong>Liabilities </strong> </th>
+									
+									<th width="20%"><strong>Shoukeen Industries</strong></th>
+									<th width="30%"><strong>Assets </strong> </th>
+									
+									<th width="20%"><strong>Shoukeen Industries</strong></th>																	
+								</tr>
+							</thead>
+
+						<tbody>
+						
+						
+						
+								<tr align="left" valign="top">																	
+									<td>
+									<div class="tblttl">Capital Account</div>
+																		
+									</td>									
+																	
+									<td></td>
+									<td>
+									<div class="tblttl">Fixed Assets</div>
+									
+										<table width="100%" class="prls">
+											<tr>
+												<td>Laptop</td>
+												<td align="right"></td>										
+											</tr>
+																			
+										</table>									
+									
+									</td>									
+																	
+									<td align="right"><div class="tblttl">₹90000.00 </div></td>
+								</tr>
+
+								
+								<tr align="left" valign="top">																	
+									<td>
+									<div class="tblttl">Loans Liabilities</div>																											
+									</td>									
+																	
+									<td align="right"></td>
+									<td>
+									<div class="tblttl">Working Capital</div>
+																													
+									</td>									
+																	
+									<td align="right"><div class="tblttl">₹29,83,747.29 </div></td>
+								</tr>
+								
+								
+								<tr align="left" valign="top">																	
+									<td>
+									<div class="tblttl">Profit & Loss A/C</div>
+										<table width="100%" class="prls">
+											<tr>
+												<td>Opening Balance</td>
+												<td align="right"></td>										
+											</tr>
+											<tr>
+												<td>Current Period</td>
+												<td align="right">₹26,33,747.29</td>										
+											</tr>
+											<tr>
+												<td></td>
+												<td align="right"></td>										
+											</tr>
+										
+										
+										</table>
+									
+									</td>									
+																		
+									<td align="right"><b>₹26,33,747.29</b></td>
+									
+									<td>
+									<div class="tblttl">Current Assets</div>
+										<table width="100%" class="prls">
+											<tr>
+												<td>Closing Stock</td>
+												<td align="right">₹40,774.00</td>										
+											</tr>
+											<tr>
+												<td>Sundry Debtors</td>
+												<td align="right">₹2,12,942.00</td>										
+											</tr>
+											<tr>
+												<td>Cash in hand</td>
+												<td align="right"></td>										
+											</tr>
+											<tr>
+												<td>Bank Accounts</td>
+												<td align="right">₹3,26,540.00</td>										
+											</tr>
+											<tr>
+												<td></td>
+												<td align="right" class="topbdr">₹5,80,256.00</td>										
+											</tr>
+										
+										</table>
+									
+									</td>
+									
+									<td></td>
+								</tr>
+								
+							
+								<tr align="left" valign="top">																	
+									<td><div class="tblttl">Difference in Opening Balances</div></td>									
+																	
+									<td align="right"><b>₹3,50,000.00</b></td>
+									
+									<td>
+									<div class="tblttl">Current Liabilities</div>
+										<table width="100%" class="prls">
+											<tr>
+												<td>Duties & Taxes</td>
+												<td align="right">(-)₹4,67,797.71</td>										
+											</tr>
+											<tr>
+												<td>Sundry Creditors</td>
+												<td align="right">₹28,71,289.00</td>										
+											</tr>
+											<tr>
+												<td></td>
+												<td align="right" class="topbdr">₹24,03,491.29</td>										
+											</tr>
+										
+										
+										</table>
+									
+									</td>
+									<td></td>
+								</tr>
+						
+							<tr align="left" valign="top">																	
+									<td><div class="tblttl">Total</div></td>									
+																	
+									<td align="right"><div class="tblttl">₹29,83,747.29</div></td>
+									
+									<td><div class="tblttl">Total</div></td>									
+																	
+									<td align="right"><div class="tblttl">₹29,83,747.29</div></td>
+								</tr>
+					
+						 
+
+				
+								
+							</tbody>
+							
+							
+							</table>
+					
+							</div>
+							</div>
+					
+					
+					    	</div>
+
+
+
+				<!-- Right Sec End -->
+
+
+					
+
+					
+					
+				
+				
+				
+				
+			</div>
+		</div>
+	</div>
+		                         
+		                         <!-- Modal -->
+		                        <!--  <div class="modal fade show" id="myModal" >
+			                            <div class="modal-dialog modal-xl">
+			                         	<div class="modal-content">
+
+												Modal Header
+											<div class="modal-header">
+													<h4 class="modal-title">Modal Heading</h4>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+											</div>
+
+												Modal body
+												<div class="modal-body">Modal body..</div>
+
+												Modal footer
+												<div class="modal-footer">
+												<button type="button" class="btn btn-danger"
+											data-bs-dismiss="modal" onclick="closeModel()">Close</button>
+										</div> 
+
+									</div>
+								</div>
+								</div> -->
+								 <!-- Modal -->
+								 <div class="col-lg-12 ledgertable" id="demo">
+								<table  class="table table-bordered table-striped">
+								
+								<thead>
+								<tr align="center" style="background:#f5f6f7;" valign="middle">
+									<th width="10%"><strong>Date </strong> </th>
+									<th width="35%"><strong>Particulars </strong></th>
+
+									<th width="10%"><strong>Vch Type </strong> </th>
+									<th width="10%"><strong>Vch No. </strong></th>
+									<th width="15%"><strong>Debit Ammount</strong></th>
+									<th width="20%"><strong>Credit Ammount</strong></th>
+								
+								</tr>
+							</thead>
+
+						<tbody>
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Salary Exp.</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Rent Paid</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Electricity Exp.</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Mobile Phone Bill Exp.</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Conveyance Exp.</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+							   <tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Office Exp.</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Depreciation</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Prepaid Subscription</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Prepaid Insurence</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								<tr align="left" valign="top">																	
+									<td>25-06-2023</td>									
+									<td>Capital</td>
+									<td>Journal</td>
+									<td>9</td>
+									<td>₹5000.00</td>
+									<td></td>
+								</tr>
+								
+								
+								
+						
+
+						 
+								
+							</tbody>
+							
+							
+							</table>
+										</div>
+		</body>
+</html>

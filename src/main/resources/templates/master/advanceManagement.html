@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<meta charset="ISO-8859-1">
+<style type="text/css">
+.highcharts-exporting-group {
+	display: none;
+}
+
+.slidebox {
+	padding: 14px;
+	margin-top: 0px;
+	margin: 0px 10px;
+}
+
+.holdCls {
+	background-color: rgb(0, 143, 0);
+}
+
+.bg_white {
+	background: #ffffff !important;
+}
+</style>
+
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function(){
+		var dateFormat = localStorage.getItem("dateFormat");
+
+	/* 	$("#dueMonthCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+			datepicker : true,
+			scrollMonth : false,
+		   minDate : new Date()
+		}).on("change", function() {
+			$('#dueMonth').val($(this).val());
+		})
+		$('#dueMonth').blur(
+				function() {
+					$("#dueMonthCalendar").val(
+							$(this).val());
+				}); */
+				$("#myGrid").show();
+				var gridDiv = document.querySelector('#myGrid');
+				new agGrid.Grid(gridDiv, gridOptions);
+ 
+				
+				var userid = $("#sessionId").val();
+				var userrole = $("#sessionRole").val();
+				var roleid = "";
+				for(var i = 6; i <= userrole.length; i=i+6){  
+				    roleid = roleid + '"' +userrole.slice(i-6, i)+ '",';
+				}
+				roleid = roleid.substring(0, roleid.length - 1);
+				$('.loader').show();
+				gridOptions.api.setRowData();
+				agGrid.simpleHttpRequest({
+					url : "advance-disburshment-details-view?userid=" + userid+"&roleid="+roleid,
+				}).then(function(data) {
+					var len = data.length;
+					$('#totalReq').find('span').html(len);
+					gridOptions.api.setRowData(data);
+					$('.loader').hide();
+				})
+
+				$("#add").attr("disabled", false);
+				$('#approve').attr('disabled', true);
+				$('#reject').attr('disabled', true);
+				$("#payment").attr("disabled", true);
+				$("#delete").attr("disabled", true);
+				$("#process").attr("disabled", true);
+				
+				$("#fin").hide();
+		 
+
+				$('.collapse').on('show.bs.collapse', function() {
+					$(this).siblings('.panel-heading').addClass('active');
+				});
+
+				$('.collapse').on('hide.bs.collapse', function() {
+					$(this).siblings('.panel-heading').removeClass('active');
+				});
+
+		
+
+				$("#demo").hide();
+
+				$('#docTbl').on('click', '.rmv1', function() {
+					openDeleteConfirm();
+					var value = $(this).parent("div").attr("id");
+					$("#dltValue").val(value);
+				});
+
+				$("#statusDiv").hide();
+				$('.collapse').on('show.bs.collapse', function() {
+					$(this).siblings('.panel-heading').addClass('active');
+				});
+ 
+  
+				//date time picker
+				$("#transactionDate").datetimepicker({
+					format : 'd-m-Y',
+					closeOnDateSelect : true,
+					minDate : new Date(),
+					timepicker : false,
+				})
+				var currentDate = twoDigitDate + "-" + twoDigitMonth + "-"
+						+ fullDate.getFullYear();
+				$("#transactionDate").val(currentDate);
+				HideBank();
+				$("#form").hide();
+				$("#cancel").hide();
+				$("#save").hide();
+			
+			});
+	
+	/* -------------------search bar for mygrid1------------------------ */
+
+	function onQuickFilterChanged() {
+$(".ti-search srchicon").hide();		
+		gridOptions.api.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+	//Advance Management
+	const columnDefs = [
+			{
+				headerCheckboxSelection : false,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+			{
+				headerName : 'Advance Id',
+				field : "advanceId",
+				cellRenderer : function(params) {
+					 var sempid=$("#sessionId").val();
+						if (params.data.empID==sempid && params.data.status=="Pending") {
+							return '<a id="advanceId" onclick=editAdvanceDetails("'
+							+ params.data.advanceId+','
+							+ params.data.empID+','+params.data.status
+							+ '") href="javascript:void(0)">'
+							+ params.data.advanceId + '</a>';
+						}else{
+							return '<div>'+params.data.advanceId+'</div>';
+						}
+				}
+ 
+			}, {
+				headerName : 'Requisition Policy Id',
+				field : "reqPolicyId",
+				width : 220,
+			}, {
+				headerName : 'Employee Id',
+				field : "empID",
+			}, {
+				headerName : 'Employee Name',
+				field : "empName",
+			}, {
+				headerName : 'Apply Date',
+				field : "advanceApplyDate",
+			}, {
+				headerName : 'Loan Amount',
+				field : "loanamt"
+			}, {
+				headerName : 'reason',
+				field : "reason"
+			}, {
+				headerName : 'Advance Status',
+				field : "status",
+				cellRenderer : function(params) {
+					if (params.data.status =="Pending") { 
+						return '<div style="color:#a9a9a9">Pending</div>';
+					} else if (params.data.status =="Forwarded") {
+						return '<div style="color:#ffa500">Forwarded</div>';
+					} else if (params.data.status == "Approved") {
+						return '<div style="color:#0642f5">Approved</div>';
+					} else {
+						return '<div style="color:#ff8242">Rejected</div>';
+					}	
+				}
+			}, {
+				headerName : 'Approved By',
+				field : "approvedBy"
+			}, {
+				headerName : 'Rejected By',
+				field : "rejectedBy"
+			},{
+				headerName : 'Comments',
+				field : "approveComment",
+				width : 305,
+			} ]; 
+	
+	
+	//Advance management
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 150,
+			height : 10
+		},
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		onSelectionChanged : rowSelectId,
+	};
+	 var advId="";
+	 id="";
+	function rowSelectId() {
+		 var selectedNodes = gridOptions.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		  advId= selectedData.map(node => node.advanceId);
+		 var empID= selectedData.map(node => node.empID);
+		 
+		var selectedRows = gridOptions.api.getSelectedRows();
+		id = "";
+		 var rowCount = 0;
+		for (var i = 0; i < selectedRows.length; i++) {
+			id = id + '"' + selectedRows[i].advanceId+ '"';
+		     rowCount = rowCount + 1;
+		}
+	 
+		 var adRole=$("#adRole").val();
+		 var uid=$("#sessionId").val();
+		   if (rowCount > 0) {
+				$('#add').attr('disabled', true);
+				if(empID!=uid){
+					 if (selectedData.map(node => node.status) =="Approved") {
+				        	$("#payment").attr("disabled", false);
+				        	$("#process").attr("disabled", false);
+				        	$('#approve').attr('disabled', true);
+							$('#reject').attr('disabled', true);
+							$('#delete').attr("disabled", true);
+				        } else {
+				            $('#payment').attr("disabled", true);
+				            $("#process").attr("disabled", true);
+				         	$('#approve').attr('disabled', false);
+							$('#reject').attr('disabled', false);
+							$('#delete').attr("disabled", true);
+				        } 
+					
+				}else{
+					if(adRole=='rol001' || adRole=='rol010'){
+						$('#approve').attr('disabled', false);
+						$('#reject').attr('disabled', false);
+						$('#delete').attr("disabled", false);
+					}else{
+						$('#approve').attr('disabled', true);
+						$('#reject').attr('disabled', true);
+					}
+					if(selectedData.map(node => node.status)=="Pending"){
+						$('#delete').attr("disabled", false);
+					}else{
+						$('#delete').attr("disabled", true);
+					}
+					if (selectedData.map(node => node.status) =="Approved") {
+						$("#process").attr("disabled", false);
+					}else{
+						$("#process").attr("disabled", true);
+					}
+				}	
+
+    } else {
+    	$('#delete').attr("disabled", true);
+		$('#approve').attr('disabled', true);
+		$('#reject').attr('disabled', true);
+		$("#payment").attr("disabled", true);
+		$("#process").attr("disabled", true);
+		$('#add').attr('disabled', false);
+
+    }
+	}
+
+
+	//Open Nav for Advance Management
+	function openNav() {
+		document.getElementById("mySidenav").style.cssText = "width: 25%; position: absolute; right:-10px; overflow: hidden; height:auto;";
+		document.getElementById("main").style.width = "75%";
+		$("#cancel").show();
+		$("#save").attr("disabled", false);
+		$("#save").show();
+		$("#add").attr("disabled", true);
+		$("#delete").attr("disabled", true);
+	}
+ 
+	//Close Nav for Advance Management
+	
+	function closeNav() {
+		var userid = $("#sessionId").val();
+		var userrole = $("#sessionRole").val();
+		var roleid = "";
+		for(var i = 6; i <= userrole.length; i=i+6){  
+		    roleid = roleid + '"' +userrole.slice(i-6, i)+ '",';
+		}
+		roleid = roleid.substring(0, roleid.length - 1); 
+		agGrid.simpleHttpRequest({
+			url : "advance-disburshment-details-view?userid=" + userid+"&roleid="+roleid,
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(data);
+		})
+		
+		$("#reqPolicyId").val("");
+		$("#loanamtrange").val("");
+		$("#ternure").val("");
+		$("#intrestRate").val("");
+		$("#loanamt").val("");
+		$("#reason").val("");
+		$("#add").attr("disabled", false);
+		$("#delete").attr("disabled", true);
+		$("#add").show();
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main").style.width = "100%";
+	}
+ 
+	/* onchange function for get Policy Details by policy id */
+	function getPolicyDetails(){
+			$("#loanamtrange").val(""); 
+			$("#ternure").val(""); 
+			$("#intrestRate").val(""); 
+		    var reqPolicyId = $("#reqPolicyId").val();
+
+		    if (reqPolicyId) {
+		        $.ajax({
+		            type: 'GET',
+		            url: 'advance-disburshment-getPolicyDetails?reqPolicyId=' + reqPolicyId,
+		            contentType: false,
+		            success: function(response) {
+		                if (response.message == "success") {
+		                	$("#loanamtrange").val(response.body.key); 
+		                	var ten=response.body.name+" /month";
+							$("#ternure").val(ten); 
+							var inte=response.body.code + " %  /month";
+							$("#intrestRate").val(inte); 
+		                }
+		            },
+		            error: function(e) {
+		                alert("error");
+		            }
+		        });
+		    }  
+	 
+	}
+	//Add Advance details 
+	
+	
+	
+
+	function addDetails() {
+		obj = {};
+		obj.advanceId = $("#advanceId").val();
+		obj.reqPolicyId = $("#reqPolicyId").val();
+		obj.empID = $("#sessionId").val();
+		obj.loanamt = $("#loanamt").val();
+		obj.reason = $("#reason").val();
+  
+		var validation = true;
+
+		if (obj.reqPolicyId == null || obj.reqPolicyId == "") {
+			validation = validationUpdated("Policy Type Required", "reqPolicyId");
+		}
+		if (obj.loanamt == null || obj.loanamt == "") {
+			validation = validationUpdated("Loan Amount Required", "loanamt");
+		}
+		if (obj.reason == null || obj.reason == "") {
+			validation = validationUpdated("Reason Required", "reason");
+		}
+		if (validation) {
+			console.log(obj)
+			$('.loader').show();
+			$.ajax({
+				type : "POST",
+				url : "advance-disburshment-details-save",
+				contentType : "application/json",
+				data : JSON.stringify(obj),
+				success : function(response) {
+					if (response.message == "Success") {
+
+						$("#messageParagraph").text(
+						"Data Saved Successfully");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+						$("#add").show();
+						$("#myGrid").show();
+						$("#cancel").hide();
+						$("#save").hide();
+						$("#form").hide();
+						$("#new").hide();
+						closeNav();
+						$('.loader').hide();
+					}else{
+						$("#messageParagraph").text(
+						"Something went to wrong");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+						$('.loader').hide();
+					}
+				},
+				error : function(data) {
+				}
+			})
+		}
+	}
+	/*
+	 *function for Edit Advacnce
+	 */
+
+	 function editAdvanceDetails(id) {
+			var data = id.split(",");
+			var advid= data[0];
+			var empid = data[1];
+			var sts = data[2];
+		    var sempid=$("#sessionId").val();
+		
+		    if (advid) {
+		    	$('.loader').show();
+			$.ajax({
+				type : "GET",
+				url : "advance-disburshment-details-edit?id=" + advid,
+				async : false,
+				success : function(response) {
+					
+					if (response.message == "Success") {
+						if (sts== "0" && empid==sempid) {
+							//$('#save').attr('disabled', true);
+							
+						$("#myGrid").show();
+						openNav()
+
+						$("#cancel").show();
+						$("#save").show();
+						$("#add").hide();
+						$("#delete").show();
+						//$("#demo1").show();
+						
+						$("#advanceId").val(response.body.advanceId);
+						$("#reqPolicyId").val(response.body.reqPolicyId);
+						$("#loanamt").val(response.body.loanamt);
+						$("#reason").val(response.body.reason);
+						
+						getPolicyDetails();
+					}
+						else {
+							
+						$("#myGrid").show();
+						openNav()
+
+						$("#cancel").show();
+						$('#save').attr('disabled', true);
+						$("#add").hide();
+						$("#delete").show();
+						$("#demo1").show(); 
+						
+						$("#advanceId").val(response.body.advanceId);
+						$("#reqPolicyId").val(response.body.reqPolicyId);
+						$("#loanamt").val(response.body.loanamt);
+						$("#reason").val(response.body.reason);
+						
+						getPolicyDetails();
+							
+							}
+						}
+					
+				}
+			});
+			$('.loader').hide();
+		    }
+		}
+	/* Delete Advance */
+	
+	function deleteData() {
+		$('.loader').show();
+		$.ajax({
+			type : "GET",
+			url : "advance-disburshment-details-delete?id=" + id,
+			async : false,
+			success : function(response) {
+				if (response.message == "Success") {
+					closeNav();
+					$('#delete').attr("disabled", true);
+					$("#messageParagraph").text("Data Deleted Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					$('.loader').hide();
+				}
+			},
+			error : function(data) {
+			}
+
+		});
+	}
+	/* Function for commentModal show */
+	function rejectAdvanceModal() {
+
+	    $('#commentModal').modal('toggle');
+	    $("#approveAdvanceSubmitBtn").hide();
+	    $("#rejectAdvanceSubmitBtn").show();
+	}
+	function approveAdvanceModal() {
+
+	    $('#commentModal').modal('toggle');
+	    $("#approveAdvanceSubmitBtn").show();
+	    $("#rejectAdvanceSubmitBtn").hide();
+
+	}
+	/* -------------------function for approve button----------------- */
+	var empid = "";
+	var empname = "";
+	function approveAdvance() {
+		var userrole = $("#sessionRole").val();
+		var roleid = "";
+		for(var i = 6; i <= userrole.length; i=i+6){  
+		    roleid = roleid + '"' +userrole.slice(i-6, i)+ '",';
+		}
+		roleid = roleid.substring(0, roleid.length - 1); 
+		
+		empid = $("#sessionId").val();
+		comment = $("#comment").val();
+	
+		$.ajax({
+			type : "GET",
+			url : "advance-disburshment-details-approve?approveId=" + advId + "&name=" + empid+"&comment="+comment+"&roleid="+roleid,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					closeNav();
+					 $('#commentModal').modal('hide');
+					$('#delete').attr("disabled", true);
+					$('#approve').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+					$("#payment").attr("disabled", true);
+					$("#comment").val(null);
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	/*-----------------------function for reject button------------------- */
+	var rejempid = "";
+	var rejempname = "";
+	function rejectAdvance() {
+		rejempid = $("#sessionId").val();
+		comment = $("#comment").val();
+ 
+		$.ajax({
+			type : "GET",
+			url : "advance-disburshment-details-reject?rejectId=" + advId + "&name=" + rejempid+"&comment="+comment,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					closeNav();
+					$('#commentModal').modal('hide');
+					$('#delete').attr("disabled", true);
+					$('#approve').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+					$("#payment").attr("disabled", true);
+					$("#comment").val(null);
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+	
+	
+
+	function addPay() {
+
+		var selectedRows = gridOptions.api.getSelectedRows();
+
+		payGridOptions.api.setRowData(selectedRows);
+		$("#myModal").modal('show');
+
+	}
+
+	document.addEventListener('DOMContentLoaded', function() {
+
+		var gridDiv = document.querySelector('#payGrid');
+		new agGrid.Grid(gridDiv, payGridOptions);
+
+		//Process
+		var gridDiv1 = document.querySelector('#myGridProcess');
+		new agGrid.Grid(gridDiv1, gridOptions1);
+		
+		//EMI Details
+		var gridEMI = document.querySelector('#emiGrid');
+		new agGrid.Grid(gridEMI, emiGridOptions);
+		
+		$('#finalAprrove').attr("disabled", true);
+		$('#viewEmiDetails').attr("disabled", true);
+	});
+
+	// let the grid know which columns and what data to use product table
+
+	
+
+	var payGridDefs = [ {
+		headerName : "Advance Id",
+		field : "advanceId",
+
+	}, {
+		headerName : "Advance Policy Id",
+		field : "reqPolicyId",
+
+	}, {
+		headerName : "Employee Name",
+		field : "empName",
+
+	}, {
+		headerName : "Loan Amount",
+		field : "loanamt",
+	} ];
+ 
+	var payGridOptions = {
+			columnDefs : payGridDefs,
+			defaultColDef : {
+				sortable : true,
+				filter : true,
+				resizable : true,
+				width : 190
+			},
+			rowSelection : 'multiple',
+			groupSelectsChildren : true,
+			suppressRowClickSelection : true,
+			suppressAggFuncInHeader : true,
+		};
+	
+	/*
+	 * Add Reimbursement  Details function
+	 */
+
+	function addProcess() {
+	
+		gridOptions1.api.setRowData();
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var advanceId = selectedRows[0].advanceId;
+		var empName = selectedRows[0].empName;
+		var advanceApplyDate = selectedRows[0].advanceApplyDate;
+		var approvedDate = selectedRows[0].approvedDate;
+		var reason = selectedRows[0].reason;
+		var purpose = selectedRows[0].purpose;
+		var loanamt = selectedRows[0].loanamt;
+
+		$("#advanceId1").val(advanceId);
+		$("#empName1").val(empName);
+		$("#advanceApplyDate1").val(advanceApplyDate);
+		$("#approvedDate1").val(approvedDate);
+		$("#reason1").val(reason);
+		$("#reimPurpose").val(purpose);
+		$("#loanamt1").val(loanamt);
+		
+		agGrid.simpleHttpRequest({
+			url : "advance-disburshment-process-view?advanceId=" + advanceId,
+		}).then(function(data) {
+			gridOptions1.api.setRowData(data);
+		});
+
+		$("#main").hide();
+		$("#demo").show();
+		$("#finalAprrove").attr("disabled", true);
+		$("#viewEmiDetails").attr("disabled", true);
+	}	
+	//Close Nav for Advance Management
+	function cancelProcess() {
+				closeNav();
+				$("#add").attr("disabled", false);
+				$('#approve').attr('disabled', true);
+				$('#reject').attr('disabled', true);
+				$("#payment").attr("disabled", true);
+				$("#delete").attr("disabled", true);
+				$("#process").attr("disabled", true);
+
+		$("#main").show();
+		$("#demo").hide();
+	}
+	/*
+	 * Process Details
+	 */
+
+	const columnDefs1 = [
+			{
+				headerCheckboxSelection : false,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+			{
+				headerName : "Employee Id.",
+				field : "empID",
+			}, {
+				headerName : 'Tenure(Month)',
+				field : "ternure",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Rate Of Interest(Month)',
+				field : "intrestRate",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Advance Amount',
+				field : "loanamt",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'EMI',
+				field : "emi",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Total Interest',
+				field : "totalInterest",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Process Status',
+				field : "processStatus",cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					if (params.data.processStatus == 0) {
+						return 'Pending';
+					} else if (params.data.processStatus == 1) {
+						return 'Confirmed';
+					} else {
+						return '';
+					}
+				}
+			} ];
+
+	const gridOptions1 = {
+		columnDefs : columnDefs1,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 178,
+			height : 10
+		},
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		onSelectionChanged : rowSelectProcessId,
+	};
+function rowSelectProcessId(){
+	var selectedRows = gridOptions1.api.getSelectedRows();
+	empID = "";
+	 var rowCount = 0;
+	for (var i = 0; i < selectedRows.length; i++) {
+		empID = empID + '"' + selectedRows[i].empID+ '",';
+	     rowCount = rowCount + 1;
+	}
+	 var selectedNodes = gridOptions1.api.getSelectedNodes();
+	    var selectedData = selectedNodes.map(node => node.data);
+	   if (rowCount > 0) {
+			$('#finalAprrove').attr("disabled", false);
+			if(selectedData.map(node => node.processStatus) == 1){
+				$('#viewEmiDetails').attr("disabled", false);
+			}
+	  	} else {
+			$('#finalAprrove').attr("disabled", true);
+			$('#viewEmiDetails').attr("disabled", true);
+		}
+}
+function finalAprrove(){
+	var selectedRows = gridOptions1.api.getSelectedRows();
+	selectedRows.forEach(function(selectedRow, index) {
+
+		var obj = {};
+		obj.advanceId=$("#advanceId1").val();
+		obj.empID = selectedRow.empID;
+		obj.ternure = selectedRow.ternure;
+		obj.intrestRate = selectedRow.intrestRate;
+		obj.loanamt = selectedRow.loanamt;
+		obj.emi = selectedRow.emi;
+		obj.totalInterest = selectedRow.totalInterest; 
+		
+		$
+		.ajax({
+			type : "POST",
+			url : "advance-disburshment-process-approve",
+			dataType : "json",
+			contentType : "application/json",
+			data : JSON.stringify(obj),
+			success : function(response) {
+				if (response.message == "Success") {
+
+					$("#messageParagraph").text("Approved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					
+					var advanceId=$("#advanceId1").val();
+					agGrid.simpleHttpRequest({
+						url : "advance-disburshment-process-view?advanceId=" + advanceId,
+					}).then(function(data) {
+						gridOptions1.api.setRowData(data);
+					});
+				 
+				}else{
+					$("#messageParagraph").text("Already Approved");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					
+					var advanceId=$("#advanceId1").val();
+					agGrid.simpleHttpRequest({
+						url : "advance-disburshment-process-view?advanceId=" + advanceId,
+					}).then(function(data) {
+						gridOptions1.api.setRowData(data);
+					});
+			 
+				}
+			},
+			error : function(response) {
+				console.log(response)
+			}
+		});
+	})
+
+ 
+
+ 
+}
+	//Add details for Reimbrusement Payment
+
+	function addDetailsPayment() {
+		var obj = {};
+		obj.paymentId = $("#paymentId").val();
+		obj.total = $("#total").val();
+		obj.amtPaid = $("#amtPaid").val();
+		obj.advRequired = $("#advRequired").val();
+		obj.paymentMode = $("#paymentMode").val();
+		obj.bankName = $("#bankName").val();
+		obj.branchName = $("#branchName").val();
+		obj.accNo = $("#accNo").val();
+
+		obj.transactionDate = $("#transactionDate").val();
+		obj.chequeNo = $("#chequeNo").val();
+		obj.transactionNo = $("#transactionNo").val();
+		var validation = true;
+
+		/* if (obj.placeName == null || obj.placeName == "") {
+			validation = validationUpdated("Place Name Required", "placeName");
+		}
+		if (obj.fromDate == null || obj.fromDate == "") {
+			validation = validationUpdated("From Date Required", "fromDate");
+		}
+		if (obj.toDate == null || obj.toDate == "") {
+			validation = validationUpdated("To Date Required", "toDate");
+		}
+		 if (obj.advanceReq == "1") {
+			validation = validationUpdated("Advance Amount Required", "advanceAmount");
+		}  */
+		if (validation) {
+			console.log(obj)
+			$.ajax({
+				type : "POST",
+				url : "reimbursement-add-details-payment-voucher",
+				contentType : "application/json",
+				data : JSON.stringify(obj),
+				success : function(response) {
+					if (response.message == "Success") {
+						$("#messageParagraph").text("Data Saved Successfully");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+
+						$("#myGrid").show();
+						$("#myModal").hide();
+						//$("#cancel").hide();
+						//$("#save").hide();
+						//$("#form").hide();
+						//$("#new").hide();
+						//closeNav();
+
+						/* agGrid.simpleHttpRequest({
+							url : "reimbursement-view-through-ajax"
+						}).then(function(data) {
+							gridOptions.api.setRowData(data);
+						}); */
+
+					}
+				},
+				error : function(data) {
+				}
+			})
+		}
+	}
+
+	/* 	
+	 // for payment mode select hide and show	
+
+	 */
+
+	function checkBankDetails() {
+		var paymentMode = $("#paymentMode").val();
+		if (paymentMode == "PMOD002") {
+			HideBank();
+		} else if (paymentMode == "PMOD004") {
+			ShowTrNo();
+		} else if (paymentMode == "PMOD003") {
+			ShowCqNo();
+		} else {
+			HideBank();
+		}
+	}
+
+	// for  hide and show bank div 
+	function HideBank() {
+		$('#bankNamediv').hide();
+		$('#branchNamediv').hide();
+		$('#accNodiv').hide();
+		$('#chequeNoDiv').hide();
+		$('#paidFromDiv').hide();
+		$('#availBalDiv').hide();
+		$('#transNoDiv').hide();
+		$('#bankName').val('');
+		$('#branchName').val('');
+		$('#accNo').val('');
+		$('#chequeNo').val('');
+		$('#paidFrom').val('');
+		$('#transNo').val('');
+	}
+
+	function ShowCqNo() {
+		$('#bankNamediv').show();
+		$('#branchNamediv').show();
+		$('#accNodiv').hide();
+		$('#paidFromDiv').show();
+		$('#availBalDiv').show();
+		$('#transNoDiv').hide();
+		$('#chequeNoDiv').show();
+	}
+
+	function ShowTrNo() {
+		$('#bankNamediv').show();
+		$('#branchNamediv').show();
+		$('#accNodiv').show();
+		$('#transNoDiv').show();
+		$('#paidFromDiv').show();
+		$('#availBalDiv').show();
+		$('#chequeNoDiv').hide();
+	}
+/* function for viewEmiDetails */
+ function viewEmiDetails(){
+	 emiGridOptions.api.setRowData();
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var empId = selectedRows[0].empID;
+		var advanceId=$("#advanceId1").val();
+	
+		agGrid.simpleHttpRequest({
+			url : "advance-disburshment-view-emiDetails?advanceId=" + advanceId+"&empId="+empId,
+		}).then(function(data) {
+			console.log(data)
+			emiGridOptions.api.setRowData(data);
+		});
+		$("#emiModal").modal('show');
+ }
+	// let the emi grid 
+
+	var emiGridDefs = [ {
+		headerName : "Advance Id",
+		field : "advanceId",
+	
+	    /*  cellRenderer : function(params) {
+	    	       var curdate = new Date();
+                   return '<a onclick=editEmi("'
+	               +params.data.advanceId+'","'+params.data.dueDateE
+	               + '") href="javascript:void(0)">'
+	               + params.data.advanceId + '</a>';
+
+	     } */
+
+	      cellRenderer : function(params) {
+	    	    var currentDate = new Date();
+				var curmonth1 = currentDate.getMonth()+1;
+			 
+				var y=params.data.dueDateE;
+				var data = y.split("-");
+				var dmonth= data[1];
+/* 	    	    var options = { month: 'long', year: 'numeric' };
+	    	    var formattedDate = currentDate.toLocaleString('en-US', options); */
+   	           if (curmonth1<=dmonth) {
+				 return '<a onclick=editEmi("'
+	               +params.data.advanceId+'","'+params.data.dueDateE
+	               + '") href="javascript:void(0)">'
+	               + params.data.advanceId + '</a>';
+			}else{
+				return '<div>'+params.data.advanceId+'</div>';
+			}
+	}
+
+	}, {
+		headerName : "Due Month",
+		field : "dueDate",
+		cellStyle : {
+			textAlign : 'center'
+		}
+	}, {
+		headerName : "DueDate",
+		field : "dueDateE",
+		hide:  "true"
+		
+
+	}, {
+		headerName : "Emi Amount",
+		field : "emi",
+		cellStyle : {
+			textAlign : 'right'
+		}
+	} ];
+
+	var emiGridOptions = {
+			columnDefs : emiGridDefs,
+			defaultColDef : {
+				sortable : true,
+				filter : true,
+				resizable : true,
+				width : 242
+			},
+		};
+	function downloadDetails() { 
+		  var dataset = [];
+		  gridOptions.api.forEachNodeAfterFilterAndSort(function(rowNode, index) {
+		        dataset.push(rowNode.data);
+		    });
+		  gridOptions.api.exportDataAsCsv(dataset);
+		}
+	function downloadEMIDetails() { 
+		  var dataset = [];
+		  gridOptions.api.forEachNodeAfterFilterAndSort(function(rowNode, index) {
+		        dataset.push(rowNode.data);
+		    });
+		  emiGridOptions.api.exportDataAsCsv(dataset);
+		}
+	 
+	function check1(fieldId) {
+		 var amount=parseFloat($("#loanamtrange").val());
+			var tempVal = $("#" + fieldId).val().replace(/[^0-9 ]/g, '');
+			if( tempVal <= amount)		
+			{
+				$("#" + fieldId).val(tempVal);
+			
+			}
+			else{
+				
+				$("#messageParagraph").text(
+				"Please add less than or same amount as Loan Amount Range");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+				$("#" + fieldId).val(null);
+				
+			}
+		
+		}
+	 function checkAmount(fieldId) {
+			var tempVal = $("#" + fieldId).val().replace(/[^0-9 ]/g, '');
+			var val=parseInt(tempVal);
+			if(val >=100)		
+			{
+				$("#" + fieldId).val(val);
+			
+			}
+	      else{
+				$("#messageParagraph").text(
+				"Please add more than Rs.10000 in Amount Field");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+				$("#" + fieldId).val(null);
+				
+			}
+		}
+	function space(str){
+		//alert("LL")
+	    return str === null || str.match(/^ *$/) !== null;
+		$("#messageParagraph").text(
+		"empty or has blank spaces");
+		$("#msgOkModal").removeClass("btn3");
+		$("#msgOkModal").addClass("btn1");
+		$("#msgModal").modal('show');
+		$("#" + fieldId).val(null);
+	}
+	
+	
+	
+	 function checkAlphabet(fieldId) {
+		    var tempVal = $("#" + fieldId).val().replace(/[^a-zA-Z. ]/g,'');
+		    $("#" + fieldId).val(tempVal);
+		}
+	 
+	 function check(fieldId) {
+			var tempVal = $("#" + fieldId).val().replace(/[^0-9 ]/g, '');
+			$("#" + fieldId).val(tempVal);
+		}
+	
+		function openNavEmi() {
+			document.getElementById("mySidenavEmi").style.cssText = "width: 30%; position: absolute; right:-10px; overflow: hidden; height:auto; top:0px;";
+			document.getElementById("emiGrid").style.width = "70%";
+		}
+		function closeNavEmi() {
+			document.getElementById("mySidenavEmi").style.width = "0";
+			document.getElementById("emiGrid").style.width = "100%";
+			$('.formValidation').remove();
+			$("#samudyam").val("");
+			$("#client").val("");
+			$("#editProduct").val(null);
+
+		}
+		
+		
+		function editEmi(advanceId,dueDateE) {
+			openNavEmi();
+			
+			agGrid.simpleHttpRequest(
+					{
+						url : 'advance-disburshment-edit-emi?id='+ advanceId + '&date=' + dueDateE,
+					}).then(function(data) {
+						console.log("allDATA",data);
+						var jsonData = JSON.parse(data.body);
+						var allData=jsonData.edit;
+						$("#emiYear").val(allData[0].emiYear);
+						$("#monthList").val(allData[0].monthList);
+						$("#emiAmount").val(allData[0].emiAmount);
+						$("#emiMonth").val(allData[0].emiMonth);
+						$("#advanceEmiId").val(allData[0].advanceId);
+						$("#empEmiId").val(allData[0].empId);
+						$("#dueDateE").val(allData[0].dueDate);
+						
+					});
+			
+		}
+		
+		function modifyEmiData(){
+			var advanceId=$("#advanceEmiId").val();
+			var dueDate=$("#dueDateE").val();
+			var monthList=$("#monthList").val();
+			var emiYear=$("#emiYear").val();
+			var day="01";
+		/* 	var dueDateNew= concat("01").concat("-").concat(monthList).concat("-").emiYear; */
+		var dueDateNew=day.concat("-",monthList,"-",emiYear)
+			
+			var empId=$("#empEmiId").val();
+			
+					$.ajax({
+						type : "GET",
+						url : "advance-disburshment-modifyemi?advanceId="+ advanceId + "&dueDate=" + dueDate + "&dueDateNew=" + dueDateNew + "&empId=" + empId,
+						async : false,
+						success : function(response) {
+
+							if (response.code == "success") {
+								viewEmiDetails();
+								closeNavEmi();
+								$("#messageParagraph").text("Saved Successfully");
+								$("#msgOkModal").removeClass("btn3");
+								$("#msgOkModal").addClass("btn1");
+								$("#msgModal").modal('show');
+							
+								
+							}else{
+								$("#messageParagraph").text("Same Month Already Exist");
+								$("#msgOkModal").removeClass("btn3");
+								$("#msgOkModal").addClass("btn1");
+								$("#msgModal").modal('show');
+							}
+
+						},
+					});
+				
+			}
+		function dateValidation(){
+			var curdate = new Date();
+			var curyear = curdate.getFullYear();
+			var curmonth = curdate.getMonth();
+			var monthList=$("#monthList").val();
+			var emiYear=$("#emiYear").val();
+			
+			if(curyear<=emiYear){
+				 if(curyear==emiYear){
+					
+					if(curmonth<monthList){
+					
+					}else{
+						$("#messageParagraph").text("Please select Upcoming Month");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');	
+						$("#monthList").val(curmonth+1);
+					}
+			     }else{
+			    	 
+			    	 
+			     }
+					
+			}else{
+				$("#messageParagraph").text("Please select Upcoming Year");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');	
+				$("#emiYear").val(curyear);
+				$("#monthList").val(curmonth+1);
+			}
+			
+		}
+	
+</script>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div id="main">
+						<div class="d-flex justify-content-between">
+							<div class="btn-hs">
+								<div class="font-design" id="totalReq">
+									Advance Apply LIST(<span></span>)
+								</div>
+							</div>
+							<div id="searchRowDiv">
+								<div class="input-style">
+									<input type="text" placeholder="Search.." name="search"
+										class="searchboxinput" onkeyup="cancelBar()"
+										oninput="onQuickFilterChanged()" id="quickFilter"
+										autocomplete="off">
+									<div class="searchicon">
+										<a href="javascript:void(0)"><span
+											style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+											id="closeKey"
+											onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+											class="close_i"><i class="ti-close srchicon"></i></span></a><a
+											href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+									</div>
+								</div>
+							</div>
+							<div class="buttonsec btn-hs" id="btndiv">
+								<button class="download-btn" onclick="downloadDetails()">Download</button>
+								<button class="btn2" id="process" onclick="addProcess()">Process</button>
+								<button class="approve-btn" id="approve"
+									onclick="approveAdvanceModal()" th:if="${hrRole != null}">Approve</button>
+								<button class="reject-btn" id="reject"
+									onclick="rejectAdvanceModal()" th:if="${hrRole != null}">Reject</button>
+								<button class="delete-btn" id="delete" onclick="deleteData()">Delete</button>
+								<button class="new-btn" id="add" onclick="openNav()">New</button>
+							</div>
+						</div>
+
+
+						<div id="main">
+							<input type="hidden" id="sessionId" th:value="${userId}" />
+							<!-- 		<input type="hidden" id="sessionName" th:value="${userName}" />  -->
+							<input type="hidden" id="hrRole" th:value="${hrRole}" /> <input
+								type="hidden" id="sessionRole" th:value="${userRole}" /> <input
+								type="hidden" id="adRole" th:value="${adRole}" />
+							<div id="mySidenav" class="sidenav">
+								<div class="slidebox">
+									<div class="row">
+										<div class="col-md-10 edit">Advance Details</div>
+										<div class="col-md-2">
+											<div class="arrow">
+												<a href="javascript:void(0)" class="closebtn"
+													onclick="closeNav()"><i class="ti-arrow-right"></i></a>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12 buttonsec btn-hs">
+											<button class="approve-btn" type="submit" id="save"
+												form="form" value="add" onclick="addDetails()">Save</button>
+											<button class="cancel-btn" id="cancel" onclick="closeNav()">Cancel</button>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<input type="hidden" id="advanceId" /> <label>Advance
+													Policy Type</label>
+												<div class="select">
+													<select onblur="removeValid(event)" id="reqPolicyId"
+														onchange="getPolicyDetails()">
+														<option value="">--Select--</option>
+														<option th:each="c,iter:${policyList}" th:value="${c.key}"
+															th:text="${c.key}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Loan Amount Range</label> <input type="text"
+													class="form-control" id="loanamtrange" autocomplete="off"
+													readonly />
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Tenure</label> <input type="text"
+													class="form-control" id="ternure" autocomplete="off"
+													readonly />
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Interest Rate</label> <input type="text"
+													class="form-control" id="intrestRate" autocomplete="off"
+													readonly />
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Amount</label> <input type="text"
+													class="form-control" id="loanamt" autocomplete="off"
+													onblur="removeValid(event)" onkeyup="check1('loanamt')"
+													onchange="checkAmount('loanamt')" />
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Reason</label> <input type="text"
+													class="form-control" autocomplete="off"
+													onblur="removeValid(event)" id="reason">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="myGrid" style="width: 100%; height: 500px;"
+								class="ag-theme-alpine"></div>
+
+						</div>
+					</div>
+					<div class="collapse" id="demo">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="row">
+
+									<div class="col-md-6">
+										Advance Process Details <span id="initiateId1"></span>
+									</div>
+
+									<div class="col-md-6" align="right">
+										<button class="cancel-btn" type="button" id="cancelInit"
+											onclick="cancelProcess()">Cancel</button>
+									</div>
+								</div>
+
+							</div>
+
+
+							<input type="hidden" id="managerId"> <input type="hidden"
+								id="deptId"> <input type="hidden" id="initId">
+
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Advance ID</label> <input type="text"
+											class="form-control" id="advanceId1"
+											style="border: none !important;" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Employee Name</label> <input type="text"
+											class="form-control" id="empName1"
+											style="border: none !important;" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Apply Date</label> <input type="text"
+											class="form-control" id="advanceApplyDate1"
+											style="border: none !important;" disabled="disabled">
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Approve Date</label> <input type="text"
+											class="form-control" id="approvedDate1"
+											style="border: none !important;" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Advance Reason</label> <input type="text"
+											class="form-control" id="reason1"
+											style="border: none !important;" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Advance Amount</label> <input type="text"
+											class="form-control" id="loanamt1"
+											style="border: none !important;" disabled="disabled">
+									</div>
+								</div>
+							</div>
+							<div id="demo1" class="mt-4">
+								<div class="accordion-item">
+									<h2 class="accordion-header" id="headingOne">
+										<button class="accordion-button" type="button"
+											data-bs-toggle="collapse" data-bs-target="#collapseOne"
+											aria-expanded="false" aria-controls="collapseOne">
+											Advance EMI Details</button>
+									</h2>
+
+									<div id="collapseOne" class="accordion-collapse collapse show"
+										aria-labelledby="headingOne"
+										data-bs-parent="#accordionExample">
+										<div class="accordion-body">
+
+											<div class="row">
+												<div class="col-md-12 buttonsec btn-hs">
+													<button class="btn2" id="viewEmiDetails"
+														onclick="viewEmiDetails()">View EMI Details</button>
+													<button class="approve-btn" id="finalAprrove"
+														onclick="finalAprrove()" th:if="${adRole != null}">Final
+														Approve</button>
+												</div>
+												<div id="myGridProcess" style="width: 100%; height: 300px;"
+													class="ag-theme-alpine"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+
+
+
+
+					<!-- alert modal start -->
+					<div id="alert" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-bs-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p id="textId"></p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+
+									<button type="button" class="btn4" data-bs-dismiss="modal"
+										onclick="cancelModalBtn();">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+
+				</div>
+				<!-- ------------------------------------------------Modal-------------------------------------------------------------------------- -->
+				<!-- ------------------Comment modal------------------------- -->
+
+				<div id="commentModal" class="modal fade">
+					<div class="modal-dialog">
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title">Comments</h4>
+								<button type="button" class="close" data-bs-dismiss="modal"
+									aria-label="Close">
+									<i class="ti-close"></i>
+								</button>
+
+							</div>
+							<div class="modal-body">
+								<!-- text input -->
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label>Comment</label> <input class="form-control"
+												type="text" id="comment" autocomplete="off">
+										</div>
+									</div>
+
+								</div>
+							</div>
+							<div class="modal-footer justify-content-left">
+								<button type="button" class="btn1" data-bs-dismiss="modal"
+									aria-hidden="true" id="approveAdvanceSubmitBtn"
+									onclick="approveAdvance()">Submit</button>
+								<button type="button" class="btn1" data-bs-dismiss="modal"
+									aria-hidden="true" id="rejectAdvanceSubmitBtn"
+									onclick="rejectAdvance()">Submit</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Payment Modal Start-->
+				<div class="modal fade" id="myModal">
+					<div class="modal-dialog modal-lg"
+						style="margin-top: 130px; height: 900px;">
+						<div class="modal-content">
+
+							<!-- Modal Header -->
+							<div class="modal-header">
+								<h4 class="modal-title md-color">View Advance Apply</h4>
+								<button type="button" class="close cp" data-bs-dismiss="modal">&times;</button>
+							</div>
+							<!-- Modal body -->
+							<div class="modal-body">
+
+								<div id="payGrid" style="width: 100%; height: 100px;"
+									class="ag-theme-alpine"></div>
+
+								<div class="col-md-12" id="paymentDetails">
+									<div class="card-title">
+										<h4>Payment Details</h4>
+									</div>
+									<div class="row">
+										<input type="hidden" id="paymentId">
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Payment Mode</label> <select class="form-control"
+													id="paymentMode" onchange="checkBankDetails();">
+													<option value="">--Select--</option>
+													<option th:each="c:${PayModeLists}" th:value='${c.key}'
+														th:text="${c.name}"></option>
+												</select>
+											</div>
+											<div class="form-group" id="bankNamediv">
+												<label>Bank Name</label> <select class="form-control"
+													id="bankName">
+													<option value="null">--Select--</option>
+													<option th:each="c:${bankNameLists}" th:value='${c.key}'
+														th:text="${c.name}"></option>
+												</select>
+											</div>
+											<div class="form-group" id="branchNamediv">
+												<label>Branch Name</label> <input type="text"
+													autocomplete="off" class="form-control" id="branchName"
+													onkeyup="checkAlphabet('branchName');" />
+											</div>
+										</div>
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Transaction Date</label> <input type="text"
+													class="form-control" id="transactionDate">
+											</div>
+
+											<div class="form-group" id="accNodiv">
+												<label>Account Number</label> <input type="text"
+													class="form-control" id="accNo" autocomplete="off"
+													onkeyup="check('accNo');" maxLength="17" />
+											</div>
+											<div class="form-group" id="chequeNoDiv">
+												<label>Cheque Number</label> <input type="text"
+													class="form-control" id="chequeNo" maxLength="30"
+													autocomplete="off" onkeyup="check('chequeNo');" />
+											</div>
+											<div class="form-group" id="transNoDiv">
+												<label>Transaction Number</label> <input type="text"
+													class="form-control" id="transactionNo" autocomplete="off"
+													onkeyup="check('transactionNo');" />
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="form-group">
+											<button type="button" id="submitPayment" class="btn1"
+												onclick="addDetailsPayment();">Submit</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+							<!-- Modal footer -->
+							<div class="modal-footer">
+								<div class="chartbtnsec">
+
+									<!-- <button class="btn4" data-bs-dismiss="modal">CANCEL</button> -->
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<!-- Modal End-->
+				<!-- Payment Modal Start-->
+				<div class="modal fade" id="emiModal">
+					<div class="modal-dialog modal-lg"
+						style="margin-top: 130px; height: 900px;">
+						<div class="modal-content">
+
+							<!-- Modal Header -->
+							<!-- 	<div class="col-md-6 buttonsec btn-hs"> -->
+							<div class="modal-header buttonsec btn-hs">
+
+								<h4 class="modal-title md-color">View EMI Details</h4>
+								<!-- <button class="download" onclick="downloadEMIDetails()" >Download</button> -->
+								<button style="margin-left: 449px;" class="download-btn"
+									onclick="downloadEMIDetails()">Download</button>
+								<button type="button" class="close cp" data-bs-dismiss="modal">&times;</button>
+
+							</div>
+							<!-- Modal body -->
+							<div class="modal-body d-flex" id="modifyEmi">
+
+								<div id="emiGrid" style="width: 100%; height: 300px;"
+									class="ag-theme-alpine"></div>
+
+
+								<div id="mySidenavEmi" class="sidenav">
+									<div class="slidebox">
+										<div class="row">
+											<div class="chartbtnsec">
+												<div align="right">
+													<button class="cancel-btn" onclick="closeNavEmi()">CANCEL</button>
+													<button class="approve-btn" id="saveTableData"
+														onclick="modifyEmiData()">SAVE</button>
+
+												</div>
+											</div>
+
+
+											  <input type="hidden" id="advanceEmiId">
+											  <input type="hidden" id="empEmiId">
+											  <input type="hidden" id="dueDateE">
+																<div class="col-lg-12">
+												<div class="form-group">
+													<label>Due Month</label> <input type="text" id="emiMonth"
+														class="form-control" readonly>
+												</div>
+											</div>
+											<!-- <div class="col-lg-12">
+												<div class="form-group calendar_box">
+													<label>New Date Month</label> <input type="text" id="dueMonth"
+														class="form-control" onblur="removeValid(event)"
+														th:attr="onkeyup=|formatDate('dueMonth','${session.DATEFORMAT_JS}')|">
+													<i class="ti-calendar picker_calendar"
+														id="dueMonthCalendar"></i>
+												</div>
+											</div> -->
+											<div class="col-lg-5">
+							<div class="form-group">
+							  <label>Year</label>
+								<div class="select">
+									<select id="emiYear" class="form-control" onchange="dateValidation()">
+										<option th:each="c,iter:${yearList}" th:value="${c.name}"
+											th:text="${c.name}"></option>
+									</select>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-lg-7">
+							<div class="form-group">
+							  <label>Month Name</label>
+								<div class="select">
+									<select id="monthList" class="form-control" onchange="dateValidation()">
+										<option value="1">JANUARY</option>
+										<option value="2">FEBRUARY</option>
+										<option value="3">MARCH</option>
+										<option value="4">APRIL</option>
+										<option value="5">MAY</option>
+										<option value="6">JUNE</option>
+										<option value="7">JULY</option>
+										<option value="8">AUGUST</option>
+										<option value="9">SEPTEMBER</option>
+										<option value="10">OCTOBER</option>
+										<option value="11">NOVEMBER</option>
+										<option value="12">DECEMBER</option>
+									</select>
+								</div>
+							</div>
+						</div>
+											<div class="col-lg-12">
+												<div class="form-group">
+													<label>EMI Amount</label> <input type="text" id="emiAmount"
+														class="form-control" readonly>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+							<!-- Modal footer -->
+							<div class="modal-footer">
+								<div class="chartbtnsec"></div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<!-- Modal End-->
+
+				<!-- Modal Start-->
+
+
+				<!-- Modal End-->
+			</div>
+		</div>
+	</div>
+</body>
+</html>

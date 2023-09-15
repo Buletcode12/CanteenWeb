@@ -1,0 +1,1009 @@
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style>
+.hvrbox .hvrbox-layer_top {
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 25%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	color: #fff;
+	padding: 15px;
+}
+
+/*.btn1 {
+	border: none;
+	border-radius: 7px;
+	font-size: 13px;
+	background-color: #5784c4;
+	color: #fff !important;
+	margin-left: 5px;
+	margin-bottom: 8px;
+	width: 100px;
+	height: 33px;
+	line-height: 12px;
+	float: right;
+	text-transform: uppercase;
+	cursor: pointer;
+	font-weight: bold;
+}*/
+
+.btn3 {
+	border: none;
+	border-radius: 7px;
+	font-size: 13px;
+	background-color: #ff4b4b;
+	color: #fff !important;
+	margin-left: 5px;
+	margin-bottom: 8px;
+	width: 70px;
+	height: 33px;
+	line-height: 12px;
+	float: right;
+	text-transform: uppercase;
+	cursor: pointer;
+	white-space: normal;
+	font-weight: bold;
+}
+
+.taskInfo {
+	padding-left: 10px;
+	color: #0c63e4;
+}
+
+.rating {
+	float: left;
+}
+
+.rating:not(:checked )>input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0, 0, 0, 0);
+}
+
+.rating:not(:checked )>label {
+	float: right;
+	width: 1em;
+	padding: 0 .1em;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	font-size: 200%;
+	line-height: 1.2;
+	color: rgba(0, 0, 0, 0.6);
+	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked )>label:before {
+	content: '★ ';
+}
+
+.rating>input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked )>label:hover, .rating:not(:checked )>label:hover 
+	 ~ label {
+	color: black;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
+	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
+	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>label:active {
+	position: relative;
+	top: 2px;
+	left: 2px;
+}
+
+.btn-outline-primary {
+	color: #007bff;
+	background-color: rgb(240 243 241/ 90%);
+	background-image: none;
+	border-color: #007bff;
+	cursor: pointer;
+}
+
+.picker_calendar5 {
+	cursor: pointer;
+	position: absolute;
+	bottom: 361px;
+	left: 742px;
+}
+
+.picker_calendar6 {
+	cursor: pointer;
+	position: absolute;
+	bottom: 361px;
+	left: 1132px;
+}
+
+.btnbill {
+	position: absolute;
+	right: 70px;
+	margin-top: -50px;
+	z-index: 999;
+}
+
+.btn-primarynew {
+	color: #fff !important;
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+}
+
+.formValidation1 {
+	font-size: 10px;
+	font-weight: 100;
+	color: #ff9e99;
+	background-color: transparent;
+	position: relative;
+	top: -1px;
+	padding: 3px 0;
+}
+</style>
+<script>
+	$(function() {
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		agGrid.simpleHttpRequest({
+			url : "manage-ledger-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+
+			gridOptions.api.setRowData(data);
+
+		});
+		$("#myGrid").show();
+		$("#delete").attr("disabled", true);
+	});
+
+	$(function() {
+		$('.collapse').on('show.bs.collapse', function() {
+			$(this).siblings('.panel-heading').addClass('active');
+		});
+
+	})
+	//search bar
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('input,textarea').focus(
+			function() {
+				$(this).data('placeholder', $(this).attr('placeholder')).attr(
+						'placeholder', '');
+			}).blur(function() {
+		$(this).attr('placeholder', $(this).data('placeholder'));
+	});
+
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	var txtLen = 0;
+	function textCount(event) {
+
+		var id = event.target.id;
+		var pId = $('#' + id).next().attr("id");
+		$('#' + pId + ' span').empty();
+		txtLen = $('#' + id).val().length;
+		$('#' + pId + ' span').append(txtLen);
+	}
+	// column Defs
+	const columnDefs = [
+			{
+				headerCheckboxSelection : true,
+				checkboxSelection : true,
+				width : 8,
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : 'Ledger Id',
+				field : "leadgerId",
+				width : 200,
+				cellRenderer : function(params) {
+					return '<a onclick=editPage("' + params.data.leadgerId
+							+ ',' + '0' + '") href="javascript:void(0)">'
+							+ params.data.leadgerId + '</a>';
+				}
+			},
+
+			{
+				headerName : "Ledger Name",
+				field : "ledgername",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Group",
+				field : "groupId",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Name",
+				field : "lname",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Address",
+				field : "address",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Leadger Country",
+				field : "leadgercountry",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Leadger State",
+				field : "leadgerstate",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Pin Code",
+				field : "pincode",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Pan | It No",
+				field : "panitn",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Opening Balance",
+				field : "openinbalanceDate",
+				width : 200,
+				cellStyle : {
+					textAlign : 'left'
+				}
+			} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 200,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		suppressRowClickSelection : true,
+		onSelectionChanged : rowSelect,
+		getRowNodeId : function(data) {
+			return data.leadgerId;
+		}
+	};
+
+	var deleteId = "";
+	function rowSelect() {
+		//alert('hello select');
+		var selectedRows = gridOptions.api.getSelectedRows();
+		deleteId = "";
+
+		for (var i = 0; i < selectedRows.length; i++) {
+			deleteId = deleteId + '"' + selectedRows[i].leadgerId + '",';
+			// deleteId = deleteId  + selectedRows[i].incentiveId + ',';
+		}
+		deleteId = deleteId.substring(0, deleteId.length - 1);
+		console.log(deleteId)
+		var rowCount = 0;
+
+		selectedRows.forEach(function(selectedRow, index) {
+			rowCount = rowCount + 1;
+		});
+
+		if (rowCount > 0) {
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true);
+		}
+	}
+	// for new button
+	function newBtn() {
+		//	alert('hello');
+		$("#add").hide();
+		$("#copy").hide();
+		$("#delete").hide();
+		$("#myGrid").hide();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#statusDiv").hide();
+		$("#idDiv").hide();
+		$("#collapseFour").hide();
+		$("#headingFour").hide();
+		$("#myGridActivity").hide();
+		$("#leadgerId").empty();
+
+		$("#demo").show();
+
+	}
+	// for cancel button
+	function cancelBtn() {
+		$("#add").show();
+		$("#copy").show();
+		$("#delete").show();
+		$("#totalReq").show();
+		$("#myGrid").show();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+
+		$('#leadgerId').val("");
+		$('#ledgername').val("");
+		$('#groupName').val("");
+		$('#lname').val("");
+		$('#address').val("");
+		$('#leadgercountry').val("");
+		$('#leadgerstate').val("");
+		$('#pincode').val("");
+		$('#panitn').val("");
+		$('#openinbalanceDate').val("");
+
+		agGrid.simpleHttpRequest({
+			url : "manage-ledger-view"
+		}).then(function(data) {
+			gridOptions.api.setRowData(data);
+		});
+	}
+
+	// Edit & stage change 
+	function editPage(id) {
+		//alert(id);
+		var editId = id.split(",");
+
+		var leadgerId = editId[0];
+
+		var modal = editId[1];
+		//alert('colorId------'+colorId);
+		$("#demo").show();
+		$("#add").hide();
+		$("#copy").hide();
+		$("#delete").hide();
+		$("#myGrid").hide();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#statusDiv").hide();
+		$("#idDiv").show();
+		$("#collapseFour").hide();
+		$("#headingFour").hide();
+		$("#myGridActivity").hide();
+
+		$.ajax({
+			type : "GET",
+			url : "manage-ledger-edit?id=" + leadgerId,
+			async : false,
+			success : function(response) {
+				console.log("response------" + JSON.stringify(response));
+				if (response.message == "Success") {
+
+					$("#add").hide();
+					$("#copy").hide();
+					$("#delete").hide();
+					$("#myGrid").hide();
+					$("#searchRowDiv").hide();
+					$("#totalReq").hide();
+					$("#statusDiv").hide();
+					$("#idDiv").hide();
+					$("#collapseFour").hide();
+					$("#headingFour").hide();
+					$("#myGridActivity").hide();
+
+					$("#demo").show();
+
+					$(".container").hide();
+
+					$("#leadgerId").text(response.body[0].leadgerId);
+					$("#ledgername").val(response.body[0].ledgername);
+					$("#groupName").val(response.body[0].groupName);
+					$("#undergroupId").val(response.body[0].groupId);
+					
+					$("#lname").val(response.body[0].lname);
+					$("#address").val(response.body[0].address);
+					$("#leadgercountry").val(response.body[0].leadgercountry);
+					getStateDataOnEdit(response.body[0].leadgerstate);
+					//$("#leadgerstate").val(response.body[0].leadgerstate);
+					$("#pincode").val(response.body[0].pincode);
+					$("#panitn").val(response.body[0].panitn);
+					$("#openinbalanceDate").val(
+							response.body[0].openinbalanceDate);
+				}
+
+			}
+		})
+	}
+</script>
+<script>
+	//addClubMemberInfo
+
+	function addLedgerInfo() {
+
+		var obj = {};
+
+		obj.leadgerId = $('#leadgerId').text();
+		obj.ledgername = $('#ledgername').val();
+		obj.groupId = $('#undergroupId').val();
+		obj.lname = $('#lname').val();
+		obj.address = $('#address').val();
+		obj.leadgercountry = $('#leadgercountry').val();
+		obj.leadgerstate = $('#leadgerstate').val();
+		obj.pincode = $('#pincode').val();
+		obj.panitn = $('#panitn').val();
+		obj.openinbalanceDate = $('#openinbalanceDate').val();
+
+		console.log("object on add-----------" + JSON.stringify(obj));
+		
+	
+
+		/* FORM VALIDATION STARTS*/
+
+		var validation = true;
+
+	/*if (obj.ledgername == null || obj.ledgername == "") {
+			validation = validationUpdated("Ledger Name Required", "ledgername");
+			return validation;
+		}
+		if (obj.groupName == null || obj.groupName == "") {
+			validation = validationUpdated(" Under Group Required", "groupName");
+			return validation;
+		}
+		if (obj.lname == null || obj.lname == "") {
+			validation = lname(" Name Required", "lname");
+			return validation;
+		}
+		if (obj.address == null || obj.address == "") {
+			validation = validationUpdated("Address Required", "address");
+			return validation;
+		}
+		if (obj.leadgercountry == null || obj.leadgercountry == "") {
+			validation = validationUpdated("Ledger Country Required",
+					"leadgercountry");
+			return validation;
+		}
+		if (obj.leadgerstate == null || obj.leadgerstate == "") {
+			validation = validationUpdated("Ledger State Required",
+					"leadgerstate");
+			return validation;
+		}
+		if (obj.pincode == null || obj.pincode == "") {
+			validation = validationUpdated("Pin Code Required", "pincode");
+			return validation;
+		}
+		if (obj.panitn == null || obj.panitn == "") {
+			validation = validationUpdated("Pan | It No Required", "panitn");
+			return validation;
+		}
+		if (obj.openinbalanceDate == null || obj.openinbalanceDate == "") {
+			validation = validationUpdated("Opening Balance Required",
+					"openinbalanceDate");
+			return validation;
+		}
+		*/
+		
+	//	alert('Hello submit');
+
+		/* FORM VALIDATION ENDS*/
+
+		if (validation) {
+			$.ajax({
+				type : "POST",
+				url : "manage-ledger-add",
+				contentType : "application/json",
+				data : JSON.stringify(obj),
+				success : function(response) {
+					if (response.message == "Success") {
+						console.log(response);
+						swal("Ledger added successfully!", " ", "success");
+
+						cancelBtn();
+						agGrid.simpleHttpRequest({
+							url : "manage-ledger-view"
+						}).then(function(data) {
+							gridOptions.api.setRowData(data);
+						});
+
+					}
+				},
+				error : function(data) {
+
+					//console.log(data);
+				}
+			})
+		}
+
+	}
+
+	function deleteLedger() {
+		//console.log("delete ids--------------"+deleteId);
+
+		$.ajax({
+			type : "GET",
+			url : "manage-ledger-delete?id=" + deleteId,
+			success : function(response) {
+				if (response.message == "Success") {
+					swal("Leadger deleted successfully!", " ", "success");
+					cancelBtn();
+					agGrid.simpleHttpRequest({
+						url : "manage-ledger-view"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+					});
+
+				}
+			}
+
+		});
+
+		$('#delete').attr("disabled", true);
+	}
+
+	//Drop down
+	function getStateList() {
+		var cname = $('#leadgercountry').val();
+		if (cname) {
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			//$("#dname").append(option);
+			$.ajax({
+				type : "GET",
+				url : "manage-ledger-stateList?id=" + cname,
+				success : function(response) {
+					if (response.message == "success") {
+						$("#leadgerstate").empty();
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select");
+						$("#leadgerstate").append(option);
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#leadgerstate").append(option);
+						}
+					}
+				},
+				error : function(e) {
+				}
+			});
+		} else {
+			$("#leadgerstate").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#leadgerstate").append(option);
+			$("#leadgerstate").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			//$("#dname").append(option);
+		}
+
+	}
+
+
+	function getStateDataOnEdit(stateId) {
+		var country = $("#leadgercountry").val();
+		if (country) {
+			$.ajax({
+				type : "GET",
+				url : "manage-ledger-stateList?id=" + country,
+				success : function(response) {
+					if (response.message == "success") {
+						$("#leadgerstate").empty();
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select");
+						$("#leadgerstate").append(option);
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#leadgerstate").append(option);
+						}
+						$("#leadgerstate").val(stateId);
+					}
+				},
+				error : function(e) {
+				}
+			});
+		} else {
+			$("#leadgerstate").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#leadgerstate").append(option);
+		}
+	}
+
+	
+	//search
+
+	function getGroupList() {
+		$("#undergroupId").val("");
+
+		var search = $("#groupName").val();
+
+		if (search) {
+			//alert('hello get cust2');
+			$
+					.ajax({
+						type : "POST",
+						url : "manage-ledger-group-list",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : search,
+						success : function(response) {
+							if (response.code == "success") {
+								//console.log("response data"
+								//	+ JSON.stringify(response))
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1" >';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li style="margin-left:0px; font-weight:100; font-size:14px; color:#ccc;     background-color: #dbdbdb;"  class="autocompletedata cp" onClick="selectAutocompleteValue1(\''
+												+ response.body[i].groupId
+												+ '\',\''
+												+ response.body[i].groupName
+												+ '\')">'
+												+ response.body[i].groupName
+												+ '</li>';
+									}
+									content += '<li style="margin-left:-30px;" >'
+											+ '</li>';
+									content += '</ul>';
+									////console.log("content " + content)
+									$("#suggesstion-box11_").show();
+									$("#suggesstion-box11_").html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1">';
+									content += '<li style="margin-left:0px; font-weight:100; font-size:14px; color:#ccc;     background-color: #dbdbdb;" onClick="selectAutocompleteValue1()">'
+											+ "No Data Found" + '</li>';
+									content += '<li style="margin-left:-30px;" '
+											+ '</li>';
+									content += '</ul>';
+									$("#suggesstion-box11_").show();
+									$("#suggesstion-box11_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							//console.log(data);
+						}
+					})
+		}
+
+	}
+	function selectAutocompleteValue1(categoryId, categoryName, custGSTNo,
+			taxType) {
+
+		if (categoryId) {
+			$("#undergroupId").val(categoryId);
+			$("#groupName").val(categoryName);
+
+			$("#search").val(categoryName);
+			$("#search").attr('data-procat', categoryId);
+			$("#suggesstion-box11_").hide();
+
+		} else {
+
+			$("#undergroupId").val("");
+			$("#groupName").val("");
+
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box11_").hide();
+
+		}
+	}
+</script>
+</head>
+
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+					<div class="d-flex justify-content-between">
+						<div class="col-md-2  btn-hs">
+							<div class="font-design" id="totalReq">
+								Ledger LIST(<span></span>)
+							</div>
+						</div>
+						<div class="col-md-4  btn-hs" id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+
+						</div>
+						<div class="col-md-6 buttonsec btn-hs">
+							<input type="button" class="btn3" onclick="deleteLedger()"
+								id="delete" value="DELETE" data-toggle="modal"
+								data-target="#delete" readonly>
+							<!-- <input type="button" class="btn2" id="action" value="Action"
+									 readonly> -->
+
+							<input type="button" class="btn1" id="add"
+								value=" New Ledger Creation" style="width:180px" onclick="newBtn()" readonly>
+						</div>
+					</div>
+
+					<input type="hidden" id="totalPageno">
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+					<div id="pagination" style="cursor: pointer;"></div>
+
+					<div class="collapse" id="demo">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="d-flex justify-content-between" id="main">
+									<div class="col-md-3" id="idDiv">
+										Ledger ID: <span id="leadgerId"></span>
+									</div>
+									<div>
+										<span class="taskInfo">Basic Information</span>
+									</div>
+
+
+									<div class="col-md-6 padding-0" align="right">
+										<button class="btn1" id="cancel" onclick="cancelBtn()">BACK</button>
+										<button class="btn4" id="cancel" onclick="cancelBtn()">CANCEL</button>
+										<button class="btn1" id="save" onclick="addLedgerInfo()">SAVE</button>
+
+									</div>
+								</div>
+							</div>
+							<div class="innercontent">
+
+								<!-- <div class="row"> -->
+								<div class="row">
+
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Ledger Name</label> <input type="text"
+												class="form-control" id="ledgername"
+												placeholder="Ledger Name" > <span
+												id="errmsg_fname"></span>
+										</div>
+									</div>
+
+								
+
+
+									<div class="col-lg-6">
+										<div class="autocomplete"
+											style="width: auto !important; margin-top: 0px;">
+											<div class="form-group">
+												<label>Under Group</label> <input type="text" id="groupName"
+													placeholder="under_group" class="form-control"
+													onkeyup='getGroupList();'><input type="hidden"
+													id="undergroupId"> <span id="errmsg_producn"></span>
+											</div>
+										</div>
+										<div id="suggesstion-box11_" class="sugg-cls"></div>
+									</div>
+
+
+								</div>
+							</div>
+						</div>
+						<div id="main" class="mt-3">
+
+							<!-- 	collapse for Contact InformationStart here -->
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingOne">
+									<button class="accordion-button" type="button"
+										data-bs-toggle="collapse" data-bs-target="#collapseOne"
+										aria-expanded="false" aria-controls="collapseOne">
+										Mailing Details</button>
+								</h2>
+								<div id="collapseOne" class="accordion-collapse collapse show"
+									aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+									<div class="accordion-body">
+										<div class="row">
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Name</label> <input type="text" class="form-control"
+														id="lname" placeholder="Name"> <span
+														id="errmsg_address1"></span>
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Address</label> <input type="text"
+														class="form-control" id="address" placeholder="Address">
+													<span id="errmsg_address2"></span>
+												</div>
+											</div>
+
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label> Country</label>
+													<div class="select">
+														<select id="leadgercountry" onchange="getStateList();" class="form-control">
+															<option value="">Select Country</option>
+															<option th:each="c,iter:${countryList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+
+														</select>
+													</div>
+													<span id="errmsg_country"></span>
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<label> State</label>
+
+													<div class="select">
+														<select id="leadgerstate" class="form-control">
+															<option value="">Select State</option>
+															<option th:each="c,iter:${stateList}" th:value="${c.key}"
+																th:text="${c.name}"></option>
+
+														</select>
+													</div>
+													<span id="errmsg_state"></span>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Pin Code</label> <input type="text"
+														class="form-control" id="pincode" placeholder="Pin Code">
+													<span id="errmsg_locality"></span>
+												</div>
+											</div>
+
+
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+
+
+
+						<div class="accordion-item">
+							<h2 class="accordion-header" id="headingTwo2">
+								<button class="accordion-button" type="button"
+									data-bs-toggle="collapse" data-bs-target="#collapseTwo2"
+									aria-expanded="true" aria-controls="collapseTwo2">Tax
+									Registration Details</button>
+								<!-- 	<div class="btnbill">
+							<button class="btn btn-primarynew" onclick="copyAsBillingAdd()">Copy As Shipping Address</button>
+							</div> -->
+							</h2>
+							<div id="collapseTwo2" class="accordion-collapse collapse show"
+								aria-labelledby="headingTwo2" data-bs-parent="#accordionExample">
+								<div class="accordion-body">
+
+									<div class="row">
+
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Pan | IT No :</label> <input type="text"
+													class="form-control" id="panitn" placeholder="Number">
+												<span id="errmsg_address11"></span>
+											</div>
+										</div>
+
+
+									</div>
+
+
+								</div>
+							</div>
+						</div>
+
+
+
+						<!-- 	main div start here -->
+						<div id="main">
+
+							<!-- 	collapse for Contact InformationStart here -->
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingOne">
+									<button class="accordion-button" type="button"
+										data-bs-toggle="collapse" data-bs-target="#collapseOne"
+										aria-expanded="false" aria-controls="collapseOne">
+										Other Details</button>
+								</h2>
+								<div id="collapseOne" class="accordion-collapse collapse show"
+									aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Opening Balance(01-04-2023)</label>
+											<input type="text"
+												id="openinbalanceDate" placeholder="Opening Balance"
+												class="form-control" autocomplete="off">
+										</div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+</html>

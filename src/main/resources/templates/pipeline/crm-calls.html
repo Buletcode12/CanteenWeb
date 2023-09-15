@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style>
+
+.taskInfo{
+	padding-left: 10px;
+    color: #0c63e4;
+}
+
+.rating {
+	float: left;
+}
+
+.rating:not(:checked)>input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0, 0, 0, 0);
+}
+
+.rating:not(:checked)>label {
+	float: right;
+	width: 1em;
+	padding: 0 .1em;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	font-size: 200%;
+	line-height: 1.2;
+	color: rgba(0, 0, 0, 0.6);
+	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:before {
+	content: '★ ';
+}
+
+.rating>input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:hover, .rating:not(:checked)>label:hover ~
+	label {
+	color: black;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
+	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
+	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>label:active {
+	position: relative;
+	top: 2px;
+	left: 2px;
+}
+
+.btn-outline-primary {
+	color: #007bff;
+	background-color: rgb(240 243 241/ 90%);
+	background-image: none;
+	border-color: #007bff;
+	cursor: pointer;
+}
+
+.picker_calendar1 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 358px;
+    left: 349px;
+}
+
+
+
+
+.picker_calendar2 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 208px;
+    left: 352px;
+}
+
+.picker_calendar3 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 208px;
+    left: 745px;
+}
+
+</style>
+<script>
+	
+	$(function() {
+		
+		 $("input[name=ReminderYesOrNo]:radio").click(function () {
+		        if ($('input[name=ReminderYesOrNo]:checked').val() == "Yes") {
+		            $('.reminderBtn').show();
+
+		        } else if ($('input[name=ReminderYesOrNo]:checked').val() == "No") {
+		            $('.reminderBtn').hide();
+		            $('#reminderDateid').val("");
+		            $('#reminderTime').val("");
+		            $('#taskAlertBy').val("");
+
+		        }
+		    });
+		
+		
+		var dateFormat = localStorage.getItem("dateFormat");								
+		$("#DateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#dueDate').val($(this).val());
+		})
+
+		$('#dueDate').blur(function() {
+			$("#DateCalendar").val($(this).val());
+		})
+		
+		 //Personal Details DOB Date
+	$("#reminderCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#callStartDate').val($(this).val());
+	})
+	
+	$('#callStartDate').blur(function(){
+		$("#reminderCalendar").val($(this).val());
+	}) 
+	
+	
+	
+	
+	
+	 $("#toDateCalendarTime").datetimepicker({
+		format : 'H:i',
+		closeOnDateSelect : false,
+		timepicker : true,
+		datepicker : false,
+		step : 15
+	}).on("change", function() {
+		$('#callStartTime').val($(this).val());
+	})
+
+	$('#callStartTime').blur(function() {
+		$("#toDateCalendarTime").val($(this).val());
+	}) 
+	});
+	
+	$(function() {
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		agGrid.simpleHttpRequest({
+			url : "view-crm-calls-throughAjax"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+
+			gridOptions.api.setRowData(data);
+
+		});
+		$("#myGrid").show();
+		$("#delete").attr("disabled", true);
+	});
+
+	$(function() {
+		$('.collapse').on('show.bs.collapse', function() {
+			$(this).siblings('.panel-heading').addClass('active');
+		});
+
+	})
+	//search bar
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('input,textarea').focus(
+			function() {
+				$(this).data('placeholder', $(this).attr('placeholder')).attr(
+						'placeholder', '');
+			}).blur(function() {
+		$(this).attr('placeholder', $(this).data('placeholder'));
+	});
+
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	var txtLen = 0;
+	function textCount(event) {
+
+		var id = event.target.id;
+		var pId = $('#' + id).next().attr("id");
+		$('#' + pId + ' span').empty();
+		txtLen = $('#' + id).val().length;
+		$('#' + pId + ' span').append(txtLen);
+	}
+	// column Defs
+	const columnDefs = [
+			{
+				headerCheckboxSelection : true,
+				checkboxSelection : true,
+				width : 8,
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},{
+				headerName : 'Call Id',
+				field : "callId",
+				cellRenderer : function(params) {
+					return '<a onclick=editPage("' + params.data.callId
+							+ ',' + '0' + '") href="javascript:void(0)">'+
+							"call"+ params.data.callId + '</a>';
+				}
+			},
+			 {
+				headerName : "Subject",
+				field : "callSubject",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},{
+				headerName : "Call Type",
+				field : "callType",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},{
+				headerName : "Call Start Date",
+				field : "callStartDate",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},
+			  {
+				headerName : "Call Start Time",
+				field : "callStartTime",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},  {
+				headerName : "Status",
+				field : "callStatus",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},{
+				headerName : "Lead/Contact",
+				field : "leadOrContactName",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},  {
+				headerName : "Task Executive",
+				field : "callOwner",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 200,
+			height :10
+		},
+		rowSelection : 'multiple',
+		suppressRowClickSelection : true,
+		onSelectionChanged : rowSelect,
+		getRowNodeId : function(data) {
+			return data.callId;
+		}
+	};
+	
+	var deleteId = "";
+	function rowSelect() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+		deleteId = "";
+
+		for (var i = 0; i < selectedRows.length; i++) {
+			//deleteId = deleteId + '"' + selectedRows[i].callId + '",';
+			  deleteId = deleteId  + selectedRows[i].callId + ',';
+		}
+
+		//var programming = $("input[name='ag-checkbox-input']:checked").map(function() {
+        //    return this.value;
+       // }).get().join(', ');
+		
+		//alert(programming);
+		deleteId = deleteId.substring(0, deleteId.length - 1);
+		console.log(deleteId)
+		var rowCount = 0;
+
+		selectedRows.forEach(function(selectedRow, index) {
+			rowCount = rowCount + 1;
+		});
+
+		if (rowCount > 0) {
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true);
+		}
+	}
+	// for new button
+	function newBtn() { 
+	//	alert('hello');
+		$("#add").hide();
+		$("#copy").hide();
+		$("#delete").hide();
+		$("#myGrid").hide();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#statusDiv").hide();
+		$("#idDiv").hide();
+		$("#collapseFour").hide();
+		$("#headingFour").hide();
+		$("#myGridActivity").hide();
+
+		$("#demo").show();
+
+	}
+	// for cancel button
+	function cancelBtn() {
+		$("#add").show();
+		$("#copy").show();
+		$("#delete").show();
+		$("#totalReq").show();
+		$("#myGrid").show();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+
+		$('#callId').val("");
+		$('#oppertunity').val("");
+		$('#expectedRevenue').val("");
+		$('#probability').val("");
+		$('#customer').val("");
+		$('#email').val("");
+		$('#phone').val("");
+		$('#saleperson').val("");
+		$('#salesTeam').val("");
+		$('#date').val("");
+		$("#star1").attr("checked", false);
+		$("#star2").prop("checked", false);
+		$("#star3").prop("checked", false);
+		$('#tags').val("");
+		$('#campanyName').val("");
+		$('#description').val("");
+		$('#campanyName').val("");
+		$('#addressStreet').val("");
+		$('#addressStreet2').val("");
+		$('#city').val("");
+		$('#states').val("");
+		$('#zip').val("");
+		$('#country').val("");
+		$('#website').val("");
+		$('#language').val("");
+		$('#contactName').val("");
+		$('#tittle').val("");
+		$('#jobPosition').val("");
+		$('#mobile').val("");
+		$('#referdBy').val("");
+		$('#campaign').val("");
+		$('#medium').val("");
+		$('#source').val("");
+
+		agGrid.simpleHttpRequest({
+			url : "view-crm-calls-throughAjax"
+		}).then(function(data) {
+			gridOptions.api.setRowData(data);
+		});
+	}
+
+	$(document).ready(function() {
+		$("#date").datetimepicker({
+			format : "d-m-Y",
+			closeOnDateSelect : true,
+			minDate : new Date(),
+			timepicker : false,
+		});
+		$("#callId").val("");
+
+		var dateFormat = localStorage.getItem("dateFormat");
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+
+		$('#fromDate').blur(function() {
+			$("#fromDateCalendar").val($(this).val());
+		})
+
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDate').val($(this).val());
+		})
+
+		$('#toDate').blur(function() {
+			$("#toDateCalendar").val($(this).val());
+		})
+
+		$("#fromTime").datetimepicker({
+			format : 'H:i',
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step : 15
+		})
+
+		$("#lname").hide();
+			$("#cname").hide();
+		
+		$("#toTime").datetimepicker({
+			format : "H:i",
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step : 15
+		})
+
+	});
+	function checkCallDetails() {
+		var id = $("#callToWhom").val();
+		if (id == "Lead") {
+			$(".leadNameCls").show();
+			$(".contactNameCls").hide();
+			$("#contactName").val("");
+			$("#relatedType").prop('disabled', true);
+			$("#relatedName").prop('disabled', true);
+			}
+		else {
+			$(".contactNameCls").show();
+			$(".leadNameCls").hide();
+			$("#leadName").val("");
+			$("#relatedType").prop('disabled', false);
+			$("#relatedName").prop('disabled', false);
+		}
+	}
+	// Edit & stage change 
+	function editPage(id) {
+		//alert(id);
+		var editId = id.split(",");
+		
+		var callId = editId[0];
+		
+		var modal = editId[1];
+		//alert('callId------'+callId);
+		$("#demo").show();
+
+		$.ajax({
+			type : "GET",
+			url : "view-crm-calls-edit?id=" + callId,
+			async : false,
+			success : function(response) {
+				console.log(response);
+				if (response.message == "Success") {
+					
+					$("#add").hide();
+					$("#copy").hide();
+					$("#delete").hide();
+					$("#myGrid").hide();
+					$("#searchRowDiv").hide();
+					$("#totalReq").hide();
+					$("#statusDiv").hide();
+					$("#idDiv").hide();
+					$("#collapseFour").hide();
+					$("#headingFour").hide();
+					$("#myGridActivity").hide();
+
+					$("#demo").show();
+					$(".container").hide();
+					//agGridActivity(pipelineId);
+					var callStartDate = response.body[0].callStartDate;
+					callStartDate = callStartDate.split(' ')[0];
+					
+					
+
+					
+					var callId=$("#callId").text(response.body[0].callId);
+					$("#callToWhom").val(response.body[0].callToWhom);
+					$("#personName").val(response.body[0].personName);
+					$("#personId").val(response.body[0].personId);
+					$("#relatedType").val(response.body[0].relatedType);
+					$("#relatedId").val(response.body[0].relatedId);
+					$('#relatedName').val(response.body[0].relatedName);
+					$('#callType').val(response.body[0].callType);
+					$('#callStatus').val(response.body[0].callStatus);
+					$('#callStartDate').val(callStartDate);					
+					$('#callStartTime').val(response.body[0].callStartTime);
+					
+					$('#callOwner').val(response.body[0].callOwner);
+					$('#callSubject').val(response.body[0].callSubject);
+					$('#callReminder').val(response.body[0].callReminder);
+					$('#callPurpose').val(response.body[0].callPurpose);					
+					$('#callAgenda').val(response.body[0].callAgenda);
+					
+					$('#leadName').val(response.body[0].leadName);
+					$('#leadId').val(response.body[0].leadId);
+					$('#contactName').val(response.body[0].contactName);
+					$('#contactId').val(response.body[0].contactId);
+					
+                   var relatedId=response.body[0].callToWhom
+					
+					if(relatedId=='Lead'){
+						$(".leadNameCls").show();
+						$(".contactNameCls").hide();
+						$('#leadName').val(response.body[0].leadName);
+						//$('#leadId').val(response.body[0].leadId);
+					}
+					if(relatedId=='Contact'){
+						$(".leadNameCls").hide();
+						$(".contactNameCls").show();
+						$('#contactName').val(response.body[0].contactName);
+						//$('#contactId').val(response.body[0].contactId);
+					}
+					//for stage active status
+					
+				}
+			}
+		})
+	}
+
+</script>
+<script>
+		
+	////ends
+	function addCallInfo() {
+		
+		var id = $("#callToWhom").val();
+		var obj = {};
+		obj.callId = $('#callId').text();
+		obj.callToWhom = $('#callToWhom').val();
+		obj.leadName = $('#leadName').val();
+		obj.leadId = $('#leadId').val();
+		obj.pageType = "Call";
+		obj.contactName = $('#contactName').val();
+		obj.contactId = $('#contactId').val();
+		obj.relatedType = $('#relatedType').val();
+		obj.relatedName = $('#relatedName').val();
+		obj.relatedId = $('#relatedId').val();
+		obj.callType = $('#callType').val();
+		obj.callStatus = $('#callStatus').val();
+		obj.callStartDate = $('#callStartDate').val();
+		obj.callStartTime = $('#callStartTime').val();
+		
+		obj.callOwner = $('#callOwner').val();
+		obj.callSubject = $('#callSubject').val();
+		obj.callReminder = $('#callReminder').val();
+		obj.callPurpose = $('#callPurpose').val();
+		obj.callAgenda = $('#callAgenda').val();
+		console.log(obj);//return false;
+
+		/* FORM VALIDATION STARTS*/
+
+		var validation = true;
+		//return false;
+      
+		 if (obj.callToWhom == null || obj.callToWhom == "") {
+			validation = validationUpdated("Call To Whome Required",
+					"callToWhom");
+		 } 
+	     if (id == "Contact") {
+		    if (obj.contactName == null || obj.contactName == "") {
+				validation = validationUpdated("Name Required",
+						"contactName");
+		 }
+       	  if (obj.relatedType == null || obj.relatedType == "") {
+     			validation = validationUpdated("Related Type Required",
+     					"relatedType");
+     		 } 
+       	  if (obj.relatedName == null || obj.relatedName == "") {
+     			validation = validationUpdated("Related Name Required",
+     					"relatedName");
+     		 } 
+       	  
+			}
+	     if (id == "Lead") {
+			    if (obj.leadName == null || obj.leadName == "") {
+					validation = validationUpdated("Name Required",
+							"leadName");
+			 }
+	     }
+		 
+		 if (obj.callType == null || obj.callType == "") {
+				validation = validationUpdated("Call Type Required",
+						"callType");
+		 } 
+		 if (obj.callStatus == null || obj.callStatus == "") {
+				validation = validationUpdated("Status Required",
+						"callStatus");
+		 } 
+		 if (obj.callStartDate == null || obj.callStartDate == "") {
+				validation = validationUpdated("Start Date Required",
+						"callStartDate");
+		 }  
+		 if (obj.callStartTime == null || obj.callStartTime == "") {
+				validation = validationUpdated("Start Time Required",
+						"callStartTime");
+		 } 
+		 if (obj.callOwner == null || obj.callOwner == "") {
+				validation = validationUpdated("Call Executive Required",
+						"callOwner");
+		 }
+		 if (obj.callSubject == null || obj.callSubject == "") {
+				validation = validationUpdated("Subject Required",
+						"callSubject");
+		 } 
+		 if (obj.callReminder == null || obj.callReminder == "") {
+				validation = validationUpdated("Reminder Required",
+						"callReminder");
+		 } 
+		 if (obj.callPurpose == null || obj.callPurpose == "") {
+				validation = validationUpdated("Call Purpose Required",
+						"callPurpose");
+		 } 
+		 if (obj.callAgenda == null || obj.callAgenda == "") {
+				validation = validationUpdated("Call Agenda Required",
+						"callAgenda");
+		 }  
+
+		/* FORM VALIDATION ENDS*/
+		if (validation) {
+			$.ajax({
+				type : "POST",
+				url : "view-crm-calls-add-dtls",
+				contentType : "application/json",
+				data : JSON.stringify(obj),
+				success : function(response) {
+					console.log(response);
+					if (response.message == "Success") {
+
+						$("#add").show();
+						$("#copy").show();
+						$("#delete").show();
+						$("#totalReq").show();
+						$("#myGrid").show();
+						$("#searchRowDiv").show();
+
+						$("#demo").hide();
+
+						agGrid.simpleHttpRequest({
+							url : "view-crm-calls-throughAjax"
+						}).then(function(data) {
+							gridOptions.api.setRowData(data);
+						});
+					}
+				},
+				error : function(data) {
+
+					console.log(data);
+				}
+			})
+		}
+
+	}
+
+		
+	
+		function getNameList1() {
+			
+			var relatedType=$("#relatedType").val();
+			var searchVal = $("#relatedName").val();
+			if(searchVal == ""){
+			$("#suggesstion-box2_").hide();
+			}
+			if (relatedType && searchVal) {
+						$.ajax({
+						type : "GET",
+						url : "view-crm-calls-autosearchDetailsRelated?id1=" + relatedType+"&id2="+searchVal,
+						dataType : 'json',
+						contentType : 'application/json',
+						success : function(response) {
+							if (response.message == "success") {
+								
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutocompleteValue11(\''
+												+ response.body[i].name
+												+ '\',\''
+												+ response.body[i].key
+												+ '\')">'
+												+ response.body[i].name
+												+ '</li>';
+									}
+									content += '</ul>';
+									$("#suggesstion-box2_").show();
+									$("#suggesstion-box2_").html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<div id="autocomplete-list1">';
+									content += '<div onClick="selectAutocompleteValue0()">'
+											+ "No Data Found" + '</div>';
+									content += '</div>';
+									$("#suggesstion-box2_").show();
+									$("#suggesstion-box2_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		
+		
+			 }
+			
+
+			}
+
+			function selectAutocompleteValue11(name, relatedId) {
+
+			if (name) {
+			$("#relatedId").val(relatedId);
+			$("#relatedName").val(name);
+			$("#search").val(relatedId);
+			$("#search").attr('data-procat', name);
+			$("#suggesstion-box2_").hide();
+
+			} else {
+			$("#relatedId").val("");
+			$("#relatedName").val("");
+
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box2_").hide();
+
+			}
+			}
+			function selectAutocompleteValue0() {
+
+			$("#relatedId").val("");
+
+			$("#personName").val("");
+
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box2_").hide();
+
+			}
+		
+	
+			function getNameList() {
+				var callToWhom=$("#callToWhom").val();
+				var leadName = $("#leadName").val();
+				var contactName = $("#contactName").val();
+				 if(leadName == ""){
+					$("#suggesstion-box1_").hide();
+				}
+				if(contactName == ""){
+					$("#suggesstion-box1_").hide();
+				} 
+				
+				if(callToWhom=='Lead'){
+				var searchVal = leadName;
+				$.ajax({
+							type : "POST",
+							url : "view-crm-calls-autosearchDetailsLead",
+							dataType : 'json',
+							contentType : 'application/json',
+							data : searchVal,
+							success : function(response) {
+								if (response.message == "success") {
+									
+									if (response.body.length != 0) {
+										$("#search").css("background", "#FFF");
+										var content = '<ul id="autocomplete-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+										for (var i = 0; i < response.body.length; i++) {
+											content += '<li class="autocompletedata cp" onClick="selectAutocompleteValue1(\''
+													+ response.body[i].name
+													+ '\',\''
+													+ response.body[i].key
+													+ '\')">'
+													+ response.body[i].name
+													+ '</li>';
+										}
+										content += '</ul>';
+										$("#suggesstion-box1_").show();
+										$("#suggesstion-box1_").html(content);
+
+									} else {
+										$("#search").css("background", "#FFF");
+										var content = '<div id="autocomplete-list1">';
+										content += '<div onClick="selectAutocompleteValue()">'
+												+ "No Data Found" + '</div>';
+										content += '</div>';
+										$("#suggesstion-box1_").show();
+										$("#suggesstion-box1_").html(content);
+									}
+								}
+							},
+							error : function(data) {
+								console.log(data);
+							}
+						})
+				 }
+				else{
+					var searchVal = contactName;
+					$.ajax({
+								type : "POST",
+								url : "view-crm-calls-autosearchDetailsContact",
+								dataType : 'json',
+								contentType : 'application/json',
+								data : searchVal,
+								success : function(response) {
+									if (response.message == "success") {
+										
+										if (response.body.length != 0) {
+											$("#search").css("background", "#FFF");
+											var content = '<ul id="autocomplete-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+											for (var i = 0; i < response.body.length; i++) {
+												content += '<li class="autocompletedata cp" onClick="selectAutocompleteValueContact(\''
+														+ response.body[i].name
+														+ '\',\''
+														+ response.body[i].key
+														+ '\')">'
+														+ response.body[i].name
+														+ '</li>';
+											}
+											content += '</ul>';
+											$("#suggesstion-boxContact_").show();
+											$("#suggesstion-boxContact_").html(content);
+
+										}
+										else {
+											$("#search").css("background", "#FFF");
+											var content = '<div id="autocomplete-list1">';
+											content += '<div onClick="selectAutocompleteContactValue()">'
+													+ "No Data Found" + '</div>';
+											content += '</div>';
+											$("#suggesstion-boxContact_").show();
+											$("#suggesstion-boxContact_").html(content);
+										}
+									}
+								},
+								error : function(data) {
+									console.log(data);
+								}
+							})
+				
+					
+					
+				} 
+				
+
+				}
+
+				function selectAutocompleteValue1(name,LeadId) {
+
+				if (name) {
+					
+				//$("#personName").val("");
+				$("#leadId").val(LeadId);
+				
+				$("#leadName").val(name);
+				$("#search").val(LeadId);
+				$("#search").attr('data-procat', name);
+				$("#suggesstion-box1_").hide();
+
+				} else {
+				$("#leadId").val("");
+
+				$("#leadName").val("");
+
+				$("#search").val("");
+				$("#search").attr('data-procat', "");
+				$("#suggesstion-box1_").hide();
+
+				}
+				}
+				function selectAutocompleteValue() {
+
+				$("#leadId").val("");
+
+				$("#leadName").val("");
+
+				$("#search").val("");
+				$("#search").attr('data-procat', "");
+				$("#suggesstion-box1_").hide();
+
+				}
+				
+				
+				function selectAutocompleteValueContact(name,ContactId) {
+
+					if (name) {
+						
+					//$("#personName").val("");
+					$("#contactId").val(ContactId);
+					
+					$("#contactName").val(name);
+					$("#search").val(ContactId);
+					$("#search").attr('data-procat', name);
+					$("#suggesstion-boxContact_").hide();
+
+					} else {
+					$("#contactId").val("");
+
+					$("#contactName").val("");
+
+					$("#search").val("");
+					$("#search").attr('data-procat', "");
+					$("#suggesstion-boxContact_").hide();
+
+					}
+					}
+					function selectAutocompleteContactValue() {
+
+					$("#contactId").val("");
+
+					$("#contactName").val("");
+
+					$("#search").val("");
+					$("#search").attr('data-procat', "");
+					$("#suggesstion-boxContact_").hide();
+
+					}
+			
+	
+	function deleteCall(){
+		//console.log("delete ids--------------"+deleteId);
+		$.ajax({
+			type : "GET",
+			url : "view-crm-calls-delete-id?id=" + deleteId,
+			success : function(response) {
+				if (response.message == "Success") {
+					cancelBtn();
+					agGrid.simpleHttpRequest({
+						url : "view-crm-calls-throughAjax"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+					});
+
+				}
+			}
+
+		});
+		
+		$('#delete').attr("disabled", true);
+	}
+
+</script>
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+						<div class="d-flex justify-content-between">
+							<div class="col-md-4  btn-hs">
+								<div class="font-design" id="totalReq">
+									ALL CALLS (<span></span>)
+								</div>
+							</div>
+							<div class="col-md-4  btn-hs" id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+
+						</div>
+					<div class="buttonsec btn-hs">
+								<input type="button" class="btn3" onclick="deleteCall()" id="delete" value="DELETE"
+									data-toggle="modal" data-target="#delete" readonly> 
+									<input type="button" class="btn2" id="action" value="Action"
+									 readonly>
+									
+									<input type="button" class="btn1" id="add" value="Create Call"
+									onclick="newBtn()" readonly>
+							</div>
+						</div>
+						
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+						<div class="collapse" id="demo">
+							<div class="innercontent">
+								<div class="innerstickybg">
+									<div class="d-flex justify-content-between" id="main">
+										<div class="col-md-3" id="idDiv">
+											Call ID: <span id="callId"></span>
+										</div>
+										<div><span class="taskInfo">Call Information</span></div>
+
+
+										<div class="col-md-3 padding-0" align="right">
+										<button class="btn4" id="cancel" onclick="cancelBtn()">CANCEL</button>
+											<button class="btn1" id="save" onclick="addCallInfo()">SAVE</button>
+										</div>
+									</div>
+								</div>
+								<div class="innercontent">
+
+									<!-- <div class="row"> -->
+									<div class="row">
+										<div class="col-md-4">
+					                      <div class="form-group">
+					                        <label>Call To Whom </label>
+					                        <div class="select" onkeyup='getNameList()'>
+												<select id="callToWhom" onchange="checkCallDetails();"onblur="removeValid(event)">
+														<option value="">Select Lead/Contact</option>
+														<option value="Lead">Lead</option>
+														<option value="Contact">Contact</option>
+												</select>
+											</div>
+					                      </div>
+					                    </div>
+					              
+										
+									 <div class="col-md-4 leadNameCls" style="Display:none;">
+											<div class="form-group">
+													<label> Lead</label> <input type="text" id="leadName"
+														placeholder="Lead Name" class="form-control"
+														onkeyup='getNameList()'>
+														<input type="hidden" id="leadId"> 
+												 <div id="suggesstion-box1_" class="sugg-cls"></div> 
+											</div>
+										</div>
+										
+										<div class="col-md-4 contactNameCls"  style="Display:none;">
+											<div class="form-group">
+													<label> Contact</label> <input type="text" id="contactName"
+														placeholder="Contact Name" class="form-control"
+														onkeyup='getNameList()'>
+														<input type="hidden" id="contactId"> 
+												 <div id="suggesstion-boxContact_" class="sugg-cls"></div> 
+											</div>
+										</div>
+										
+
+
+									<div class="col-md-4">
+					                      <div class="form-group" id="rtype">
+					                        <label>Related Type</label>
+					                        <div class="select">
+												<select id="relatedType" onblur="removeValid(event)">
+														<option value="">Select Related Type</option>
+														<option value="account">Account</option>
+														<option value="contact">Contact</option>
+														<option value="deal">Deal</option>
+														<option value="campaign">Campaign</option>
+												</select>
+												
+											</div>
+					                      </div>
+					                    </div>
+					                    
+					                    
+					                    	<div class="col-md-4">
+										<div class="form-group" id="rname">
+											<label>Related Name</label> <input type="text" id="relatedName"
+												autocomplete="off" placeholder="Related Name" class="form-control"
+												onkeyup='getNameList1()'>
+												 <input type="hidden" id="relatedId"> 
+												 
+											<div id="suggesstion-box2_" class="sugg-cls"></div>
+
+										</div>
+									</div>
+					                    
+					                    
+					                    
+					                    <div class="col-md-4">
+					                      <div class="form-group">
+					                        <label>Call Type</label>
+					                         <input type="text" class="form-control"
+													id="callType" placeholder="Call Type" value="Outbound"onblur="removeValid(event)"> 
+					                      </div>
+					                    </div>
+										
+										
+									
+					                 
+					                 
+					                 <div class="col-md-4">
+											<div class="form-group">
+												<label>Outgoing Call Status</label>
+												<div class="select" >
+												<select id="callStatus"onblur="removeValid(event)"> 
+														<option value="Scheduled">Scheduled</option>
+													    <option value="Deferred">Deferred</option>
+													    <option value="In Progress">In Progress</option>
+													    <option value="Completed">Completed</option>
+													    <option value="Waiting For Input">Waiting For Input</option>
+																		
+												</select>
+											</div>
+											</div>
+										</div>
+										
+										
+									<div class="col-md-4 reminderBtn">
+										<label>Call Start Date</label>
+										<!-- <input type="text" id="callStartDate" class="form-control" onblur="removeValid(event)"
+										readonly th:attr="onkeyup=|formatDate('callStartDate','${session.DATEFORMAT_JS}')|">
+										<i class="ti-calendar picker_calendar2" id="reminderCalendar"></i> -->
+										
+										<input type="date" id="callStartDate" class="form-control">
+									</div> 
+									
+									 <div class="col-md-4 reminderBtn">
+										<label>Call Start Time</label> 
+										<!-- <input type="text"
+											id="callStartTime" class="form-control" onblur="removeValid(event)"
+											readonly th:attr="onkeyup=|formatDate('callStartTime','${session.DATEFORMAT_JS}')|">
+										<i class="ti-calendar picker_calendar3" id="toDateCalendarTime"></i> -->
+										
+										<input type="time" id="callStartTime" class="form-control">
+									</div>
+										
+										
+									
+										<div class="col-md-4">
+					                      <div class="form-group">
+					                        <label>Call Executive</label>
+					                        <div class="select">
+												<select id="callOwner" onblur="removeValid(event)">
+														<option value="">Select Call Executive</option>
+															<option th:each="c,iter:${ownerList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+																		
+												</select>
+											</div>
+					                      </div>
+					                    </div>
+					                    
+					                    
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Subject</label>
+												<input type="text" class="form-control"
+													id="callSubject" placeholder="Subject" onblur="removeValid(event)">
+											</div>
+										</div>
+										
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Reminder</label>
+												<div class="select">
+												<select id="callReminder" onblur="removeValid(event)">
+														<option value="">Select Reminder</option>
+														<option value="5 minutes before">5 minutes before</option>
+													    <option value="10 minutes before">10 minutes before</option>
+													    <option value="15 minutes before">15 minutes before</option>
+													    <option value="30 minutes before">30 minutes before</option>
+																		
+												</select>
+											</div>
+											</div>
+										</div>
+					                    							
+									</div>
+									
+								<!-- 	main div start here -->
+									<div id="main">
+										<!-- 	collapse for Contact InformationStart here -->
+											<div class="accordion-item">
+												<h2 class="accordion-header" id="headingOne">
+													<button class="accordion-button" type="button"
+														data-bs-toggle="collapse" data-bs-target="#collapseOne"
+														aria-expanded="false" aria-controls="collapseOne">
+														Purpose Of Outgoing Call</button>
+												</h2>
+												<div id="collapseOne"
+													class="accordion-collapse collapse show"
+													aria-labelledby="headingOne"
+													data-bs-parent="#accordionExample">
+													<div class="accordion-body">
+													<div class="row">
+														
+													<div class="col-md-4">
+														<div class="form-group">
+															<label>Call Purpose</label>
+															<div class="select"> 
+															<select id="callPurpose" onblur="removeValid(event)">
+																	<option value="">Select Call Purpose</option>
+																	<option value="Prospecting">Prospecting</option>
+																    <option value="Administrative">Administrative</option>
+																	<option value="Negotiation">Negotiation</option>
+																	<option value="Demo">Demo</option>
+																	<option value="Project">Project</option>
+																	<option value="Desk">Desk</option>
+																	<option value="Proposal">Proposal</option>
+																	<option value="Payment Reminder">Payment Reminder</option>
+																	<option value="Bill Submission">Bill Submission</option>
+																	<option value="Appointment">Appointment</option>
+																			
+																					
+															</select>
+														</div>
+														</div>
+													</div>
+										
+													<div class="col-md-8">
+								                      <div class="form-group">
+								                        <label>Call Agenda</label><br>
+								                            <input type="text" class="form-control"
+													id="callAgenda" placeholder="Call Agenda" onblur="removeValid(event)">
+													  </div>
+								                    </div>	
+										
+													
+													</div>
+			
+													</div>
+												</div>
+											</div>
+								
+								</div>
+						</div>
+					</div>
+
+
+
+
+					<!-- The Modal For Delete-->
+					<div class="modal fade" id="delete">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Do you really want to delete these records? This process
+										cannot be undone.</p>
+								</div>
+								<div class="modal-footer justify-content-center">
+									<button type="button" class="btn1" data-dismiss="modal"
+										aria-hidden="true">Cancel</button>
+									<button type="button" class="btn3" id="deleteModalBtn"
+										onclick="deleteReq()">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- The Modal For Validation-->
+					<div class="modal fade" id="reqValid">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p id="modalMsg"></p>
+								</div>
+								<div class="modal-footer justify-content-center">
+									<button type="button" class="btn1" data-dismiss="modal"
+										aria-hidden="true">Ok</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+						<!-- ------------------Mark Lost modal------------------------- -->
+
+					<div id="markLostModal" class="modal fade">
+						<div class="modal-dialog">
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-header">
+									<h4 class="modal-title">Lost Reason</h4>
+									<button type="button" class="close" data-dismiss="modal"
+										aria-label="Close">
+										<i class="ti-close"></i>
+									</button>
+
+								</div>
+								<div class="modal-body">
+									<!-- text input -->
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Comment</label> <input class="form-control"
+													type="text" id="comment">
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<div class="modal-footer justify-content-left">
+									<button type="button" class="btn1" data-dismiss="modal"
+										aria-hidden="true" id="SubmitBtn"
+										onclick="rejectLeave()">Submit</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

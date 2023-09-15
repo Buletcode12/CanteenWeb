@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+
+<head>
+     <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+        integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+        crossorigin="anonymous"></script>
+        
+    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+        integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+        crossorigin="anonymous"></script>
+   
+        
+        <script src="https://code.highcharts.com/highcharts-more.js"></script>
+           <link rel="stylesheet" href="../extend/css/dashboard.css" /> 
+           <link rel="stylesheet" href="../assets/css/bidding/bidding-dashboard.css" />
+<script src="../assets/highchart/bidding/bidding-dashboard.js"></script>
+<script src="../assets/js/bidding/bidding-dashboard.js"></script>
+<script src="https://kit.fontawesome.com/038792bdf1.js" crossorigin="anonymous"></script>
+  
+</head>
+
+
+<body>
+<div layout:fragment="content" class="maincontent">
+		<div>
+    <section>
+        <div class="col-md-12">
+            <!-- Tabs -->
+            <div class="card card-nav-tabs card-plain">
+                <div class="card-header card-header-primary">
+                    <div class="nav-tabs-navigation">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item" onclick="tabView('operational')">
+                                    <a class="nav-link active" href="#operational" data-toggle="tab">Operational</a>
+                                </li>
+                                 <li class="nav-item"  onclick="tabView('kpi')">
+                                    <a class="nav-link" href="#kpi" data-toggle="tab">KPI</a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="card-body ">
+                    <div class="tab-content text-center">
+                        <!-- operational tab -->
+                        <div class="tab-pane active" id="operationalImg">
+                        <div class="row mt-10">
+                        <div class="col">
+                            <div class="d-box d-box-1">
+                                <p>IDENTIFY</p>
+                                <p>(12)</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-box d-box-2">
+                                <p>REVIEW</p>
+                                <p>(10)</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-box d-box-3">
+                                <p>CLARIFICATION</p>
+                                <p>(2)</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-box d-box-4">
+                                <p>PROPOSAL</p>
+                                <p>(3)</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-box d-box-5">
+                                <p>SUBMISSION</p>
+                                <p>(4)</p>
+                            </div>
+                        </div>
+                       
+                    </div>
+                            <div class="row mt-10">
+                                <div class="col-md-2">
+                                    <h3 class="kpi-heading">KPIs</h3>
+                                    <div class="grey-bg">
+                                        <div class="numbers-box">
+                                            <p class="numbers-box-text">Number of Identity</p>
+                                            <p class="numbers">120</p>
+                                        </div>
+                                    </div>
+                                    <div class="grey-bg">
+                                        <div class="numbers-box">
+                                            <p class="numbers-box-text">Number of Proposals</p>
+                                            <p class="numbers">2</p>
+                                        </div>
+                                    </div>
+                                    <div class="grey-bg">
+                                        <div class="numbers-box">
+                                            <p class="numbers-box-text">On Going Projects</p>
+                                             <p class="numbers">2</p>
+                                        </div>
+                                    </div>
+                                    <div class="grey-bg">
+                                        <div class="numbers-box">
+                                            <p class="numbers-box-text">Completed Projects</p>
+                                             <p class="numbers">4</p>
+                                        </div>
+                                    </div>
+                                    <div class="grey-bg">
+                                        <div class="numbers-box">
+                                            <p class="numbers-box-text">Number of Sub-contractors</p>
+                                             <p class="numbers">12</p>
+                                        </div>
+                                    </div>
+                                    <div class="grey-bg">
+                                        <div class="numbers-box">
+                                            <p class="numbers-box-text">Total Closeouts</p>
+                                             <p class="numbers">2</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <h3 class="kpi-heading">New RFPs</h3>
+                                    <table class="indents-table mt-10">
+                                        <tr>
+                                            <th>Project No</th>
+                                            <th>Project Name</th>
+                                            <th>State</th>
+                                            <th>Location</th>
+                                            <th>Customer Name</th>
+                                            <th>Address</th>
+                                            <th>Email</th>
+                                            <th>Mobile</th>
+                                            <th>Status</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>INTERARCH BUILDING PRODUCTS PVT LTD</td>
+                                            <td>HARYANA</td>
+                                            <td>PANIPT, HARYANA</td>
+                                            <td>Sradha Panda</td>
+                                            <td>HARYANA</td>
+                                            <td>sradha2233@gmail.com</td>
+                                            <td>7381275737</td>
+                                            <td>Ongoing</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                           <td>2</td>
+                                            <td>INDIAN OIL CORPORATION LIMITED</td>
+                                            <td>HARYANA</td>
+                                            <td>PANIPT, HARYANA</td>
+                                            <td>Sradha Panda</td>
+                                            <td>HARYANA</td>
+                                            <td>sradha2233@gmail.com</td>
+                                            <td>7381275737</td>
+                                            <td>Ongoing</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>SMCC CONSTRUCTION INDIA LIMITED</td>
+                                            <td>GUJARAT</td>
+                                            <td>BECHARAJI, GUJARAT</td>
+                                            <td>Sagar Anchal</td>
+                                            <td>GUJARAT</td>
+                                            <td>ssagar2233@gmail.com</td>
+                                            <td>7381275737</td>
+                                            <td>Completed</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                          <td>4</td>
+                                            <td>BHUSAN POWER & STEEL LTD</td>
+                                            <td>ODISHA</td>
+                                            <td>JHARSUGUDA ODISHA</td>
+                                            <td>Sagar Anchal</td>
+                                            <td>ODISHA</td>
+                                            <td>ssagar2233@gmail.com</td>
+                                            <td>7381275737</td>
+                                            <td>Completed</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                           <td>5</td>
+                                            <td>SHREE CEMENT LIMITED</td>
+                                            <td>ODISHA</td>
+                                            <td>JHARSUGUDA ODISHA</td>
+                                            <td>Sagar Anchal</td>
+                                            <td>ODISHA</td>
+                                            <td>ssagar2233@gmail.com</td>
+                                            <td>7381275737</td>
+                                            <td>Completed</td>
+                                            <td></td>
+                                        </tr>
+                                        
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- kpi tab -->
+								<div class="inr-cnt" id="kpiImg">
+								<div class="row">
+									<div class="col-md-4">
+										<div class="kpi-card-container">
+											<h6 class="recruitment-h6">Category Wise Bidding</h6>
+											<div id="categorywisebidding"></div>
+										</div>
+										<div class="kpi-card-container mt-10">
+											<h6 class="recruitment-h6">Strike Rate</h6>
+											<div id="strike"></div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="kpi-card-container">
+											<h6 class="recruitment-h6">Root Cause Analysis</h6>
+											<div id="routecauseanalysis"></div>
+										</div>
+										<div class="kpi-card-container mt-10">
+											<h6 class="recruitment-h6">Government Vs. Corporate</h6>
+											<div id="govtvscorp"></div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="kpi-card-container">
+											<h6 class="recruitment-h6">Proposal Progress</h6>
+											<div id="proposalprogress"></div>
+										</div>
+									</div>
+								</div>
+									
+								</div>
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- End Tabs on plain Card -->
+        </div>
+    </section>
+    </div>
+    </div>
+   
+</body>
+
+</html>

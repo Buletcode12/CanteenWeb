@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+
+<style>
+.innerstickybg {
+	background: none;
+}
+
+#myReq .ag-row-selected {
+	background: #0076ba !important;
+	color: #fff;
+	text-indent: 10px !important;
+}
+
+.blank_row {
+	height: 10px !important; 
+	background-color: #007bff;
+}
+
+#myReq .ag-row-selected::before {
+	font-size: 8px;
+	color: #FFF;
+	content: '\e64c';
+	font-family: 'themify';
+	margin-right: 7px;
+	position: relative;
+	top: 3px;
+	right: 4px;
+}
+.input-style {
+    width: 269px;
+}
+#remarks {
+    text-align: center;
+  }
+#expiration{
+  display:flex;
+ }
+#exp{
+  display:flex;
+ }
+ #retention{
+  display:flex;
+ }
+
+</style>
+<script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+<script src="../assets/js/edms/documentcontrol.js"></script>
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div class="row" id="upperline">
+						
+						<div class="row" id="upperOne">
+							<div class="innerstickybg">
+								<div class="row">
+									<div class="col-md-6 ">
+										<h3>Document Control</h3>
+									</div>
+									<div class="col-md-3 ">
+										<div class="form-group">
+<!-- 										<label>Select</label> -->										
+											<div class="select">
+											<select id="docControl" onblur="removeValid(event)" onchange="openSesame()">
+												<option value="">Select</option>
+												<option value="ud">Upload Document</option>
+												<option value="uf">Upload Folder</option>
+												<option value="aal">Add a link </option>
+												<option value="nwd">New Word Document</option>
+												<option value="pp">Power Point</option>
+											</select>
+										</div>
+									</div>
+							</div>
+									<div class="col-md-3 "id="searchRowDiv">
+								<div class="input-style">
+									<input type="text" placeholder="Search.." name="search"
+										class="searchboxinput" onkeyup="cancelBar()"
+										oninput="onQuickFilterChanged()" id="quickFilter"
+										autocomplete="off">
+									<div class="searchicon">
+										<a href="javascript:void(0)"><span
+											style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+											id="closeKey"
+											onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+											class="close_i"><i class="ti-close srchicon"></i></span></a><a
+											href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+									</div>
+								</div>
+							</div>
+							
+							</div>
+								</div>
+							</div>
+
+							<div id="myGrid" style="width: 100%; height: 150px;"
+								class="ag-theme-alpine"></div>
+						</div>
+						<div  id="demo">
+							<div class="innercontent">
+								
+								<div id="main" class="mt-4">
+									<div class="accordion-item">
+										
+										<div id="collapseOne" class="accordion-collapse collapse show"
+											aria-labelledby="headingOne"
+											data-bs-parent="#accordionExample">
+											<div class="accordion-body">
+										<div style="width: 100%; height: 15px;"class="ag-theme-alpine"></div>
+										<div class="row">
+										<br>
+										<div class="col-md-12" align="right">
+											<button class="cancel-btn" id="cancelBtn" onclick="cancel()">Cancel</button>
+											<button class="approve-btn" id="save"
+												onclick="masterSaveData()">Save</button>
+										</div>
+									</div>
+										
+										<div class="row">
+											<div class="col-lg-6">
+											<div class="form-group">
+												<label>Name</label> <input type="text"
+													class="form-control transparenttxtbox" id="name"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+											<div class="col-lg-6" id="upload">
+												<label style="margin-bottom: 10px;">Image</label>
+
+												<div class="control-group position-r">
+													<label class="custom-file-upload" for="uploadDoc_0"
+														style="margin-top: 18px;"> <i class="ti-plus"></i>
+													</label>
+													<div class="controls">
+														<input type="file" class="document"id="uploadDoc_0"
+															accept=".jpeg, .jpg, .png, .pdf" name="userImage"
+															 onchange="saveFile1(event)">
+													</div>
+												</div>
+												<input type="hidden" id="uploadHidden_0"
+													class="uploadHidCls" >
+												<div id="uploadedBillDiv_0" align="center"
+													class="uploadedBillCls" style="margin-top: 10px;"></div>
+												<div id="imageName_0" class="imageName"
+													style="margin-top: 10px;"></div>
+
+											</div>
+											<div class="col-lg-6">
+											<div class="form-group">
+												<label>Status</label> <select class="" id="status" onblur="removeValid(event);" autocomplete="off">
+												<option value="">Select</option>
+													<option th:value="1">Active</option>
+													<option th:value="0">In-active</option>
+												</select>
+											</div>
+										</div>
+											
+											
+											<div style="width: 100%; height: 15px;"class="ag-theme-alpine"></div>											
+										</div>
+										</div>
+										</div>
+								</div>
+								</div>
+							</div>
+
+						</div>
+						
+					</div>
+					
+					<!-- Excel -->
+					<div class="maincontentsec">
+					<div class="content_padding">
+					<!-- <div class="content_padding">
+						
+
+							<div id="myGrid" style="width: 100%; height: 150px;"
+								class="ag-theme-alpine"></div>
+						</div> -->
+						
+			<!--  New Excel Spreadsheet  -->
+			
+			
+						
+
+						</div>
+						
+				<!-- New Word Document -->
+				
+				<div  id="newWord">
+							<div class="innercontent">
+								
+								<div id="main" class="mt-4">
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="headingOne">
+											<button class="accordion-button" type="button"
+												data-bs-toggle="collapse" data-bs-target="#collapseOne"
+												aria-expanded="false" aria-controls="collapseOne">
+												New Word Document</button>
+										</h2>
+										<div id="collapseOne" class="accordion-collapse collapse show"
+											aria-labelledby="headingOne"
+											data-bs-parent="#accordionExample">
+											<div class="accordion-body">
+										<div style="width: 100%; height: 15px;"class="ag-theme-alpine"></div>
+										<div class="row">
+										<br>
+										<div class="col-md-12" align="right">
+											<button class="cancel-btn" id="cancelBtn" onclick="cancel()">Cancel</button>
+											<button class="approve-btn" id="save"
+												onclick="masterSaveData()">Save</button>
+										</div>
+									</div>
+										
+										<div class="row">
+											<div class="col-lg-6">
+												<div class="form-group">
+													<label>Select Folder</label><input type="text"
+														class="form-control transparenttxtbox" id="folder1"
+														onblur="removeValid(event)">
+												</div>
+											</div>
+											<div class="col-lg-6">
+												<div class="form-group">
+													<label>Document Name</label>
+													<div style="display: flex; left-padding: 10px ">
+														<input type="text"
+														class="form-control transparenttxtbox" id="docNo1"
+														onblur="removeValid(event)" style="width: 25%;">
+														<br>
+														<input type="text"
+														class="form-control transparenttxtbox" id="docName1"
+														onblur="removeValid(event)">
+													</div>
+												</div>
+											</div>
+											<div style="width: 100%; height: 15px;"class="ag-theme-alpine"></div>											<div class="row" id="ckDiv">
+												<div class="col-md-12">
+													<div class="form-group">
+														<textarea id="commentck" onblur="removeValid(event)"></textarea>
+													</div>
+													<input type="hidden" id="commentckdreason">
+												</div>
+											</div>
+										</div>
+										</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+				</div>
+					</div>
+					
+					
+					<div id="documentUpload">
+				<div id="main" class="mt-4">
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="headingOne">
+											<button class="accordion-button" type="button"
+												data-bs-toggle="collapse" data-bs-target="#collapseOne"
+												aria-expanded="false" aria-controls="collapseOne">
+												Upload Document(doc/pdf/jpeg/xlx)</button>
+										</h2>
+										<div class="row m-4">
+										
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Select Folder</label> <input type="text"
+									class="form-control">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>WORKSPACE>PROJECTS</label> <input type="text"
+										class="form-control"  >
+								</div>
+							</div>
+							
+							</div>
+
+							 <div id="collapseOne" class="accordion-collapse collapse show" 
+											aria-labelledby="headingOne"
+											data-bs-parent="#accordionExample">
+											<div class="accordion-body">
+
+												<div id="mySidenav" class="sidenav">
+													<div class="slidebox">
+														<div class="row">
+															<div class="col-md-10 edit">Document Details</div>
+															<div class="col-md-2">
+																<div class="arrow">
+																	<a href="javascript:void(0)" class="closebtn"
+																		onclick="closeNav()"><i class="ti-arrow-right"></i></a>
+																</div>
+															</div>
+														</div>
+														<div style="clear: both;"></div>
+														<div class="chartbtnsec">
+															<div align="right">
+																<button class="cancel-btn" onclick="closeNav()">CANCEL</button>
+																<button class="approve-btn" id="save1"
+																	onclick="saveTableData()">SAVE</button>
+															</div>
+
+														</div>
+														<div class="clearfix"></div>
+														<div class="row">
+															<div class="col-lg-12">
+																<div class="form-group">
+																	<input type="hidden" class="form-control" id="rowEdit">
+																</div>
+															</div>
+
+															<div class="col-lg-12">
+																<div class="form-group">
+																	<label>File Name</label>
+																	<input type ="text" class="form-control">
+																</div>
+															</div>
+															<div class="col-lg-12">
+																<div class="form-group">
+																	<label>File</label> <input type="text"
+																		class="form-control">
+																</div>
+															</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Description</label> <input type="text"
+															class="form-control transparenttxtbox">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Default Tags</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Due Date</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>OCR Language</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+
+											</div>
+													</div>
+												</div>
+
+
+												<div class="row">
+													<div class="col-md-12 buttonsec btn-hs">
+														<button class="delete-btn" id="deleteChild"
+															onclick="deleteDetails()">DELETE</button>
+														<button class="new-btn" id="newchild" onclick="openNav()">NEW</button>
+													</div>
+													<div id="myGrid2" style="width: 100%; height: 200px;"
+														class="ag-theme-alpine"></div>
+												</div>
+											</div>
+										 </div> 
+									</div>
+								</div>
+			
+			
+			</div>
+			<div id="linkUpload">
+					<div id="main2" class="mt-4">
+						<div class="accordion-item">
+							<h2 class="accordion-header" id="headingTwo">
+								<button class="accordion-button" type="button"
+									data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+									aria-expanded="false" aria-controls="collapseTwo">
+									Upload A Link</button>
+							</h2>
+							<div class="row m-4">
+
+								<div class="col-md-6">
+									<div class="form-group">
+										<label>Select Folder</label> <input type="text"
+											class="form-control">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label>WORKSPACE>PROJECTS</label> <input type="text"
+											class="form-control">
+									</div>
+								</div>
+
+							</div>
+
+							<div id="collapseTwo" class="accordion-collapse collapse show"
+								aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+								<div class="accordion-body">
+
+									<div id="mySidenav1" class="sidenav">
+										<div class="slidebox">
+											<div class="row">
+												<div class="col-md-10 edit">Document Details</div>
+												<div class="col-md-2">
+													<div class="arrow">
+														<a href="javascript:void(0)" class="closebtn"
+															onclick="closeNav()"><i class="ti-arrow-right"></i></a>
+													</div>
+												</div>
+											</div>
+											<div style="clear: both;"></div>
+											<div class="chartbtnsec">
+												<div align="right">
+													<button class="cancel-btn" onclick="closeNav()">CANCEL</button>
+													<button class="approve-btn" id="save1"
+														onclick="saveTableData()">SAVE</button>
+												</div>
+
+											</div>
+											<div class="clearfix"></div>
+											<div class="row">
+												<div class="col-lg-12">
+													<div class="form-group">
+														<input type="hidden" class="form-control" id="rowEdit">
+													</div>
+												</div>
+
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Link Name</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Link URL</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Description</label> <input type="text"
+															class="form-control transparenttxtbox">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Default Tags</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>Due Date</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+												<div class="col-lg-12">
+													<div class="form-group">
+														<label>OCR Language</label> <input type="text"
+															class="form-control">
+													</div>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-12 buttonsec btn-hs">
+											<button class="delete-btn" id="deleteChild"
+												onclick="deleteDetails()">DELETE</button>
+											<button class="new-btn" id="newchild" onclick="openNav()">NEW</button>
+										</div>
+										<div id="myGrid3" style="width: 100%; height: 200px;"
+											class="ag-theme-alpine"></div>
+									</div>
+									</div>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			
+			
+							<!-- SIDE BAR NAVIGATION STARTS -->
+							<div id="mySidenav1" class="sidenav">
+								<div class="slidebox">
+									<div class="row">
+										<div class="col-md-10 edit"></div>
+										<div class="col-md-2">
+											<div class="arrow">
+												<a href="javascript:void(0)" class="closebtn"
+													onclick="closeNav1()"><i class="ti-arrow-right"></i></a>
+											</div>
+										</div>
+									</div>
+									<div style="clear: both;"></div>
+									<div class="chartbtnsec">
+									</div>
+									<div class="clearfix"></div>
+									<div class="row">
+										<input type="hidden" id="docId" value="">
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Date</label> <input type="date"
+													class="form-control transparenttxtbox" id="date"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+										
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Version</label><input type="text"
+													class="form-control transparenttxtbox" id="version"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+										
+										
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Type</label><input type="text"
+													class="form-control transparenttxtbox" id="type"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Name</label> <input type="text"
+													class="form-control transparenttxtbox" id="name"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+										
+										
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Description</label> <input type="text"
+													class="form-control transparenttxtbox" id="desc"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Access</label><input type="text"
+													class="form-control transparenttxtbox" id=access
+													onblur="removeValid(event)">
+											</div>
+										</div>
+
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Assigned</label><input type="text"
+													class="form-control transparenttxtbox" id="assign"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Due Date</label> <input type="date"
+													class="form-control transparenttxtbox" id="dueDate"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+
+										<div class="col-lg-6">
+											<div class="form-group">
+												<label>Status</label> <input type="text"
+													class="form-control transparenttxtbox" id="status"
+													onblur="removeValid(event)">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- SIDE BAR NAVIGATION ENDS -->
+
+						</div>
+
+						<!-- modal start -->
+
+					<div class="modal fade" id="myModal">
+						<div class="modal-dialog" style="margin-top: 130px; width: 300">
+							<div class="modal-content">
+
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<h4 class="modal-title md-color">Access Control</h4>
+									<button type="button" class="close cp" onclick="closeModal();"
+										data-dismiss="modal">&times;</button>
+								</div>
+
+								<!-- Modal body -->
+
+								<div class="modal-body modal-cat">
+									<div class="row">
+										<div class="col-md-12">
+												<div class="form-group">
+													<div style="display: flex; left-padding: 10px; ">
+														<input type="text"
+														class="form-control transparenttxtbox" id="userId"
+														onblur="removeValid(event)" placeholder="                     User ID">
+														OR
+														<input type="text"
+														class="form-control transparenttxtbox" id="userGroup"
+														onblur="removeValid(event)" placeholder="                       User Group">
+													</div>
+												</div>
+										
+										</div>
+										<div class="col-md-12">
+										 <br>
+											<label>
+										    <input type="checkbox" name="read" value="read">
+										    Read
+										  </label>
+										  <br><br>
+										  <label>
+										    <input type="checkbox" name="write" value="write">
+										    Write
+										  </label>
+										  <br><br>
+										  <label>
+										    <input type="checkbox" name="delete" value="delete">
+										    Delete
+										  </label>
+										  <br><br>
+										</div>
+										
+										<div class="col-md-12" id="exp">
+										<div class="col-md-6" id="expiration">
+											<div class="form-group">
+											<i class="bi bi-toggle-on"></i>
+												<label>Expiration</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<!-- <label>Expiration</label> -->
+												 <input type="date" placeholder="Expiration"
+													class="form-control transparenttxtbox" id="dob"
+													onblur="removeValid(event)">
+											</div>
+											<br>
+										</div>
+										</div>
+									
+										<div class="col-md-12">
+											<div class="form-group">
+												<!-- <label>Remarks</label>  -->
+												<textarea id="remarks" placeholder="Remark"  rows="3" cols="10"></textarea>
+											</div>
+										</div>
+										
+									</div>
+								</div>
+
+								<!-- Modal footer -->
+
+								<div class="modal-footer">
+									<button class="cancel-btn" data-dismiss="modal"
+										onclick="closeModal();">Cancel</button>
+									<button class="approve-btn" id="selectCategory">Save</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<!-- modal start -->
+
+					<div class="modal fade" id="myModal1">
+						<div class="modal-dialog" style="margin-top: 130px; width: 300">
+							<div class="modal-content">
+
+								
+
+								<!-- Modal body -->
+
+								<div class="modal-body modal-cat">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+											<h4><b>Reminders</b></h4>
+											 <i class="bi bi-alarm" onclick="reminderOpen()"></i>
+												<label>Add a new reminder</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+											<h4><b>Access Control</b></h4> 
+											<i class="bi bi-pencil-square" onclick="accessControlOpen()"></i>
+												<label>Edit</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+											<h4><b>Retention</b></h4> 
+											 <i class="bi bi-infinity" onclick="retentionOpen()"></i>
+												<label>Infinite</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+											<label id="lockfile" onclick="lockfileOpen()"style="
+											    background-color: skyblue;
+											    width: 410px;
+											    height: 43px;
+											    text-align: center;
+											    font-size: 23px;
+											    font-weight: normal;
+											">Lock File</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+											<label id="lockfile" onclick="newVersionOpen()"style="
+											    background-color: skyblue;
+											    width: 410px;
+											    height: 43px;
+											    text-align: center;
+											    font-size: 23px;
+											    font-weight: normal;
+											">Upload New Version</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+											<label id="lockfile" onclick="startWorkFlowOpen()"style="
+											    background-color: skyblue;
+											    width: 410px;
+											    height: 43px;
+											    text-align: center;
+											    font-size: 23px;
+											    font-weight: normal;
+											">Start WorkFlow</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+											<label id="lockfile" onclick="documentSignOpen()"style="
+											    background-color: skyblue;
+											    width: 410px;
+											    height: 43px;
+											    text-align: center;
+											    font-size: 23px;
+											    font-weight: normal;
+											">Start DocumentSign WorkFlow</label> 
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+											<label id="lockfile" onclick="eIdWorkflowOpen()"style="
+											    background-color: skyblue;
+											    width: 410px;
+											    height: 43px;
+											    text-align: center;
+											    font-size: 23px;
+											    font-weight: normal;
+											">Start eId WorkFlow</label> 
+											</div>
+											<br>
+										</div>
+									</div>
+								</div>
+
+								<!-- Modal footer -->
+
+								
+							</div>
+						</div>
+					</div>
+				<!-- modal start -->
+
+					<div class="modal fade" id="myModalReminder">
+						<div class="modal-dialog" style="margin-top: 130px; width: 300">
+							<div class="modal-content">
+
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<h4 class="modal-title md-color">Set Reminder to:</h4>
+									<!-- <br>
+									<label>Workspace>Projects>tech_proposal.doc</label> -->
+									<button type="button" class="close cp" onclick="closeModal();"
+										data-dismiss="modal">&times;</button>
+								</div>
+
+								<!-- Modal body -->
+
+								<div class="modal-body modal-cat">
+									<div class="row">
+									<div class="col-md-6">
+											<div class="form-group">
+												<label>Date</label>
+												 <input type="date" placeholder="Date"
+													class="form-control transparenttxtbox" id="dob"
+													onblur="removeValid(event)">
+													<br>
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+												<div class="form-group">
+													<div style="display: flex; left-padding: 10px; ">
+														<input type="text"
+														class="form-control transparenttxtbox" id="userId"
+														onblur="removeValid(event)" placeholder="                     Email">
+														OR
+														<input type="text"
+														class="form-control transparenttxtbox" id="userGroup"
+														onblur="removeValid(event)" placeholder="                       User Group">
+													</div>
+												</div>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+												<!-- <label>Remarks</label>  -->
+												<textarea id="msg" placeholder="Message"  rows="3" cols="10"></textarea>
+											</div>
+										</div>
+										
+									</div>
+								</div>
+
+								<!-- Modal footer -->
+
+								<div class="modal-footer">
+									<button class="approve-btn" id="selectCategory">Reminder</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<!-- modal start -->
+
+					<div class="modal fade" id="myModalRetention">
+						<div class="modal-dialog" style="margin-top: 130px; width: 300">
+							<div class="modal-content">
+
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<h4 class="modal-title md-color">Set Retention policy to:</h4>
+									<button type="button" class="close cp" onclick="closeModal();"
+										data-dismiss="modal">&times;</button>
+								</div>
+
+								<!-- Modal body -->
+
+								<div class="modal-body modal-cat">
+									<div class="row">
+										<div class="col-md-12" id="retention">
+										 <br>
+											<label>
+										    <input type="radio" name="infinite" value="infinite">
+										    Infinite
+										  </label>
+										  <br><br>
+										  <label>
+										    <input type="radio" name="active" value="active">
+										    Active
+										  </label>
+										  <br><br>
+										  <label>
+										    <input type="radio" name="inactive" value="inactive">
+										    Inactive
+										  </label>
+										  <br><br>
+										</div>
+										
+										<div class="col-md-12">
+											<div class="form-group">
+												 <label>After</label> 
+												 <input type="date" placeholder=""
+													class="form-control transparenttxtbox" id="after"
+													onblur="removeValid(event)">
+											</div>
+											<br>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+												 <label>Action</label> 
+												 <input type="text" placeholder=""
+													class="form-control transparenttxtbox" id="action"
+													onblur="removeValid(event)">
+											</div>
+											<br>
+										</div>
+									
+									</div>
+								</div>
+
+								<!-- Modal footer -->
+
+								<div class="modal-footer">
+									<button class="cancel-btn" data-dismiss="modal"
+										onclick="closeModal();">Cancel</button>
+									<button class="approve-btn" id="selectCategory">Save</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<!-- modal start -->
+
+					<div class="modal fade" id="myModalLock">
+						<div class="modal-dialog" style="margin-top: 130px; width: 300">
+							<div class="modal-content">
+
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<h4 class="modal-title md-color">Are you sure you want to lock the file?</h4>
+									<button type="button" class="close cp" onclick="closeModal();"
+										data-dismiss="modal">&times;</button>
+								</div>
+
+								<!-- Modal body -->
+
+								<div class="modal-body modal-cat">
+									<div class="row">
+									<div class="col-md-6">
+											<div class="form-group">
+											<label><b>"New SpreadSheet.xlsx"</b></label>
+												<p>Other editors will not be able to change the metadata or add new versions until the file is unlocked. The file unlocks automatically after 6hrs if you don't unlock it first</p>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Modal footer -->
+
+								<div class="modal-footer">
+									<button class="approve-btn" id="selectCategory">Lock</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<!-- modal start -->
+
+					<div class="modal fade" id="uploadModal">
+						<div class="modal-dialog" style="margin-top: 130px; width: 300">
+							<div class="modal-content">
+
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<h4 class="modal-title md-color">Upload a new version of "tech_proposal.doc"</h4>
+									<button type="button" class="close cp" onclick="closeModal();"
+										data-dismiss="modal">&times;</button>
+								</div>
+
+								<!-- Modal body -->
+
+								<div class="modal-body modal-cat">
+									<div class="row">
+										<div class="col-md-12" id="attachIn">
+								<div class="form-group">
+									<label>Attach</label>
+									<div class="control-group position-r">
+													<label class="custom-file-upload" for="uploadWarDoc1_0"
+														style="margin-top: 18px;"> <i class="ti-plus"></i>
+													</label>
+													<div class="controls">
+														<input type="file" class="wardocument1"id="uploadWarDoc1_0"
+															accept=".jpeg, .jpg, .png, .pdf,.doc" name="userImage"
+															 onchange="saveFile1(event)">
+													</div>
+												</div>
+												<input type="hidden" id="uploadHidden1_0"
+													class="uploadHidCls1" >
+												<div id="uploadedWarrDiv1_0" align="center"
+													class="uploadedWarrCls1" style="margin-top: 10px;"></div>
+												<div id="imageWarrName1_0" class="imageName"
+													style="margin-top: 10px;"></div>
+								</div>
+							</div>
+									
+									</div>
+								</div>
+
+								<!-- Modal footer -->
+
+								 <div class="modal-footer">
+									<button class="cancel-btn" data-dismiss="modal"
+										onclick="closeModal();">Cancel</button>
+									<button class="approve-btn" id="selectCategory">Upload</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<!-- Modal Start  -->
+				<div class="modal fade" id="myModalStartWorkflow">
+						<div class="modal-dialog" style="margin-top: 130px; width: 300">
+							<div class="modal-content">
+
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<h4 class="modal-title md-color">Start Workflow</h4>
+									<button type="button" class="close cp" onclick="closeModal();"
+										data-dismiss="modal">&times;</button>
+								</div>
+								<h4 class="modal-title md-color">Workflow for</h4>
+								<h4 class="modal-title md-color">Workspace>Projects>tech_proposal.doc</h4>
+								<!-- Modal body -->
+
+								<div class="modal-body modal-cat">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+											 <label>Resolution</label> 
+												<textarea id="msg" rows="3" cols="10"></textarea>
+											</div>
+										</div>
+							<div class="col-md-12">
+						      <div class="row" id="upperline">
+						         <div class="row">
+						         </div>
+						         <div class="row" id="upperOne">
+						            <div class="innerstickybg" >
+						               <div class="row">
+						                  <div class="col-md-4 ">
+						                     <h3 onclick="waterShow();">WorkFlow</h3>
+						                  </div>
+						               </div>
+						            </div>
+						            <div id="myGridworkflow" style="width: 100%; height: 100px;"
+						               class="ag-theme-alpine"></div>
+						         </div>
+						      </div>
+						   </div>
+										
+										
+										
+										<div class="col-md-12">
+										 <br>
+											<label>
+										    <input type="checkbox" name="read" value="read">
+										   Move after successfull workflow after everyone has approved,move the document to
+										  </label>
+										  
+										  <div class="col-md-12" id="attachIn">
+								<div class="form-group">
+									<!-- <label>Attach</label> -->
+									<div class="control-group position-r">
+													<label class="custom-file-upload" for="uploadWarDoc1_0"
+														style="margin-top: 18px;">Choose a folder
+													</label>
+													<div class="controls">
+														<input type="file" class="wardocument1"id="uploadWarDoc1_0"
+															accept=".jpeg, .jpg, .png, .pdf,.doc" name="userImage"
+															 onchange="saveFile1(event)">
+													</div>
+												</div>
+												<input type="hidden" id="uploadHidden1_0"
+													class="uploadHidCls1" >
+												<div id="uploadedWarrDiv1_0" align="center"
+													class="uploadedWarrCls1" style="margin-top: 10px;"></div>
+												<div id="imageWarrName1_0" class="imageName"
+													style="margin-top: 10px;"></div>
+								</div>
+							</div>
+										  
+										  
+										  <br><br>
+										  <label>
+										    <input type="checkbox" name="write" value="write">
+										    Metadata is visible in workflow
+										  </label>
+										  <br><br>
+										  <label>
+										    <input type="checkbox" name="delete" value="delete">
+										    Related files are visible in workflow
+										  </label>
+										  <br><br>
+										</div>
+										
+										
+									
+									</div>
+								</div>
+
+								<!-- Modal footer -->
+
+								<div class="modal-footer">
+								<button class="approve-btn" id="selectCategory">Start</button>
+									<button class="cancel-btn" data-dismiss="modal"
+										onclick="closeModal();">Cancel</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+					</div>
+				
+			</div>
+</body>
+
+</html>

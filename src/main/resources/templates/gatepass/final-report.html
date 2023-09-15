@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+
+<head>
+<meta charset="ISO-8859-1">
+
+<style type="text/css">
+
+/* .searchBox:hover>.searchInput {
+	width: 180px;
+	padding: 0 6px;
+	margin-right: 10px;
+} */
+.button-right {
+	display: flex;
+	justify-content: space-between;
+}
+</style>
+
+<script type="text/javascript" charset="utf-8">
+	$(document)
+			.ready(
+					function() {
+
+						var dateFormat = localStorage.getItem("dateFormat");
+						$("#fromDateCalender").datetimepicker({
+							format : dateFormat,
+							closeOnDateSelect : true,
+							timepicker : false,
+						}).on("change", function() {
+							$('#filterFromDate').val($(this).val());
+						})
+
+						$('#filterFromDate').blur(function() {
+							$("#fromDateCalender").val($(this).val());
+						})
+
+						$("#toDateCalendar").datetimepicker({
+							format : dateFormat,
+							closeOnDateSelect : true,
+							timepicker : false,
+						}).on("change", function() {
+							$('#filterToDate').val($(this).val());
+						})
+
+						$('#filterToDate').blur(function() {
+							$("#toDateCalendar").val($(this).val());
+						})
+
+						var toDayDate = (new Date()).toISOString().split('T')[0];
+						var newDate = changeDateFormat(toDayDate);
+
+						$("#filterFromDate").val(newDate);
+						$("#filterToDate").val(newDate);
+
+						$("#fromDateCalender").val(newDate);
+						$("#toDateCalendar").val(newDate);
+
+						$("#sec").val("gateIn");
+
+						ShowAgGrid("gateIn");
+						var gridDiv = document.querySelector('#myGrid');
+						new agGrid.Grid(gridDiv, gridOptions);
+
+						var gridDiv1 = document.querySelector('#myGrid1');
+						new agGrid.Grid(gridDiv1, gridOptions1);
+
+						var gridDiv2 = document.querySelector('#myGrid2');
+						new agGrid.Grid(gridDiv2, activityOptions);
+						var gridDiv3 = document.querySelector('#myGrid3');
+						new agGrid.Grid(gridDiv3, activityOptions1);
+
+						var gridDiv4 = document
+								.querySelector('#myGrid_DownloadGateIn');
+						new agGrid.Grid(gridDiv4, downloadGateInOptions);
+						var gridDiv5 = document
+								.querySelector('#myGrid_DownloadGateOut');
+						new agGrid.Grid(gridDiv5, downloadGateOutOptions);
+
+						var rowData = [];
+						gridOptions.api.setRowData(rowData);
+						gridOptions1.api.setRowData(rowData);
+						//activityOptions.api.setRowData(rowData);
+
+						agGrid
+								.simpleHttpRequest(
+										{
+											url : "gatepass-report-view?sec="
+													+ $("#sec").val()
+													+ "&fromdate=" + newDate
+													+ "&todate=" + newDate
+													+ "&type=" + 'all'
+										})
+								.then(
+										function(data) {
+											var jsonData = JSON
+													.parse(data.body);
+											var allData = jsonData.viewGateInData;
+											var viewGateInDataDownload = jsonData.viewGateInDataDownload;
+											console.log(allData);
+											var len = allData.length;
+											$('#totalReq').find('span').html(
+													len);
+											gridOptions.api.setRowData(allData);
+											downloadGateInOptions.api
+													.setRowData(viewGateInDataDownload);
+										});
+
+						$("#currsec").addClass("active");
+
+					});
+
+	var columnDefs = [
+			{
+				headerCheckboxSelection : false,
+				headerCheckboxSelectionFilteredOnly : false,
+				checkboxSelection : true,
+				width : 10,
+				pinned : 'left',
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : 'Gate Entry Id',
+				width : 150,
+				field : "entryId",
+				pinned : 'left',
+				cellRenderer : function(params) {
+					if (params.data.type == 'Unloading'
+							|| params.data.type == 'Loading And Unloading') {
+						return '<a id="entryId" onclick=gateInDetails("'
+								+ params.data.entryId + '","'
+								+ params.data.type
+								+ '") href="javascript:void(0)">'
+								+ params.data.entryId + '</a>';
+
+					} else {
+						return '<span  style="color:#808080">'
+								+ params.data.entryId + '</span>';
+					}
+
+				}
+
+			},
+			{
+				headerName : 'Vehicle No',
+				field : "vehicleNo",
+				pinned : 'left',
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Entry Date',
+				field : "date",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Entry Time',
+				field : "time",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Type',
+				field : "type",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Name',
+				field : "driverName",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Mob.',
+				field : "driverMobNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Dl No.',
+				field : "dl_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Lr No',
+				field : "lrNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Wheeler',
+				field : "wheels",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Transport Name',
+				field : "transportName",
+				width : 200,
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Depo',
+				field : "depo_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Vendor Name',
+				field : "vendor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Name',
+				field : "visitor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit address',
+				field : "visiting_address",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Purpose',
+				field : "visite_purpose",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'To Meet',
+				field : "to_meet",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Pass',
+				field : "pass_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Mob.',
+				field : "visitor_mobile",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Document',
+				field : "in_doc",
+				width : 180,
+				cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					var div = "";
+					if (params.data.in_doc == 'NA') {
+						return '<span  style="color:#808080">'
+								+ params.data.in_doc + '</span>';
+					} else {
+						var ext = params.data.in_doc.split(".");
+						if (ext[1] == "pdf") {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-file-pdf-o" style="cursor: pointer; color: red;" onclick=viewImage("'
+									+ params.data.in_doc + '")> '
+									+ params.data.in_doc + '</div>';
+						} else {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-picture-o" style="cursor: pointer; color: blue;" onclick=viewImage("'
+									+ params.data.in_doc + '")> '
+									+ params.data.in_doc + '</div>';
+						}
+					}
+					return div;
+				},
+			}, ];
+
+	// let the grid know which columns and what data to use
+	var gridOptions = {
+		columnDefs : columnDefs,
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 150
+		},
+	//onSelectionChanged : onSelectionChanged,
+	};
+
+	var columnDefs1 = [
+			{
+				headerCheckboxSelection : false,
+				headerCheckboxSelectionFilteredOnly : false,
+				checkboxSelection : true,
+				width : 10,
+				pinned : 'left',
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : 'Gate Exit Id',
+				width : 200,
+				field : "exitId",
+				pinned : 'left',
+				cellRenderer : function(params) {
+					if (params.data.type == 'Loading'
+							|| params.data.type == 'Loading And Unloading') {
+						return '<a id="entryId" onclick=gateOutDetails("'
+								+ params.data.exitId + '","' + params.data.type
+								+ '") href="javascript:void(0)">'
+								+ params.data.exitId + '</a>';
+
+					} else {
+						return '<span  style="color:#808080">'
+								+ params.data.exitId + '</span>';
+					}
+
+				}
+
+			},
+			{
+				headerName : 'Vehicle No',
+				field : "vehicleNo",
+				pinned : 'left',
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Exit Date',
+				field : "date",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Exit Time',
+				field : "time",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Type',
+				field : "type",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Name',
+				field : "driverName",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Mob.',
+				field : "driverMobNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Dl No.',
+				field : "dl_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Lr No',
+				field : "lrNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Wheeler',
+				field : "wheels",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Transport Name',
+				field : "transportName",
+				width : 200,
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Depo',
+				field : "depo_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Customer Name',
+				field : "customer_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Name',
+				field : "visitor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit address',
+				field : "visiting_address",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Purpose',
+				field : "visite_purpose",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'To Meet',
+				field : "to_meet",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Pass',
+				field : "pass_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Mob.',
+				field : "visitor_mobile",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Document',
+				field : "out_doc",
+				width : 180,
+				cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					var div = "";
+					if (params.data.out_doc == 'NA') {
+						return '<span  style="color:#808080">'
+								+ params.data.out_doc + '</span>';
+					} else {
+						var ext = params.data.out_doc.split(".");
+						if (ext[1] == "pdf") {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-file-pdf-o" style="cursor: pointer; color: red;" onclick=viewImage("'
+									+ params.data.out_doc + '")> '
+									+ params.data.out_doc + '</div>';
+						} else {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-picture-o" style="cursor: pointer; color: blue;" onclick=viewImage("'
+									+ params.data.out_doc + '")> '
+									+ params.data.out_doc + '</div>';
+						}
+					}
+					return div;
+				},
+			} ];
+
+	// let the grid know which columns and what data to use
+	var gridOptions1 = {
+		columnDefs : columnDefs1,
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 150
+		},
+	//onSelectionChanged : onSelectionChanged,
+	};
+
+	var columnDefsItem = [ {
+		headerCheckboxSelection : false,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+	},
+
+	{
+		headerName : 'SKU/Item Code',
+		field : "sku",
+		width : 120,
+	}, {
+		headerName : 'HSN Code',
+		field : "hsnCode",
+		width : 120,
+	}, {
+		headerName : 'Item Id',
+		field : "itemId",
+		width : 100,
+		
+	},{
+		headerName : 'Item Category',
+		field : "itemCategory",
+		width : 150,
+		
+		cellStyle : {
+			textAlign : 'center'
+		},
+	},{
+
+		headerName : 'Item Name',
+		field : "itemName",
+		width : 175,
+	},  {
+		headerName : 'Quantity',
+		field : "quantity",
+		type : 'rightAligned',
+		width : 100,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+
+		headerName : 'Unit',
+		field : "unitName",
+		width : 100,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Amount',
+		field : "lineTotal",
+		type : 'rightAligned',
+		width : 120,
+
+		aggFunc : 'sum',
+
+	}, {
+		headerName : 'Challan/Invoice No',
+		field : "challanNo",
+		width : 220,
+	//hide : true,
+
+	}, {
+		headerName : 'Challan/Invoice Date',
+		field : "challanDate",
+		width : 250,
+	//hide : true,
+
+	}, {
+		headerName : 'Pending Quantity',
+		field : "pendingQuantity",
+		type : 'rightAligned',
+		width : 170,
+		//hide : true,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Receiving Quantity',
+		field : "receivingQuantity",
+		type : 'rightAligned',
+		width : 170,
+		//hide : true,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Received Quantity',
+		field : "receivedQuantity",
+		type : 'rightAligned',
+		width : 173,
+		//hide : true,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Description',
+		field : "descItem",
+		//type : 'rightAligned',
+		width : 153,
+
+	}, ];
+	var activityOptions = {
+		columnDefs : columnDefsItem,
+		rowSelection : 'single',
+		//onSelectionChanged : rowSelectLeaveDetails,
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 220,
+			height : 10
+		},
+	/* 			getRowNodeId : function(data) {
+	 return data.slNo;
+	 } */
+
+	};
+
+	var columnDefsItem1 = [ {
+		headerCheckboxSelection : false,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+	},
+
+	{
+		headerName : 'SKU/Item Code',
+		field : "sku",
+		width : 120,
+	}, {
+		headerName : 'HSN Code',
+		field : "hsnCode",
+		width : 120,
+	},{
+		headerName : 'Item Id',
+		field : "itemId",
+		width : 100,
+		
+	},{
+		headerName : 'Item Category',
+		field : "itemCategory",
+		width : 150,
+		cellStyle : {
+			textAlign : 'center'
+		},
+		
+	}, {
+
+		headerName : 'Item Name',
+		field : "itemName",
+		width : 175,
+	},  {
+		headerName : 'Quantity',
+		field : "quantity",
+		type : 'rightAligned',
+		width : 100,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+
+		headerName : 'Unit',
+		field : "unitName",
+		width : 100,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Amount',
+		field : "lineTotal",
+		type : 'rightAligned',
+		width : 120,
+
+		aggFunc : 'sum',
+
+	}, {
+		headerName : 'Challan/Invoice No',
+		field : "challanNo",
+		width : 220,
+	//hide : true,
+
+	}, {
+		headerName : 'Challan/Invoice Date',
+		field : "challanDate",
+		width : 250,
+	//hide : true,
+
+	}, {
+		headerName : 'Pending Quantity',
+		field : "pendingQuantity",
+		type : 'rightAligned',
+		width : 170,
+		//hide : true,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Receiving Quantity',
+		field : "receivingQuantity",
+		type : 'rightAligned',
+		width : 170,
+		//hide : true,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Received Quantity',
+		field : "receivedQuantity",
+		type : 'rightAligned',
+		width : 173,
+		//hide : true,
+		cellStyle : {
+			textAlign : 'center'
+		},
+	}, {
+		headerName : 'Description',
+		field : "descItem",
+		//type : 'rightAligned',
+		width : 153,
+
+	}, ];
+	var activityOptions1 = {
+		columnDefs : columnDefsItem1,
+		rowSelection : 'single',
+		//onSelectionChanged : rowSelectLeaveDetails,
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 220,
+			height : 10
+		},
+
+	};
+
+	var columnDefsDownloadGateIn = [
+			{
+				headerCheckboxSelection : false,
+				headerCheckboxSelectionFilteredOnly : false,
+				checkboxSelection : true,
+				width : 10,
+				pinned : 'left',
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : 'Gate Entry Id',
+				width : 150,
+				field : "entryId",
+				pinned : 'left',
+				cellRenderer : function(params) {
+					if (params.data.type == 'Unloading'
+							|| params.data.type == 'Loading And Unloading') {
+						return '<a id="entryId" onclick=gateInDetails("'
+								+ params.data.entryId + '","'
+								+ params.data.type
+								+ '") href="javascript:void(0)">'
+								+ params.data.entryId + '</a>';
+
+					} else {
+						return '<span  style="color:#808080">'
+								+ params.data.entryId + '</span>';
+					}
+
+				}
+
+			},
+			{
+				headerName : 'Vehicle No',
+				field : "vehicleNo",
+				pinned : 'left',
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Entry Date',
+				field : "date",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Entry Time',
+				field : "time",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Type',
+				field : "type",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Name',
+				field : "driverName",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Mob.',
+				field : "driverMobNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Dl No.',
+				field : "dl_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Lr No',
+				field : "lrNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Wheeler',
+				field : "wheels",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Transport Name',
+				field : "transportName",
+				width : 200,
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Depo',
+				field : "depo_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Vendor Name',
+				field : "vendor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Name',
+				field : "visitor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit address',
+				field : "visiting_address",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Purpose',
+				field : "visite_purpose",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'To Meet',
+				field : "to_meet",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Pass',
+				field : "pass_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Mob.',
+				field : "visitor_mobile",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'SKU/Item Code',
+				field : "sku",
+				width : 120,
+			},
+			{
+				headerName : 'HSN Code',
+				field : "hsnCode",
+				width : 120,
+			}, {
+				headerName : 'Item Id',
+				field : "itemId",
+				width : 100,
+				
+			},{
+				headerName : 'Item Category',
+				field : "itemCategory",
+				width : 150,
+				
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+
+				headerName : 'Item Name',
+				field : "itemName",
+				width : 175,
+			},
+			{
+				headerName : 'Quantity',
+				field : "quantity",
+				type : 'rightAligned',
+				width : 100,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+
+				headerName : 'Unit',
+				field : "unitName",
+				width : 100,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Amount',
+				field : "lineTotal",
+				type : 'rightAligned',
+				width : 120,
+
+				aggFunc : 'sum',
+
+			},
+			{
+				headerName : 'Challan/Invoice No',
+				field : "challanNo",
+				width : 220,
+			//hide : true,
+
+			},
+			{
+				headerName : 'Challan/Invoice Date',
+				field : "challanDate",
+				width : 250,
+			//hide : true,
+
+			},
+			{
+				headerName : 'Pending Quantity',
+				field : "pendingQuantity",
+				type : 'rightAligned',
+				width : 170,
+				//hide : true,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Receiving Quantity',
+				field : "receivingQuantity",
+				type : 'rightAligned',
+				width : 170,
+				//hide : true,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Received Quantity',
+				field : "receivedQuantity",
+				type : 'rightAligned',
+				width : 173,
+				//hide : true,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Description',
+				field : "descItem",
+				//type : 'rightAligned',
+				width : 153,
+
+			},
+			{
+				headerName : 'Document',
+				field : "in_doc",
+				width : 180,
+				cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					var div = "";
+					if (params.data.in_doc == 'NA') {
+						return '<span  style="color:#808080">'
+								+ params.data.in_doc + '</span>';
+					} else {
+						var ext = params.data.in_doc.split(".");
+						if (ext[1] == "pdf") {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-file-pdf-o" style="cursor: pointer; color: red;" onclick=viewImage("'
+									+ params.data.in_doc + '")> '
+									+ params.data.in_doc + '</div>';
+						} else {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-picture-o" style="cursor: pointer; color: blue;" onclick=viewImage("'
+									+ params.data.in_doc + '")> '
+									+ params.data.in_doc + '</div>';
+						}
+					}
+					return div;
+				},
+			}, ];
+
+	// let the grid know which columns and what data to use
+	var downloadGateInOptions = {
+		columnDefs : columnDefsDownloadGateIn,
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 150
+		},
+	//onSelectionChanged : onSelectionChanged,
+	};
+
+	var columnDefsDownloadGateOut = [
+			{
+				headerCheckboxSelection : false,
+				headerCheckboxSelectionFilteredOnly : false,
+				checkboxSelection : true,
+				width : 10,
+				pinned : 'left',
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : 'Gate Exit Id',
+				width : 200,
+				field : "exitId",
+				pinned : 'left',
+				cellRenderer : function(params) {
+					if (params.data.type == 'Loading'
+							|| params.data.type == 'Loading And Unloading') {
+						return '<a id="entryId" onclick=gateOutDetails("'
+								+ params.data.exitId + '","' + params.data.type
+								+ '") href="javascript:void(0)">'
+								+ params.data.exitId + '</a>';
+
+					} else {
+						return '<span  style="color:#808080">'
+								+ params.data.exitId + '</span>';
+					}
+
+				}
+
+			},
+			{
+				headerName : 'Vehicle No',
+				field : "vehicleNo",
+				pinned : 'left',
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Exit Date',
+				field : "date",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Exit Time',
+				field : "time",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Type',
+				field : "type",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Name',
+				field : "driverName",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Driver Mob.',
+				field : "driverMobNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Dl No.',
+				field : "dl_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Lr No',
+				field : "lrNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Wheeler',
+				field : "wheels",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Transport Name',
+				field : "transportName",
+				width : 200,
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Depo',
+				field : "depo_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Customer Name',
+				field : "customer_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Name',
+				field : "visitor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit address',
+				field : "visiting_address",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Purpose',
+				field : "visite_purpose",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'To Meet',
+				field : "to_meet",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visit Pass',
+				field : "pass_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'Visitor Mob.',
+				field : "visitor_mobile",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			{
+				headerName : 'SKU/Item Code',
+				field : "sku",
+				width : 120,
+			},
+			{
+				headerName : 'HSN Code',
+				field : "hsnCode",
+				width : 120,
+			}, {
+				headerName : 'Item Id',
+				field : "itemId",
+				width : 100,
+				
+			},{
+				headerName : 'Item Category',
+				field : "itemCategory",
+				width : 150,
+				
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+
+				headerName : 'Item Name',
+				field : "itemName",
+				width : 175,
+			},
+			{
+				headerName : 'Quantity',
+				field : "quantity",
+				type : 'rightAligned',
+				width : 100,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+
+				headerName : 'Unit',
+				field : "unitName",
+				width : 100,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Amount',
+				field : "lineTotal",
+				type : 'rightAligned',
+				width : 120,
+
+				aggFunc : 'sum',
+
+			},
+			{
+				headerName : 'Challan/Invoice No',
+				field : "challanNo",
+				width : 220,
+			//hide : true,
+
+			},
+			{
+				headerName : 'Challan/Invoice Date',
+				field : "challanDate",
+				width : 250,
+			//hide : true,
+
+			},
+			{
+				headerName : 'Pending Quantity',
+				field : "pendingQuantity",
+				type : 'rightAligned',
+				width : 170,
+				//hide : true,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Receiving Quantity',
+				field : "receivingQuantity",
+				type : 'rightAligned',
+				width : 170,
+				//hide : true,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Received Quantity',
+				field : "receivedQuantity",
+				type : 'rightAligned',
+				width : 173,
+				//hide : true,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'Description',
+				field : "descItem",
+				//type : 'rightAligned',
+				width : 153,
+
+			},
+			{
+				headerName : 'Document',
+				field : "out_doc",
+				width : 180,
+				cellStyle : {
+					textAlign : 'center'
+				},
+				cellRenderer : function(params) {
+					var div = "";
+					if (params.data.out_doc == 'NA') {
+						return '<span  style="color:#808080">'
+								+ params.data.out_doc + '</span>';
+					} else {
+						var ext = params.data.out_doc.split(".");
+						if (ext[1] == "pdf") {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-file-pdf-o" style="cursor: pointer; color: red;" onclick=viewImage("'
+									+ params.data.out_doc + '")> '
+									+ params.data.out_doc + '</div>';
+						} else {
+							div = div
+									+ " "
+									+ '<div class ="fa fa-picture-o" style="cursor: pointer; color: blue;" onclick=viewImage("'
+									+ params.data.out_doc + '")> '
+									+ params.data.out_doc + '</div>';
+						}
+					}
+					return div;
+				},
+			} ];
+
+	// let the grid know which columns and what data to use
+	var downloadGateOutOptions = {
+		columnDefs : columnDefsDownloadGateOut,
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 150
+		},
+	//onSelectionChanged : onSelectionChanged,
+	};
+
+	function downloadDetails() {
+		var sec = $("#sec").val();
+		if (sec == "gateIn") {
+			var dataset = [];
+			downloadGateInOptions.api.forEachNodeAfterFilterAndSort(function(
+					rowNode, index) {
+				dataset.push(rowNode.data);
+			});
+			downloadGateInOptions.api.exportDataAsCsv(dataset);
+		} else if (sec == "gateOut") {
+			var dataset = [];
+			downloadGateOutOptions.api.forEachNodeAfterFilterAndSort(function(rowNode,
+					index) {
+				dataset.push(rowNode.data);
+			});
+			downloadGateOutOptions.api.exportDataAsCsv(dataset);
+		}
+
+	}
+
+	function ShowAgGrid(sec) {
+		$("#sec").val(sec);
+		if (sec == 'gateIn') {
+
+			$("#gateInsec").addClass("active");
+			$('#gateOutsec').removeClass('active');
+			$('#securitysec').removeClass('active');
+			$('#staffsec').removeClass('active');
+
+			var toDayDate = (new Date()).toISOString().split('T')[0];
+			var newDate = changeDateFormat(toDayDate);
+
+			$("#filterFromDate").val(newDate);
+			$("#filterToDate").val(newDate);
+
+			$("#fromDateCalender").val(newDate);
+			$("#toDateCalendar").val(newDate);
+
+			$("#type").val("all");
+			$("#myGrid").show();
+			$("#myGrid1").hide();
+			$("#myGrid_DownloadGateIn").hide();
+			$("#myGrid_DownloadGateOut").hide();
+
+			ShowAgGridData(sec, newDate);
+		} else if (sec == 'gateOut') {
+
+			$("#gateInsec").removeClass("active");
+			$('#gateOutsec').addClass('active');
+			$('#securitysec').removeClass('active');
+			$('#staffsec').removeClass('active');
+
+			var toDayDate = (new Date()).toISOString().split('T')[0];
+			var newDate = changeDateFormat(toDayDate);
+
+			$("#filterFromDate").val(newDate);
+			$("#filterToDate").val(newDate);
+
+			$("#fromDateCalender").val(newDate);
+			$("#toDateCalendar").val(newDate);
+
+			$("#myGrid").hide();
+			$("#myGrid1").show();
+			$("#type").val("all");
+
+			ShowAgGridData(sec, newDate);
+		} else if (sec == 'security') {
+			$("#gateInsec").removeClass("active");
+			$('#gateOutsec').removeClass('active');
+			$('#securitysec').addClass('active');
+			$('#staffsec').removeClass('active');
+
+			$("#messageParagraph").text("Comming Soon!!!!!");
+			$("#msgOkModal").removeClass("btn3");
+			$("#msgOkModal").addClass("btn1");
+			$("#msgModal").modal('show');
+			ShowAgGrid("gateIn");
+		} else if (sec == 'staff') {
+			$("#gateInsec").addClass("active");
+			$('#gateOutsec').removeClass('active');
+			$('#securitysec').removeClass('active');
+			$('#staffsec').addClass('active');
+
+			$("#messageParagraph").text("Comming Soon!!!!!");
+			$("#msgOkModal").removeClass("btn3");
+			$("#msgOkModal").addClass("btn1");
+			$("#msgModal").modal('show');
+			ShowAgGrid("gateIn");
+		}
+
+	}
+
+	function ShowAgGridData(sec, newDate) {
+		var len;
+		agGrid.simpleHttpRequest(
+				{
+					url : "gatepass-report-view?sec=" + sec + "&fromdate="
+							+ newDate + "&todate=" + newDate + "&type=" + 'all'
+				}).then(function(data) {
+			var jsonData = JSON.parse(data.body);
+			if (sec == "gateIn") {
+				var allData = jsonData.viewGateInData;
+				var viewGateInDataDownload = jsonData.viewGateInDataDownload;
+				if (allData == "" || allData == null || allData == 'null') {
+					len = 0;
+				} else {
+					len = allData.length;
+				}
+				gridOptions.api.setRowData(allData);
+				downloadGateInOptions.api.setRowData(viewGateInDataDownload);
+			} else if (sec == "gateOut") {
+				var allData = jsonData.viewGateOutData;
+				var viewGateOutDataDownload = jsonData.viewGateOutDataDownload;
+				if (allData == "" || allData == null || allData == 'null') {
+					len = 0;
+				} else {
+					len = allData.length;
+				}
+				gridOptions1.api.setRowData(allData);
+				downloadGateOutOptions.api.setRowData(viewGateOutDataDownload);
+			}
+
+			$('#totalReq').find('span').html(len);
+
+		});
+
+	}
+
+	function filter() {
+		var fromdatex = $("#filterFromDate").val();
+		var fd = fromdatex.split("-");
+		var todatex = $("#filterToDate").val();
+		var td = todatex.split("-");
+
+		if (fromdatex != '' && todatex != '') {
+			if (fd[2] == td[2]) {
+				if (fd[1] == td[1]) {
+					if (fd[0] <= td[0]) {
+						filterData();
+					} else {
+						setFromToDate();
+					}
+				} else if (fd[1] < td[1]) {
+					filterData();
+				} else {
+					setFromToDate();
+				}
+			} else if (fd[2] < td[2]) {
+				filterData();
+			} else {
+				setFromToDate();
+			}
+		}
+	}
+	function setFromToDate() {
+		$("#messageParagraph").text(
+				"Please choose to date greater than or equal to from date ");
+		$("#msgOkModal").removeClass("btn3");
+		$("#msgOkModal").addClass("btn1");
+		$("#msgModal").modal('show');
+		var date = (new Date()).toISOString().split('T')[0];
+		var newToDate = changeDateFormat(date);
+		var newFromDate = changeDateFormat(date);
+		$("#filterFromDate").val(newToDate);
+		$("#filterToDate").val(newToDate);
+
+		$("#fromDateCalender").val(newDate);
+		$("#toDateCalendar").val(newDate);
+	}
+
+	function filterData() {
+		var len;
+		var secx = $("#sec").val();
+		var type = $("#type").val();
+		var fromDate = $("#filterFromDate").val();
+		var toDate = $("#filterToDate").val();
+
+		agGrid.simpleHttpRequest(
+				{
+					url : "gatepass-report-view?sec=" + secx + "&fromdate="
+							+ fromDate + "&todate=" + toDate + "&type=" + type
+				}).then(function(data) {
+			var jsonData = JSON.parse(data.body);
+			if (secx == "gateIn") {
+				gridOptions.api.setRowData();
+				var allData = jsonData.viewGateInData;
+				var viewGateInDataDownload = jsonData.viewGateInDataDownload;
+				console.log(viewGateInDataDownload);
+				if (allData == "" || allData == null || allData == 'null') {
+					len = 0;
+				} else {
+					len = allData.length;
+				}
+				gridOptions.api.setRowData(allData);
+				downloadGateInOptions.api.setRowData(viewGateInDataDownload);
+			} else if (secx == "gateOut") {
+				gridOptions1.api.setRowData();
+				var allData = jsonData.viewGateOutData;
+				var viewGateOutDataDownload = jsonData.viewGateOutDataDownload;
+				if (allData == "" || allData == null || allData == 'null') {
+					len = 0;
+				} else {
+					len = allData.length;
+				}
+				gridOptions1.api.setRowData(allData);
+				downloadGateOutOptions.api.setRowData(viewGateOutDataDownload);
+			}
+
+			$('#totalReq').find('span').html(len);
+
+		});
+
+	}
+
+	function changeDateFormat(inputDate) { // expects Y-m-d
+		var splitDate = inputDate.split('-');
+		if (splitDate.count == 0) {
+			return null;
+		}
+		var year = splitDate[0];
+		var month = splitDate[1];
+		var day = splitDate[2];
+
+		return day + '-' + month + '-' + year;
+	}
+
+	function gateInDetails(id, type) {
+		//alert(id+type);
+
+		agGrid.simpleHttpRequest({
+			url : "gatepass-report-gateEntryDetails?id=" + id
+
+		}).then(function(data) {
+			var jsonData = JSON.parse(data.body);
+			var allData = jsonData.viewEntryDtls;
+
+			console.log(allData)
+			if (allData == 'null' || allData == null) {
+				$("#messageParagraph").text("OOps!! No Data Available!");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+			} else {
+
+				activityOptions.api.setRowData(allData);
+				$('#entry').find('span').html(id);
+				$('#myModal10').modal('show');
+			}
+
+		});
+
+	}
+
+	function gateOutDetails(id, type) {
+		agGrid.simpleHttpRequest({
+			url : "gatepass-report-gateOutDetails?id=" + id
+
+		}).then(function(data) {
+			var jsonData = JSON.parse(data.body);
+			var allData = jsonData.viewOutDtls;
+
+			console.log(allData)
+			if (allData == 'null' || allData == null) {
+				$("#messageParagraph").text("OOps!! No Data Available!");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+
+			} else {
+				activityOptions1.api.setRowData(allData);
+				$('#entry1').find('span').html(id);
+				$('#myModal11').modal('show');
+			}
+
+		});
+	}
+
+	function viewImage(id) {
+		window.open("/document/document/" + id, '_blank');
+	}
+</script>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div id="main_content">
+							<div class="row mt-1" id="buttonClass">
+								<div class="btn-group col-md-3">
+									<button class="btn btn-primary " id="gateInsec"
+										value='gateInsec' onclick="ShowAgGrid('gateIn')">Gate
+										In</button>
+								</div>
+								<div class="btn-group col-md-3">
+									<button class="btn btn-primary " id="gateOutsec"
+										value='gateOutsec' onclick="ShowAgGrid('gateOut')">Gate
+										Out</button>
+								</div>
+								<div class="btn-group col-md-3">
+									<button class="btn btn-primary " id="securitysec"
+										value='securitysec' onclick="ShowAgGrid('security')">Security</button>
+								</div>
+								<div class="btn-group col-md-3">
+									<button class="btn btn-primary " id="staffsec" value='staffsec'
+										onclick="ShowAgGrid('staff')">Staff</button>
+								</div>
+							</div>
+							<br>
+							<div class="d-flex justify-content-between" id="tdiv">
+								<div class="btn-hs">
+									<div class="font-design" id="totalReq">
+										TOTAL LIST(<span></span>) <input type="hidden" id="sec">
+									</div>
+								</div>
+
+
+								<div class="button-right">
+									<div>
+
+										<div class="form-group d-flex">
+											<label style="margin: 5px 5px 0px 0px;">Type:</label>
+											<div class="select" style="margin-right: 15px;">
+												<select id="type" class="form-control"
+													onblur="removeValid(event)"
+													style="width: 170px; padding-left: 7px;">
+													<option value="all">All</option>
+													<option value="loading">Loading</option>
+													<option value="unloading">Unloading</option>
+													<option value="both">Loading & Unloading</option>
+													<option value="visiting">Visiting</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div id="dateDiv1" class="d-flex form-group">
+										<label style="margin: 5px 8px 0px 0px;">From Dt:</label>
+										<div class="form-group calendar_box" id='fdate'
+											style="margin-right: 15px;">
+											<input type="text" id="filterFromDate" value=""
+												class="form-control" placeholder="from date.."
+												th:attr="onkeyup=|formatDate('filterFromDate','${session.DATEFORMAT_JS}')|"
+												readonly> <i class="ti-calendar picker_calendar"
+												id="fromDateCalender" style="top: 14px; right: 0px;"></i>
+										</div>
+									</div>
+									<div id="dateDiv2" class="d-flex form-group">
+										<label style="margin: 5px 8px 0px 0px;">To Dt:</label>
+										<div class="form-group calendar_box" id="tdate"
+											style="margin-right: 15px;">
+											<input type="text" id="filterToDate" value=""
+												class="form-control" placeholder="to date.."
+												th:attr="onkeyup=|formatDate('filterToDate','${session.DATEFORMAT_JS}')|"
+												readonly> <i class="ti-calendar picker_calendar"
+												id="toDateCalendar" style="top: 14px; right: 0px;"></i>
+										</div>
+									</div>
+
+									<div class="buttonsec btn-hs" id="ttbtn">
+										<button class="new-btn" id="filterBtn" onclick="filter()">
+											<i class="bi bi-search"></i> Search
+										</button>
+									</div>
+									<div class="buttonsec btn-hs" id="ttbtn">
+										<button class="download-btn" id="download"
+											onclick="downloadDetails()">Download</button>
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+
+						<div id="gateInGrid">
+							<div id="myGrid" style="width: 100%; height: 500px;"
+								class="ag-theme-alpine"></div>
+
+						</div>
+						<div id="gateOutGrid">
+							<div id="myGrid1" style="width: 100%; height: 500px;"
+								class="ag-theme-alpine"></div>
+						</div>
+						<div id="myGrid_DownloadGateIn"
+							style="width: 100%; height: 500px;" class="ag-theme-alpine"></div>
+						
+						<div id="myGrid_DownloadGateOut"
+							style="width: 100%; height: 500px;" class="ag-theme-alpine"></div>
+
+
+
+
+					</div>
+				</div>
+				<div class="modal fade" id="myModal10">
+					<div class="modal-dialog modal-lg" style="max-width: 1100px">
+						<div class="modal-content" style="width: 100%">
+
+							<!-- Modal Header -->
+							<div class="modal-header">
+								<h4 class="modal-title" style="font-size: 16px" id="entry">
+									<b>Request Id: <span></span></b>
+								</h4>
+								<button type="button" class="close" data-bs-dismiss="modal"
+									style="font-size: 25px">
+									<i class="ti-close"></i>
+								</button>
+							</div>
+							<!-- Modal body -->
+							<div class="modal-body"
+								style="height: 300px; overflow-y: scroll;">
+								<div class="vertical-line">
+
+									<div class="row">
+										<div id="myGrid2" style="width: 100%; height: 250px;"
+											class="ag-theme-alpine"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="myModal11">
+					<div class="modal-dialog modal-lg" style="max-width: 1100px">
+						<div class="modal-content" style="width: 100%">
+
+							<!-- Modal Header -->
+							<div class="modal-header">
+								<h4 class="modal-title" style="font-size: 16px" id="entry1">
+									<b>Request Id: <span></span></b>
+								</h4>
+								<button type="button" class="close" data-bs-dismiss="modal"
+									style="font-size: 25px">
+									<i class="ti-close"></i>
+								</button>
+							</div>
+							<!-- Modal body -->
+							<div class="modal-body"
+								style="height: 300px; overflow-y: scroll;">
+								<div class="vertical-line">
+
+									<div class="row">
+										<div id="myGrid3" style="width: 100%; height: 250px;"
+											class="ag-theme-alpine"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+</body>
+
+</html>

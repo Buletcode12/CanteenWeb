@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<style type="text/css">
+body {
+	margin: 0;
+	font-family: 'Poppins', sans-serif;
+	font-size: 13px;
+	color: #000;
+	height: 100%;
+}
+
+img {
+	border: none;
+	outline: none;
+}
+
+.mainsec {
+	width: 792px;
+	background: #FFF;
+	margin: 0 auto;
+	padding: 0px;
+	position: relative;
+}
+
+.detailcontent {
+	margin-bottom: 15px;
+	margin-top: 5px;
+}
+
+td {
+	padding: 0px;
+	border: none !important;
+}
+
+td:last-child {
+	
+}
+
+.nobdr {
+	font-size: 10px;
+}
+
+p {
+	font-size: 14px;
+	padding: 2px 0 !important;
+	line-height: 14px;
+}
+
+.indent {
+	margin-left: 50px;
+}
+
+.top-title {
+	padding: 6px 0px;
+}
+
+.logoname {
+	font-size: 24px;
+	color: #3464b3;
+	font-weight: 600;
+	padding-bottom: 8px;
+	padding-top: 10px;
+}
+
+.heading {
+	font-size: 24px;
+	color: #333;
+	font-weight: 600;
+	padding-bottom: 8px;
+	padding-top: 10px;
+}
+
+.commentsec {
+	background: #f5f5f5;
+	padding: 10px;
+	line-height: 22px;
+}
+
+.commentheading {
+	background: #e4e5e6;
+	font-size: 14px;
+}
+
+.content-block, p {
+	page-break-inside: avoid;
+}
+
+html, body {
+	width: 210mm;
+	margin: 0 auto;
+}
+
+thead {
+	top: 0px;
+	left: 50%;
+	margin-left: -397px;
+	z-index: 99;
+}
+
+.formtable {
+	position: relative;
+}
+
+.formtable td {
+	padding: 4px 4px;
+}
+
+@page {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+}
+
+ .bansec {
+	position: relative;
+	width: 100%;
+	height:120px;
+	clear: both;
+	display: block;
+	margin: 0px 50px;
+	padding-top: 20px;
+	padding-left:8px;
+	padding-right:8px;
+	/* background-color:#ccc; */
+	/* background:url("../../assets/images/headerbg.jpg");
+	background-repeat:no-repeat;
+	background-size:cover;  */
+} 
+
+
+
+.leftsec {
+	float: left;
+}
+
+.rightsec {
+	float: right;
+}
+
+.address {
+	padding: 10px;
+	text-align: right;
+	width: 200px;
+	float: right;
+}
+
+.logotext {
+	float: left;
+	width: 300px;
+	margin-left: 10px;
+}
+
+.label {
+	font-weight: bold;
+	line-height: 22px;
+	padding: 3px 10px;
+	display: inline-block;
+	margin-bottom: 8px;
+}
+
+.labelnxt {
+	font-weight: bold;
+	line-height: 22px;
+	padding: 3px 10px;
+	display: inline-block;
+	width: 230px;
+	margin-bottom: 8px;
+}
+
+.labelnew {
+	font-weight: bold;
+	line-height: 22px;
+	padding: 3px 10px;
+	display: inline-block;
+}
+
+.labeltxt {
+	font-weight: bold;
+	line-height: 22px;
+	padding: 3px 10px;
+	display: inline-block;
+	width: 80px;
+}
+
+.datelabel {
+	font-weight: bold;
+	padding: 0px 10px;
+}
+
+.titletxt {
+	font-weight: bold;
+}
+
+.redtxt {
+	font-weight: bold;
+	color: #FF0000;
+}
+
+.blue {
+	font-weight: bold;
+	color: #3869BF;
+}
+
+.green {
+	font-weight: bold;
+	color: #29AF35;
+}
+
+.electiontxt {
+	font-weight: bold;
+	float: right;
+}
+
+.formtable {
+	position: relative;
+	width: 100%;
+}
+
+.formtable td {
+	border: solid 1px #ccc !important;
+}
+
+.elesec {
+	margin-right: 66px;
+	float: right;
+}
+
+.dtsec {
+	float: left;
+}
+
+.line {
+	text-decoration: line-through;
+}
+
+.sundargardfooter {
+	bottom: 0 px;
+	height: auto;
+	left: 0;
+	width: 100%;
+	padding: 0px 30px;
+}
+
+.biharfooter {
+	bottom: 0 px;
+	height: auto;
+	left: 0;
+	width: 100%;
+	padding: 0px 30px;
+}
+
+.mahafooter {
+	bottom: 0 px;
+	height: auto;
+	left: 0;
+	width: 100%;
+	padding: 0px 30px;
+}
+
+.footer {
+	bottom: 0 px;
+	height: auto;
+	left: 0;
+	width: 100%;
+	padding: 0px 0px;
+}
+
+.nobdr {
+	position: relative
+}
+
+.nobdr tr td {
+	border: none;
+}
+
+.nobdr>tbody {
+	position: relative
+}
+
+.nobdr>tbody>tr>td {
+	border-bottom: none !important;
+}
+
+.footertxt {
+	color: #000;
+	font-size: 15px;
+	font-weight: bold;
+	line-height: 36px;
+	margin-bottom: 20px;
+	text-align: center;
+	padding-top: 10px;
+	border-top: solid 1px grey;
+}
+
+.imgicon {
+	/*float:left;*/
+	
+}
+
+.bluetxt {
+	color: #3869BF;
+	font-size: 16px;
+	font-weight: bold;
+	line-height: 20px;
+	margin-left: 5px;
+	margin-top: 20px;
+	/* float:left;*/
+	margin-bottom: 12px;
+}
+
+.formtable .toptitle {
+	font-size: 16px;
+	font-weight: 500;
+	padding: 6px 0px;
+	background: #f5f6f7;
+	text-align: center;
+	color: #0A55A8;
+	width: 99.8%;
+}
+
+.bg {
+	background-position: left bottom;
+	left: 0;
+	bottom: 0;
+	position: relative;
+}
+
+.back-bg {
+	background-image: url("images/header_report.png");
+	background-repeat: no-repeat;
+	height: 200px;
+	width: 100%;
+}
+
+.note {
+	padding-left: 30px;
+	padding-top: 20px;
+	padding-bottom: 10px;
+}
+
+.top-sec {
+	padding: 100px 10px 0px;
+}
+
+.ehealth-hd {
+	font-size: 24px;
+	color: #106cb5;
+	font-weight: bold;
+	text-align: center;
+}
+
+.ehealth-adrs {
+	font-size: 16px;
+	color: #797979;
+	text-align: center;
+}
+
+.call {
+	font-size: 20px;
+	color: #000;
+	font-weight: bold;
+	text-align: right;
+}
+
+.top-sec img {
+	width: 300px;
+}
+
+.logo img {
+	height: 80px;
+	width: 80px;
+}
+
+.logo1 img {
+	height: 50px;
+	width: 270px;
+}
+
+.ft-last {
+	background-color: #1f4e78;
+	color: #fff;
+	font-weight: 700;
+	padding: 15px;
+	text-align: center;
+	font-size: 20px;
+}
+
+.imgicon {
+	float: left;
+}
+
+.addsec {
+	border: solid 1px #ccc !important;
+	padding: 5px 25px;
+	margin: 0 2px;
+}
+
+.addtxt {
+	text-align: left;
+}
+
+.titletext {
+	font-size: 16px;
+	font-weight: 600;
+	padding: 6px 0px;
+	background: #f5f6f7;
+	text-align: center;
+	color: #0A55A8;
+	border: solid 1px #ccc !important;
+	display: block;
+	clear: both;
+	margin: 3px 0;
+}
+
+.detailsec {
+	display: block;
+	padding: 5px 25px
+}
+
+.dtxt {
+	text-align: left;
+	margin-bottom: 5px;
+}
+
+.dtxt span {
+	font-weight: bold;
+}
+
+.rcptxt {
+	text-align: right;
+	margin-bottom: 5px;
+}
+
+.rcptxt span {
+	font-weight: bold;
+}
+
+h1.hdtxt {
+	margin: 5px 0 !important;
+}
+
+.hdtxt {
+	font-size: 22px;
+	color: #64bd53;
+	display: block;
+}
+
+.clear {
+	clear: both;
+}
+
+.sub {
+	text-decoration: underline;
+	margin-top: 30px;
+}
+
+.mr-10 {
+	margin-top: 30px;
+}
+
+.mr-11 {
+	margin-top: 30px;
+}
+
+.mr-12 {
+	margin-top: 35px;
+}
+
+p.newtxt {
+	text-align: right;
+	font-size: 13px;
+	padding: 0 !important;
+	margin: 0 !important;
+	margin-bottom: 5px !important;
+}
+
+.btmtxt {
+	font-size: 14px;
+	text-align: left;
+}
+
+.itxt {
+	font-style: italic;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+.hdstxt {
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 8px;
+	text-decoration: underline;
+	margin-top: 10px;
+}
+
+.sptxt {
+	font-style: italic;
+	font-weight: bold;
+}
+
+.mr-btm {
+	margin-top: 15px;
+	margin-bottom: 30px;
+}
+
+.smimg {
+	position: relative;
+	top: 10px;
+	margin-right: 5px;
+}
+
+.smimg img {
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+}
+
+.btmtxt {
+	font-size: 14px;
+	text-align: left;
+}
+
+.btxt {
+	font-size: 14px;
+}
+
+.subtxt {
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+.btmsec {
+	position: absolute;
+	bottom: 0;
+}
+
+.ceo {
+	padding-top: 0px !important;
+}
+
+.ceotxt {
+	padding-bottom: 0px !important;
+}
+
+.newsec {
+	display: block;
+	float: left;
+	width: 100%;
+}
+
+.txtname {
+	display: block;
+}
+
+.subtxt {
+	display: block;
+	font-weight: 100;
+	font-size: 12px;
+	text-decoration: none !important;
+}
+
+.comptxt {
+	color: #000;
+	font-size: 15px;
+	font-weight: normal;
+	margin-bottom: 10px;
+	text-align: center;
+}
+ul li{
+margin:0!important;
+padding-bottom:8px!important;
+/* line-height:6px!important; */
+}
+
+ul li p{
+margin:0!important;
+padding:0px!important;
+/* line-height:6px!important; */
+}
+
+
+</style>
+
+
+<script>
+	function download() {
+
+		window.print();
+
+	}
+</script>
+</head>
+<body th:each="c,iter:${quotationslip[0].termCondition}">
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="maincontentsec">
+				<div class="mainsec">
+					<!--First Sec Start-->
+					<div class="bansec">
+						<div class="leftsec">
+							<!-- <img src="classpath:static/assets/images/samudyam_org_logo.png" /> -->
+						<img th:src="${quotationslip[0].orgImage}"/>
+						</div>
+						<div class="rightsec">
+						<h1 class="hdtxt" th:text="${quotationslip[0].organization}"></h1>
+						<strong></strong> <strong><span
+								th:text="${quotationslip[0].orgAddress}"></span> </strong> <br></br> 
+						<strong>
+								Email Id :</strong> <strong><span
+								th:text="${quotationslip[0].orgEmail}"></span> </strong> <br></br>
+								<strong>Phone:</strong>
+							<strong><span th:text="${quotationslip[0].orgPhone}"></span> </strong>
+							<br></br>
+							<strong>GST IN:</strong> <strong><span
+								th:text="${quotationslip[0].orgGstNo}"></span> </strong> <br></br> 
+						<strong>CIN
+								No:</strong> <strong><span th:text="${quotationslip[0].orgCinNo}"></span>
+							</strong>
+						
+							<!-- <h1 class="hdtxt">Samudyam Projects Private Limited</h1>
+							<p class="newtxt">At:Tapang, Dist:Khurda,Pin:752018,Odisha</p>
+							<p class="newtxt">Email:info.samudyam@gmail.com</p>
+							<p class="newtxt">Phone:7682832731/39</p> -->
+							<!-- <h1 class="hdtxt" th:text="${quotationslip[0].organization}"> </h1> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgAddress}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgEmail}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgPhone}"></p> -->
+						</div>
+					</div>
+					<div class="clear"></div>
+
+					<div style="height: 954px; margin: 0px 50px; border-top: 1px solid grey; margin-top: 10px; position: relative;">
+
+
+						<div class="hdstxt" align="center">QUOTATION</div>
+
+						<div class="newsec">
+							<div style="float: left;">
+								<strong> REF ID :</strong> <strong><span
+									th:text="${quotationslip[0].reference} +' ('+ ${quotationslip[0].version}+')' ">
+								</span> </strong>
+							</div>
+							<div align="right" style="float: right;">
+								<strong>DATE :</strong> <strong><span
+									th:text="${quotationslip[0].updatedOn}"></span> </strong>
+							</div>
+						</div>
+
+						<div class="clear"></div>
+
+						<p>
+							<strong>To </strong>
+						</p>
+						<p
+							style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+							<strong><span th:text="${quotationslip[0].custName}"></span><span>,</span></strong>
+						</p>
+						<p
+							style="margin-top: 5px !important; padding-top: 0px !important;">
+							<span th:if="${quotationslip[0].billingStreet1}!=''"
+								th:text="${quotationslip[0].billingStreet1} +','"></span> <span
+								th:if="${quotationslip[0].billingStreet2}!=''"> <br></br>
+								<th:block th:text="${quotationslip[0].billingStreet2}" />
+							</span><br></br> <span th:text="${quotationslip[0].billingCity}"></span><br></br>
+							<span
+								th:text="${quotationslip[0].billingState} + ${quotationslip[0].billingZipcode}"></span><br></br>
+                                   <span th:text="${quotationslip[0].billingMobileNo}"></span> 
+							<!-- <span th:text="${quotationslip[0].billingZipcode} +','"></span><br></br>
+							<span th:text="${quotationslip[0].billingState} +','"></span><br></br> -->
+							<!-- <span th:text="${quotationslip[0].billingCountry} +','"></span><br></br> -->
+							
+						</p>
+
+						<p>
+							<u><strong>SUBJECT </strong></u>&nbsp; : 
+							<u><strong><span th:text="${quotationslip[0].subject}"></span></strong></u>
+
+						</p>
+
+						<div class="mr-btm"></div>
+
+						<p width="25%" th:utext="${quotationslip[0].qutDescription}"></p>
+
+						<p>Regards,</p>
+						<p
+							style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+							<strong>Samudyam Projects Pvt Ltd</strong>
+						</p>
+
+						<p
+							style="margin-top: 5px !important; padding-top: 0px !important;">
+							*This is electronic generated document</p>
+
+						<div class="btmsec" style="width: 100%;">
+
+							<div class="footertxt" style="margin: 0px; padding: 0;">
+								<!-- <p class="comptxt" style="margin-top: 10px;padding:0px;">*This is electronic generated document</p> -->
+								<p style="margin: 0px; padding: 0;">Works At-Tapang, Khurda
+									-752018, Odisha</p>
+							</div>
+
+						</div>
+
+					</div>
+					<!--First Sec End-->
+
+					<!--Second Sec Start-->
+					<div th:if="${quotationslip[0].quotType}==1">
+						<div class="clear"></div>
+						<div class="bansec">
+						<div class="leftsec">
+							<!-- <img src="classpath:static/assets/images/samudyam_org_logo.png" /> -->
+						<img th:src="${quotationslip[0].orgImage}"/>
+						</div>
+						<div class="rightsec">
+						<h1 class="hdtxt" th:text="${quotationslip[0].organization}"></h1>
+						<strong></strong> <strong><span
+								th:text="${quotationslip[0].orgAddress}"></span> </strong> <br></br> 
+						<strong>
+								Email Id :</strong> <strong><span
+								th:text="${quotationslip[0].orgEmail}"></span> </strong> <br></br>
+								<strong>Phone:</strong>
+							<strong><span th:text="${quotationslip[0].orgPhone}"></span> </strong>
+							<br></br>
+							<strong>GST IN:</strong> <strong><span
+								th:text="${quotationslip[0].orgGstNo}"></span> </strong> <br></br> 
+						<strong>CIN
+								No:</strong> <strong><span th:text="${quotationslip[0].orgCinNo}"></span>
+							</strong>
+						
+							<!-- <h1 class="hdtxt">Samudyam Projects Private Limited</h1>
+							<p class="newtxt">At:Tapang, Dist:Khurda,Pin:752018,Odisha</p>
+							<p class="newtxt">Email:info.samudyam@gmail.com</p>
+							<p class="newtxt">Phone:7682832731/39</p> -->
+							<!-- <h1 class="hdtxt" th:text="${quotationslip[0].organization}"> </h1> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgAddress}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgEmail}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgPhone}"></p> -->
+						</div>
+					</div>
+
+						<div class="clear"></div>
+
+						<!--Table Start-->
+						<div style="height: 957px; margin-left: 50px; margin-right: 50px; border-top: 1px solid grey; margin-top: 10px; position: relative;">
+							<p>
+								<strong> A. Quotation</strong>
+							</p>
+							<table class="formtable">
+								<thead>
+									<tr align="left" style="background: #f5f6f7;">
+										<td width="5%"><strong>SL No</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<!-- <td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==1"><strong>Item</strong></td>
+										<td width="30%" th:if="${dstatus}==0 AND ${sizestatus}==1"><strong>Item</strong></td>
+										<td width="40%" th:if="${dstatus}==1 AND ${sizestatus}==0"><strong>Item</strong></td>
+										<td width="10%" th:if="${dstatus}==0 AND ${sizestatus}==0"><strong>Item</strong></td> -->
+										<td width="60%" th:if="${dstatus}==1"><strong>Item
+												Description</strong></td>
+										<td width="10%" th:if="${sizestatus}==1"><strong>Size</strong></td>
+										<td width="10%"><strong>Unit</strong></td>
+										<td width="5%" th:if="${thicknessstatus}==1">><strong>Thickness</strong></td>
+										<td width="10%"><strong>Qty</strong></td>
+										<td width="10%"><strong>Rate per unit</strong></td>
+										<td width="10%"><strong>Amount</strong></td>
+									</tr>
+								</thead>
+
+								<tbody th:if="${not #lists.isEmpty(quotationslip)}">
+									<tr align="left" th:each="items: ${quotationslip}">
+
+
+										<td th:text="${items.slNo}"></td>
+										<td th:text="${items.itemName}"></td>
+										<td th:if="${dstatus}==1" th:text="${items.itemDesc}"></td>
+
+										<td th:if="${sizestatus}==1" th:text="${items.sizeInMM}"></td>
+										<!--  <td th:text="${items.sizeInMM}"></td> -->
+										<td th:text="${items.unit}"></td>
+										<!-- <td th:text="${items.thicknessInMM}" align="right"></td> -->
+										<td th:if="${thicknessstatus}==1" th:text="${items.thicknessInMM}"></td>
+										<td th:text="${items.quantity}" align="right"></td>
+										<td th:text="${items.unitPrice}" align="right"></td>
+										<td th:text="${items.lineTotal}" align="right"></td>
+									</tr>
+
+									<tr align="right">
+
+										<td colspan="8" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==1" ><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="6" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td colspan="6" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td colspan="5" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td id="designation" th:text="${quotationslip[0].sumTotal}"></td>
+									</tr>
+
+
+								</tbody>
+
+							</table>
+
+
+							<p>
+								<strong>B. Scope Matrix-</strong>
+							</p>
+							<table class="formtable">
+
+
+
+								<thead>
+									<tr align="left" style="background: #f5f6f7;">
+										<td><strong>SL No</strong></td>
+										<td><strong>Description</strong></td>
+										<td><strong>Client</strong></td>
+										<td><strong>Samudyam</strong></td>
+										<td th:if="${remarkstatus}==1"><strong>Remarks</strong></td>
+									</tr>
+								</thead>
+								<tbody th:if="${not #lists.isEmpty(scopematrix)}">
+									<tr align="left" th:each="sm: ${scopematrix}">
+
+
+										<td th:text="${sm.slno}"></td>
+										<td th:text="${sm.scopeMatrixDesc}"></td>
+
+										<td th:if="${sm.matrixClient}==Yes">
+											<div align="center">
+												<img src="classpath:static/assets/images/check.png"
+													width="13" />
+											</div>
+										</td>
+										<td th:if="${sm.matrixClient}!=Yes"><img src=" "
+											width="13" /></td>
+										<td th:if="${sm.matrixSamudyam}==Yes"><div align="center">
+												<img src="classpath:static/assets/images/check.png"
+													width="13" />
+											</div></td>
+										<td th:if="${sm.matrixSamudyam}!=Yes"><img src=" "
+											width="13" /></td>
+										<td th:if="${remarkstatus}==1"
+											th:text="${sm.scopeMatrixRemarks}"></td>
+									</tr>
+
+								</tbody>
+
+							</table>
+							<div class="btmsec" style="width: 100%;">
+
+								<div class="footertxt" style="margin: 0px; padding: 0;">
+									<p style="margin: 0px; padding: 0;">Works At-Tapang, Khurda
+										-752018, Odisha</p>
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+					<div th:if="${quotationslip[0].quotType}==0">
+						<div class="clear"></div>
+					<div class="bansec">
+						<div class="leftsec">
+							<!-- <img src="classpath:static/assets/images/samudyam_org_logo.png" /> -->
+						<img th:src="${quotationslip[0].orgImage}"/>
+						</div>
+						<div class="rightsec">
+						<h1 class="hdtxt" th:text="${quotationslip[0].organization}"></h1>
+						<strong></strong> <strong><span
+								th:text="${quotationslip[0].orgAddress}"></span> </strong> <br></br> 
+						<strong>
+								Email Id :</strong> <strong><span
+								th:text="${quotationslip[0].orgEmail}"></span> </strong> <br></br>
+								<strong>Phone:</strong>
+							<strong><span th:text="${quotationslip[0].orgPhone}"></span> </strong>
+							<br></br>
+							<strong>GST IN:</strong> <strong><span
+								th:text="${quotationslip[0].orgGstNo}"></span> </strong> <br></br> 
+						<strong>CIN
+								No:</strong> <strong><span th:text="${quotationslip[0].orgCinNo}"></span>
+							</strong>
+						
+							<!-- <h1 class="hdtxt">Samudyam Projects Private Limited</h1>
+							<p class="newtxt">At:Tapang, Dist:Khurda,Pin:752018,Odisha</p>
+							<p class="newtxt">Email:info.samudyam@gmail.com</p>
+							<p class="newtxt">Phone:7682832731/39</p> -->
+							<!-- <h1 class="hdtxt" th:text="${quotationslip[0].organization}"> </h1> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgAddress}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgEmail}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgPhone}"></p> -->
+						</div>
+					</div>
+
+						<div class="clear"></div>
+						<!--Table Start-->
+						<div
+							style="height: 955px; margin-left: 50px; margin-right: 50px; border-top: 1px solid grey; margin-top: 10px; position: relative;">
+							<p>
+								<strong> A. Quotation</strong>
+							</p>
+							<table class="formtable">
+								<thead>
+									<tr align="left" style="background: #f5f6f7;">
+										<td width="5%"><strong>SL No</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>Item</strong></td>
+										<td width="20%" th:if="${dstatus}==1"><strong>Item
+												Description</strong></td>
+										<td width="10%" th:if="${sizestatus}==1"><strong>Size</strong></td>
+										<td width="10%"><strong>Unit</strong></td>
+										<td width="5%" th:if="${thicknessstatus}==1"><strong>Thickness</strong></td>
+										<td width="10%"><strong>Qty</strong></td>
+										<td width="10%"><strong>Rate per unit</strong></td>
+										<td width="10%"><strong>Amount</strong></td>
+									</tr>
+								</thead>
+
+								<tbody th:if="${not #lists.isEmpty(quotationslip)}">
+									<tr align="left" th:each="items: ${quotationslip}">
+
+
+										<td th:text="${items.slNo}"></td>
+										<td th:text="${items.itemName}"></td>
+										<td th:if="${dstatus}==1" th:text="${items.itemDesc}"></td>
+
+										<td th:if="${sizestatus}==1" th:text="${items.sizeInMM}"></td>
+										<!--  <td th:text="${items.sizeInMM}"></td> -->
+										<td th:text="${items.unit}"></td>
+										<td th:if="${thicknessstatus}==1" th:text="${items.thicknessInMM}" align="right"></td>
+										<td th:text="${items.quantity}" align="right"></td>
+										<td th:text="${items.unitPrice}" align="right"></td>
+										<td th:text="${items.lineTotal}" align="right"></td>
+									</tr>
+									<tr align="right">
+
+										<td colspan="8" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==1" ><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="6" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td colspan="6" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==1 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td colspan="5" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==0 AND ${thicknessstatus}==0"><strong>TOTAL</strong></td>
+										<td id="designation" th:text="${quotationslip[0].sumTotal}"></td>
+									</tr>
+
+								<!-- 	<tr align="right">
+
+										<td colspan="8" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==1"><strong>TOTAL</strong></td>
+										<td colspan="7" align="center"
+											th:if="${dstatus}==1 AND ${sizestatus}==0"><strong>TOTAL</strong></td>
+										<td colspan="6" align="center"
+											th:if="${dstatus}==0 AND ${sizestatus}==0"><strong>TOTAL</strong></td>
+										<td id="designation" th:text="${quotationslip[0].sumTotal}"></td>
+									</tr>
+ -->
+
+								</tbody>
+
+							</table>
+							<p>
+								<u><strong>C. Other Terms And Conditions</strong></u>
+							</p>
+							<p th:utext="${quotationslip[0].termCondition}"></p>
+
+							<br> </br>
+
+						<p>Now we look forward for your prestigious order and hope
+									that we shall be given an opportunity to provide </p>
+									<p>our services in offering you viable &amp; reliable products &amp; services.</p>
+							<p>Thanking you and assuring you of our best services at all
+								times.</p>
+							<p>Yours Faithfully,</p>
+							<p
+								style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+								<strong>Samudyam Projects Pvt Ltd</strong>
+							</p>
+							<p
+								style="margin-top: 5px !important; padding-top: 0px !important;">
+								*This is electronic generated document</p>
+							<div class="btmsec" style="width: 100%;">
+
+								<div class="footertxt" style="margin: 0px; padding: 0;">
+									<p style="margin: 0px; padding: 0;">Works At-Tapang, Khurda
+										-752018, Odisha</p>
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+					<!--Second Sec end-->
+					
+					<!--3rd Sec Start-->
+		<div th:if="${quotationslip[0].quotType}==1">
+			<div class="clear"></div>
+					<div class="bansec">
+						<div class="leftsec">
+							<!-- <img src="classpath:static/assets/images/samudyam_org_logo.png" /> -->
+						<img th:src="${quotationslip[0].orgImage}"/>
+						</div>
+						<div class="rightsec">
+						<h1 class="hdtxt" th:text="${quotationslip[0].organization}"></h1>
+						<strong></strong> <strong><span
+								th:text="${quotationslip[0].orgAddress}"></span> </strong> <br></br> 
+						<strong>
+								Email Id :</strong> <strong><span
+								th:text="${quotationslip[0].orgEmail}"></span> </strong> <br></br>
+								<strong>Phone:</strong>
+							<strong><span th:text="${quotationslip[0].orgPhone}"></span> </strong>
+							<br></br>
+							<strong>GST IN:</strong> <strong><span
+								th:text="${quotationslip[0].orgGstNo}"></span> </strong> <br></br> 
+						<strong>CIN
+								No:</strong> <strong><span th:text="${quotationslip[0].orgCinNo}"></span>
+							</strong>
+						
+							<!-- <h1 class="hdtxt">Samudyam Projects Private Limited</h1>
+							<p class="newtxt">At:Tapang, Dist:Khurda,Pin:752018,Odisha</p>
+							<p class="newtxt">Email:info.samudyam@gmail.com</p>
+							<p class="newtxt">Phone:7682832731/39</p> -->
+							<!-- <h1 class="hdtxt" th:text="${quotationslip[0].organization}"> </h1> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgAddress}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgEmail}"></p> -->
+							<!-- <p class="newtxt" th:text="${quotationslip[0].orgPhone}"></p> -->
+						</div>
+					</div>
+						<div class="clear"></div>
+
+				<div style="height: 955px; margin-left: 50px; margin-right: 50px; border-top: 1px solid grey; margin-top: 10px; position: relative; ">
+
+
+
+							<div  style="width: 100%;">
+								<p>
+									<u><strong>C. Other Terms And Conditions</strong></u>
+								</p>
+								<p th:utext="${quotationslip[0].termCondition}"></p>
+
+								<br> </br>
+
+								<p>Now we look forward for your prestigious order and hope
+									that we shall be given an opportunity to provide </p>
+									<p>our services in offering you viable &amp; reliable products &amp; services.</p>
+								<p>Thanking you and assuring you of our best services at all
+									times.</p>
+								<p>Yours Faithfully,</p>
+								<p
+									style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+									<strong>Samudyam Projects Pvt Ltd</strong>
+								</p>
+								<p
+									style="margin-top: 5px !important; padding-top: 0px !important;">
+									*This is electronic generated document</p>
+
+
+								<div class="btmsec" style="width: 100%;">
+
+									<div class="footertxt" style="margin: 0px; padding: 0;">
+										<p style="margin: 0px; padding: 0;">Works At-Tapang,
+											Khurda -752018, Odisha</p>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--3rd Sec end-->
+
+
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

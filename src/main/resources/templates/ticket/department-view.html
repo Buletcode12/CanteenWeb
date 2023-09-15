@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+
+<head>
+<meta charset="ISO-8859-1">
+
+<style type="text/css">
+
+/* .searchBox:hover>.searchInput {
+	width: 180px;
+	padding: 0 6px;
+	margin-right: 10px;
+} */
+.button-right {
+	display: flex;
+	justify-content: space-between;
+}
+</style>
+
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(
+			function() {
+				
+				
+
+				var dateFormat = localStorage.getItem("dateFormat");
+				$("#DateCalendar").datetimepicker({
+					format : dateFormat,
+					closeOnDateSelect : true,
+					timepicker : false,
+				}).on("change", function() {
+					$('#date').val($(this).val());
+				})
+
+				$('#date').blur(function() {
+					$("#DateCalendar").val($(this).val());
+				})
+				
+				$("#toDateCalendarTime").datetimepicker({
+					 format: 'h:i A',
+					    closeOnDateSelect: false,
+					    timepicker: true,
+					    datepicker: false,
+					    step: 1,
+					    formatTime: 'h:i A'
+				}).on("change", function() {
+					$('#time').val($(this).val());
+				})
+
+				$('#time').blur(function() {
+					$("#toDateCalendarTime").val($(this).val());
+				})
+				
+				
+		
+				var gridDiv = document.querySelector('#myGrid');
+				new agGrid.Grid(gridDiv, gridOptions);
+
+				var rowData = [];
+				gridOptions.api.setRowData(rowData);
+				
+				
+				$("#buttonClass").html(" ");
+				agGrid.simpleHttpRequest(
+						{
+							url : "departmentview-priority-list"
+						}).then(function(data) {
+					var jsonData = JSON.parse(data.body);
+					var allData = jsonData.priorityList;
+					
+					if(allData != "" || allData != null || allData != 'null'){
+						
+						for(var i=0 ; i< allData.length ; i++){
+							
+							var priorityList = `<div class="btn-group col-md-3">
+								<button class="btn btn-primary child" id=${allData[i].priorityName}
+								value=${allData[i].prorityId} onclick="ShowAgGrid(id)">${allData[i].priorityName}(<span></span>)</button>
+						</div>`
+								$("#buttonClass").append(priorityList);
+						}
+						$("#"+allData[0].priorityName).addClass("active");
+					}
+					
+				});
+
+			});
+	
+	
+
+	var columnDefs = [
+			{
+				headerCheckboxSelection : false,
+				headerCheckboxSelectionFilteredOnly : false,
+				checkboxSelection : true,
+				width : 10,
+				pinned: 'left',
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : 'Gate Entry Id',
+				width : 150,
+				field : "entryId",
+				pinned: 'left',
+				cellRenderer : function(params) {
+					if(params.data.type == 'unloading' || params.data.type == 'both'){
+						return '<a id="entryId" onclick=gateInDetails("'
+						+ params.data.entryId + '","' +  params.data.type
+						+ '") href="javascript:void(0)">'
+						+ params.data.entryId + '</a>';
+
+					}else{
+						return '<span  style="color:#808080">'
+						+ params.data.entryId + '</span>';
+					}
+					
+				}
+
+			}, {
+				headerName : 'Vehicle No',
+				field : "vehicleNo",
+				pinned: 'left',
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},{
+				headerName : 'Entry Date',
+				field : "date",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Entry Time',
+				field : "time",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Type',
+				field : "type",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},  {
+				headerName : 'Driver Name',
+				field : "driverName",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Driver Mob.',
+				field : "driverMobNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Dl No.',
+				field : "dl_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Lr No',
+				field : "lrNo",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Wheeler',
+				field : "wheels",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Transport Name',
+				field : "transportName",
+				width : 200,
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Depo',
+				field : "depo_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},{
+				headerName : 'Vendor Name',
+				field : "vendor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Visitor Name',
+				field : "visitor_name",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Visit address',
+				field : "visiting_address",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Visit Purpose',
+				field : "visite_purpose",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'To Meet',
+				field : "to_meet",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Visit Pass',
+				field : "pass_no",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Visitor Mob.',
+				field : "visitor_mobile",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, ];
+
+	// let the grid know which columns and what data to use
+	var gridOptions = {
+		columnDefs : columnDefs,
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 150
+		},
+	//onSelectionChanged : onSelectionChanged,
+	};
+
+	function ShowAgGrid(sec) {
+	    	
+	    	var parentElement = $('#buttonClass');
+	    	parentElement.find('.child').removeClass('active');
+	    	$("#"+sec).addClass("active");
+	
+	}
+
+ 
+function showModal(){
+	$('#myModal10').modal('show');
+	 var date1 = (new Date()).toISOString().split('T')[0];
+	  var newDate = changeDateFormat(date1);
+	  
+	  var currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+	
+	$("#time").val(currentTime);
+	$("#date").val(newDate);
+}
+
+function changeDateFormat(inputDate) { // expects Y-m-d
+	var splitDate = inputDate.split('-');
+	if (splitDate.count == 0) {
+		return null;
+	}
+	var year = splitDate[0];
+	var month = splitDate[1];
+	var day = splitDate[2];
+
+	return day + '-' + month + '-' + year;
+}
+	
+</script>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div id="main_content">
+							<div class="row mt-1" id="buttonClass"></div>
+							<br>
+							<div class="d-flex justify-content-between" id="tdiv">
+								<div class="btn-hs">
+									<div class="font-design" id="totalReq">
+										TOTAL LIST(<span></span>) <input type="hidden" id="sec">
+									</div>
+								</div>
+
+								<div class="button-right">
+									<div class="buttonsec btn-hs" id="inspectionbtnDiv">
+										<button class="approve-btn" id="inspectionBtn"
+											onclick="showModal()">INSPECTION</button>
+									</div>
+									<div class="buttonsec btn-hs" id="actionbtnDiv">
+										<button class="new-btn" id="actionBtn" onclick="filter()">
+											ACTION</button>
+									</div>
+
+								</div>
+							</div>
+
+
+						</div>
+
+
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+
+					</div>
+				</div>
+				<div class="modal fade" id="myModal10">
+					<div class="modal-dialog modal-lg" style="max-width: 650px; margin-top: 80px;">
+						<div class="modal-content" style="width: 100%">
+
+							<!-- Modal Header -->
+							<div class="modal-header">
+								<h4 class="modal-title" style="font-size: 16px" id="entry">
+									<b>Ticket Id: <span></span></b>
+								</h4>
+								<div>
+								<!-- <button id="close" type="button" class="btn btn-primary" title="Save"
+									data-bs-dismiss="modal">
+									<i class="bi bi-send-check"></i>
+								</button> -->
+								<button id="close" type="button" class="btn btn-danger" title="Close"
+									data-bs-dismiss="modal">
+									<i class="bi bi-x-lg"></i>
+								</button>
+								</div>
+							</div>
+							<!-- Modal body -->
+							<div class="modal-body"
+								style="height: 300px; overflow-y: scroll;">
+								<div class="vertical-line">
+
+									<div class="d-flex justify-content-between" id="modalDiv">
+										<div class="btn-hs">
+											<div class="font-design">
+												ASSIGN EMPLOYEE : 
+											</div>
+										</div>
+
+										<div class="button-right">
+											<div class="buttonsec btn-hs" id="inspectionbtnDiv">
+												<button class="save-btn ms-auto" id="saveInspection">SAVE</button>
+											</div>
+										</div>
+									</div>
+									
+									<div class="row">
+									<div class="col-md-6" >
+									<div class="form-group calendar_box">
+										<label>Date : </label> <input type="text" id="date"
+											class="form-control" onblur="removeValid(event)"
+											th:attr="onkeyup=|formatDate('date','${session.DATEFORMAT_JS}')|"
+											readonly> <i class="ti-calendar picker_calendar"
+											id="DateCalendar"></i>
+									</div>
+								</div>
+										<div class="col-md-6">
+									<div class="form-group calendar_box">
+										<label>Time</label> <input type="text" id="time"
+											class="form-control" onblur="removeValid(event)"
+											th:attr="onkeyup=|formatDate('time','${session.DATEFORMAT_JS}')|"
+											readonly> <i class="ti-time picker_calendar"
+											id="toDateCalendarTime"></i>
+									</div>
+								</div>
+									</div>
+
+									<div class="row">
+									<div class="col-md-6">
+											<div class="form-group">
+												<label> Department </label> <input type="text"
+													class="form-control" id="maxwt" >
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Priority </label> <input type="text"
+													class="form-control" id="maxwt"  >
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+
+		</div>
+	</div>
+
+</body>
+
+</html>

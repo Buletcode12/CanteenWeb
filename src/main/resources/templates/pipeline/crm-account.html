@@ -1,0 +1,2581 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<title>Welcome To NERP</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+.accInfo {
+	padding-left: 10px;
+	color: #0c63e4;
+}
+
+ul .icon {
+	list-style-type: circle !important;
+}
+
+.dropbtn {
+	border: none;
+	border-radius: 4px;
+	font-size: 10px;
+	background-color: #5784c4;
+	color: #fff !important;
+	margin-left: 5px;
+	margin-bottom: 8px;
+	width: 100px;
+	height: 28px;
+	line-height: 12px;
+	float: right;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.dropdown {
+	position: relative;
+	display: inline-block;
+}
+
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #f1f1f1;
+	min-width: 180px;
+	min-height: 10px;
+	box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+.dropdown-content a {
+	color: black;
+	padding: 6px 8px;
+	text-decoration: none;
+	display: block;
+}
+
+.dropdown-content a:hover {
+	background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+
+.dropdown:hover .dropbtn {
+	background-color: #3e8e41;
+}
+
+.btn11 {
+	border: none;
+	border-radius: 4px;
+	font-size: 10px;
+	background-color: #5784c4;
+	color: #fff !important;
+	margin-left: 5px;
+	margin-bottom: 8px;
+	width: 150px;
+	height: 28px;
+	line-height: 12px;
+	float: right;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+/* ---checkbox start---- */
+.multiselect {
+	width: 200px;
+}
+
+.selectBox {
+	position: relative;
+}
+
+.selectBox select {
+	width: 100%;
+	font-weight: bold;
+}
+
+.overSelect {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+#checkboxes {
+	/*   display: none; */
+	border: 1px #dadada solid;
+	padding-left: 5px;
+}
+
+#checkboxes label {
+	display: block;
+}
+
+#checkboxes label:hover {
+	background-color: #1e90ff;
+}
+
+#checkboxes2 {
+	/*  display: none; */
+	border: 1px #dadada solid;
+	padding-left: 5px;
+}
+
+#checkboxes2 label {
+	display: block;
+}
+
+#checkboxes2 label:hover {
+	background-color: #1e90ff;
+}
+
+/* -----checkbox end----- */
+.rating {
+	float: left;
+}
+
+.p_img {
+	margin-right: 15px;
+}
+
+.d-flex1 span {
+	padding: 0px 5px;
+	color: #999;
+	font-size: 11px;
+}
+
+.d-flex1 span>u {
+	color: #000;
+	text-decoration: none;
+}
+
+.u_name {
+	padding: 0px 5px;
+	font-weight: bold;
+}
+
+.rating:not(:checked)>input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0, 0, 0, 0);
+}
+
+.rating:not(:checked)>label {
+	float: right;
+	width: 1em;
+	padding: 0 .1em;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	font-size: 200%;
+	line-height: 1.2;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.rating:not(:checked)>label:before {
+	content: '★ ';
+}
+
+.rating>input:checked ~ label {
+	color: #ea0;
+}
+
+.rating:not(:checked)>label:hover, .rating:not(:checked)>label:hover 
+	~ label {
+	color: black;
+}
+
+.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
+	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
+	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
+	color: #ea0;
+}
+
+.rating>label:active {
+	position: relative;
+	top: 2px;
+	left: 2px;
+}
+
+.btn-outline-primary {
+	color: #007bff;
+	background-color: rgb(240 243 241/ 90%);
+	background-image: none;
+	border-color: #007bff;
+	cursor: pointer;
+}
+
+body {
+	margin-top: 20px;
+	color: #1a202c;
+	text-align: left;
+	/*  background-color: #e2e8f0;   */
+}
+
+.inner-wrapper {
+	position: relative;
+	height: calc(100vh - 3.5rem);
+	transition: transform 0.3s;
+}
+
+@media ( min-width : 992px) {
+	.sticky-navbar .inner-wrapper {
+		height: calc(100vh - 3.5rem - 48px);
+	}
+}
+
+.inner-main, .inner-sidebar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.inner-sidebar {
+	left: 0;
+	width: 235px;
+	border-right: 1px solid #cbd5e0;
+	background-color: #fff;
+	z-index: 1;
+}
+
+.inner-main {
+	right: 0;
+	left: 235px;
+}
+
+.inner-main-footer, .inner-main-header, .inner-sidebar-footer,
+	.inner-sidebar-header {
+	height: 3.5rem;
+	border-bottom: 1px solid #cbd5e0;
+	display: flex;
+	align-items: center;
+	padding: 0 1rem;
+	flex-shrink: 0;
+}
+
+.inner-main-body, .inner-sidebar-body {
+	padding: 1rem;
+	overflow-y: auto;
+	position: relative;
+	flex: 1 1 auto;
+}
+
+.inner-main-body .sticky-top, .inner-sidebar-body .sticky-top {
+	z-index: 999;
+}
+
+.inner-main-footer, .inner-main-header {
+	background-color: #fff;
+}
+
+.inner-main-footer, .inner-sidebar-footer {
+	border-top: 1px solid #cbd5e0;
+	border-bottom: 0;
+	height: auto;
+	min-height: 3.5rem;
+}
+
+@media ( max-width : 767.98px) {
+	.inner-sidebar {
+		left: -235px;
+	}
+	.inner-main {
+		left: 0;
+	}
+	.inner-expand .main-body {
+		overflow: hidden;
+	}
+	.inner-expand .inner-wrapper {
+		transform: translate3d(235px, 0, 0);
+	}
+}
+
+.nav .show>.nav-link.nav-link-faded, .nav-link.nav-link-faded.active,
+	.nav-link.nav-link-faded:active, .nav-pills .nav-link.nav-link-faded.active,
+	.navbar-nav .show>.nav-link.nav-link-faded {
+	color: #3367b5;
+	background-color: #c9d8f0;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+	color: #fff;
+	background-color: #467bcb;
+}
+
+.nav-link.has-icon {
+	display: flex;
+	align-items: center;
+}
+
+.nav-link.active {
+	color: #467bcb;
+}
+
+.nav-pills .nav-link {
+	border-radius: .25rem;
+}
+
+.nav-link {
+	color: #4a5568;
+}
+
+.card {
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0
+		rgba(0, 0, 0, .06);
+}
+
+.card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	word-wrap: break-word;
+	background-color: #fff;
+	background-clip: border-box;
+	border: 0 solid rgba(0, 0, 0, .125);
+	border-radius: .25rem;
+}
+
+.card-body {
+	flex: 1 1 auto;
+	min-height: 1px;
+	padding: 1rem;
+}
+
+.fa-icon {
+	font-size: 13px !important;
+}
+
+/* .img-hover {
+	opacity: 0;
+	transition: all 0.1s;
+} */
+
+.img-hover:hover {
+	opacity: 1;
+}
+
+.chk {
+	margin-right: 6px !important;
+	position: relative;
+}
+
+.mr-5 {
+	margin-bottom: 5px;
+}
+</style>
+<script type="text/javascript">
+
+function openNavTask() {
+	//alert('hello');
+	document.getElementById("mySidenavTask").style.cssText = "width: 290px; position: absolute; right:-10px; overflow: hidden; height:auto; top:420px;";
+
+	document.getElementById("mainTask").style.width = "75%";
+}
+
+$(document).ready(function () {
+	$("#mySidenavTask").hide();
+
+	var maxField = 5; // Total 5 product fields we add
+
+	var addButton = $('.add_button'); // Add more button selector
+
+	var wrapper = $('.field_wrapper'); // Input fields wrapper
+	
+
+
+	var fieldHTML = `<div class="form-elements">
+		<div class="row">
+		<div class="col-md-4">
+			<div class="form-group">
+				<label>Field:</label> <input type="text" class="form-control"
+					id="field" placeholder="field" name="field[]">
+			</div>
+		</div>
+			<div class="col-md-4">
+			<div class="form-group">
+				<label>Value:</label> <input type="text" class="form-control"
+					id="value" placeholder="Value" name="value[]">
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="form-group">
+			<a href="javascript:void(0);" class="remove_button" title="Add field">Remove</a>
+			</div>
+			</div>
+			</div>
+		</div>`; //New input field html 
+
+	var x = 1; //Initial field counter is 1
+
+	$(addButton).click(function () {
+		//Check maximum number of input fields
+		if (x < maxField) {
+			x++; //Increment field counter
+			$(wrapper).append(fieldHTML);
+		}
+	});
+
+	//Once remove button is clicked
+	$(wrapper).on('click', '.remove_button', function (e) {
+		e.preventDefault();
+		$(this).parent().closest(".form-elements").remove();
+		x--; //Decrement field counter
+	});
+});
+
+
+$(document).ready(function(){
+	
+	var dateFormat = localStorage.getItem("dateFormat");
+	$("#fromDateCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#fromDate').val($(this).val());
+	})
+	$('#fromDate').blur(function(){
+		$("#fromDateCalendar").val($(this).val());
+	})
+
+	$("#endDateCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#toDate').val($(this).val());
+	})
+	$('#toDate').blur(function(){
+		$("#endDateCalendar").val($(this).val());
+	})
+	
+	
+})
+
+
+
+$(function () {
+	$("#demo").hide();
+	$("#demoSendEmail").hide();
+	$("#macroContainer").hide();
+	$("#demoCreateTask").hide();
+	$("#demoCreateTags").hide();
+	
+	$("#demoSetReminder").hide();
+	$("#demoMassUpdate").hide();
+	$("#demoAddCampaign").hide();
+	$("#demoUpdateResponse").hide();
+	$("#demoPrintMailingLabels").hide();
+	$("#demoMailMerge").hide();
+	$("#demoMassConvert").hide();
+	$("#demoDeleteAction").hide();
+    $("#myCheckbox").click(function () {
+        if ($(this).is(":checked")) {
+            $("#runMacro").attr("disabled", false);
+   			$("#sentMail").attr("disabled", false);
+   			$("#createTask").attr("disabled", false);
+   			$("#tags").attr("disabled", false)
+   			$("#action").attr("disabled", false)
+        } else {
+        	$("#runMacro").attr("disabled", true);
+     		$("#sentMail").attr("disabled", true);
+     		$("#createTask").attr("disabled", true);
+     		$("#tags").attr("disabled", true)
+     		$("#action").attr("disabled", true)
+        }
+    });
+});
+
+var expanded = false;
+
+function showCheckboxes() {
+  var checkboxes = document.getElementById("checkboxes");
+  if (!expanded) {
+    checkboxes.style.display = "block";
+    expanded = true;
+  } else {
+    checkboxes.style.display = "none";
+    expanded = false;
+  }
+}
+
+
+function showCheckboxesSecond(){
+	 var checkboxes = document.getElementById("checkboxes2");
+	  if (!expanded) {
+	    checkboxes.style.display = "block";
+	    expanded = true;
+	  } else {
+	    checkboxes.style.display = "none";
+	    expanded = false;
+	  }
+}
+
+	//Starts Side Nav
+	/* function openNav() {
+
+		$('#lostReason').val("");
+
+		document.getElementById("mySidenav").style.cssText = "width: 250px; position: absolute; right:-10px; overflow: hidden; height:auto; top:0px;";
+
+		document.getElementById("main").style.width = "100%";
+	} */
+	
+function openNav() {
+		
+		$('#goalName').val("");
+		$('#expectedResult').val("");
+		$('#weightage').val("");
+		
+		document.getElementById("mySidenav").style.cssText = "width: 290px; position: absolute; right:-10px; overflow: hidden; height:auto; top:100px;";
+
+		document.getElementById("main_content").style.width = "75%";
+	}
+
+	function closeNav() {
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main").style.width = "100%";
+	}
+
+	function openNav1() {
+
+		$('#fromtime').val("");
+		$('#totime').val("");
+
+		document.getElementById("mySidenav1").style.cssText = "width: 250px; position: absolute; right:-10px; overflow: hidden; height:auto; top:0px;";
+
+		document.getElementById("main").style.width = "100%";
+	}
+
+	function closeNav1() {
+		document.getElementById("mySidenav1").style.width = "0";
+		document.getElementById("main").style.width = "100%";
+	}
+	//side Nav Ends
+
+	
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	var txtLen = 0;
+	function textCount(event) {
+
+		var id = event.target.id;
+		var pId = $('#' + id).next().attr("id");
+		$('#' + pId + ' span').empty();
+		txtLen = $('#' + id).val().length;
+		$('#' + pId + ' span').append(txtLen);
+	}
+	// column Defs
+	/* const columnDefs = [
+			{
+				headerCheckboxSelection : true,
+				checkboxSelection : true,
+				width : 8,
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},{
+				headerName : "Image",
+				field : "customer",
+				width : 80
+			},{
+				headerName : 'Name',
+				field : "accountId",
+				cellRenderer : function(params) {
+					return '<a onclick=editPage("' + params.data.accountId
+							+ ',' + '0' + '") href="javascript:void(0)">'
+							+ params.data.accountId + '</a>';
+				}
+			},
+			{
+				headerName : "Phone",
+				field : "oppertunity",
+				cellRenderer : function(params) {
+					return '<a onclick=editPage("' + params.data.accountId
+							+ ',' + '1' + '") href="javascript:void(0)">'
+							+ params.data.oppertunity + '</a>';
+				}
+			}, {
+				headerName : "Email",
+				field : "customer"
+			}, {
+				headerName : "Mobile",
+				field : "priority",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},  {
+				headerName : "Company",
+				field : "priority",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},
+			 {
+				headerName : "Title",
+				field : "priority",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			},{
+				headerName : "Lead Source",
+				field : "statusName",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			} ]; */
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 200,
+			height :10
+		},
+		rowSelection : 'multiple',
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.customerId;
+		}
+	};
+
+	
+	// for new button
+	function newBtn() { 
+	//	alert('hello');
+		$("#add").hide();
+		$("#copy").hide();
+		$("#delete").hide();
+		//$("#myGrid").hide();
+		$(".container").hide();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#statusDiv").hide();
+		$("#idDiv").hide();
+		$("#collapseFour").hide();
+		$("#headingFour").hide();
+		$("#myGridActivity").hide();
+
+		$("#demo").show();
+		//$("#runMacro").attr("disabled", true);
+ 		//$("#sentMail").attr("disabled", true);
+ 		//$("#createTask").attr("disabled", true);
+ 		//$("#tags").attr("disabled", true)
+
+	}
+	// for cancel button
+	function cancelBtn() {
+		$("#add").show();
+		$("#copy").show();
+		$("#delete").show();
+		$("#totalReq").show();
+		$(".container").show();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+
+		$('#accountId').text("");
+		$('#accountOwner').val("");
+		$('#rating').val("");
+		$('#accountName').val("");
+		$('#phone').val("");
+		$('#accountSite').val("");
+		$('#fax').val("");
+		$('#parentAccountId').val("");
+		$('#parentAccount').val("");
+		$('#website').val("");
+		$('#referenceContact').val("");
+		$('#accountNo').val("");
+		$('#ticketSymbol').val("");
+		$('#accountType').val("");
+		$('#ownership').val("");
+		$('#industry').val("");
+		$('#employee').val("");
+		$('#accountRevenue').val("");
+		$('#sicCode').val("");
+		$('#billingStreet').val("");
+		$('#shippingStreet').val("");
+		$('#billingCity').val("");
+		$('#shippingCity').val("");
+		$('#billingState').val("");
+		$('#shippingState').val("");
+		$('#billingCode').val("");
+		$('#shippingCode').val("");
+		$('#billingCountry').val("");
+		$('#shippingCountry').val("");
+		$('#description').val("");
+
+		/* agGrid.simpleHttpRequest({
+			url : "view-crm-pipeline-throughAjax"
+		}).then(function(data) {
+			gridOptions.api.setRowData(data);
+		}); */
+	}
+
+	$(document).ready(function() {
+		$("#date").datetimepicker({
+			format : "d-m-Y",
+			closeOnDateSelect : true,
+			minDate : new Date(),
+			timepicker : false,
+		});
+		$("#accountId").val("");
+
+		var dateFormat = localStorage.getItem("dateFormat");
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+
+		$('#fromDate').blur(function() {
+			$("#fromDateCalendar").val($(this).val());
+		})
+
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDate').val($(this).val());
+		})
+
+		$('#toDate').blur(function() {
+			$("#toDateCalendar").val($(this).val());
+		})
+
+		$("#fromTime").datetimepicker({
+			format : 'H:i',
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step : 15
+		})
+
+		$("#toTime").datetimepicker({
+			format : "H:i",
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step : 15
+		})
+
+	});
+</script>
+<script>
+	////ends
+	function addAccountInfo() {
+		var obj = {};
+		obj.accountId = $('#accountId').text();
+		obj.accountOwner = $('#accountOwner').val();
+		obj.rating = $('#rating').val();
+		obj.accountName = $('#accountName').val();
+		obj.phone = $('#phone').val();
+		obj.accountSite = $('#accountSite').val();
+		obj.fax = $('#fax').val();
+		obj.parentAccountId = $('#parentAccountId').val();
+		obj.parentAccount = $('#parentAccount').val();
+		obj.website = $('#website').val();
+		obj.referenceContact = $('#referenceContact').val();
+		obj.accountNo = $('#accountNo').val();
+		obj.ticketSymbol = $('#ticketSymbol').val();
+		obj.accountType = $('#accountType').val();
+		obj.ownership = $('#ownership').val();
+		obj.industry = $('#industry').val();
+		obj.employee = $('#employee').val();
+		obj.accountRevenue = $('#accountRevenue').val();
+		obj.sicCode = $('#sicCode').val();
+		obj.billingStreet = $('#billingStreet').val();
+		obj.shippingStreet = $('#shippingStreet').val();
+		obj.billingCity = $('#billingCity').val();
+		obj.shippingCity = $('#shippingCity').val();
+		obj.billingState = $('#billingState').val();
+		obj.shippingState = $('#shippingState').val();
+		obj.billingCode = $('#billingCode').val();
+		obj.shippingCode = $('#shippingCode').val();
+		obj.billingCountry = $('#billingCountry').val();
+		obj.shippingCountry = $('#shippingCountry').val();
+		obj.description = $('#description').val();
+		console.log(obj);
+
+		/* FORM VALIDATION STARTS*/
+
+		var validation = true;
+
+		/* if (obj.oppertunity == null || obj.oppertunity == "") {
+			validation = validationUpdated("oppertunity Required",
+					"oppertunity");
+		}
+ */
+		/* FORM VALIDATION ENDS*/
+
+		if (validation) {
+			//alert('hjhjhjbbh');
+			$.ajax({
+				type : "POST",
+				url : "view-crm-accounts-add",
+				contentType : "application/json",
+				data : JSON.stringify(obj),
+				success : function(response) {
+					console.log(response);
+					if (response.message == "Success") {
+						location.reload();
+
+						/* $("#add").show();
+						$("#copy").show();
+						$("#delete").show();
+						$("#totalReq").show();
+						$("#myGrid").show();
+						$("#searchRowDiv").show();
+
+						$("#demo").hide();
+
+						agGrid.simpleHttpRequest({
+							url : "view-crm-pipeline-throughAjax"
+						}).then(function(data) {
+							gridOptions.api.setRowData(data);
+						}); */
+					}
+				},
+				error : function(data) {
+
+					console.log(data);
+				}
+			})
+		}
+
+	}
+
+	// auto complete
+	function contactNameAutoComplete() {
+
+		var x = $("#contactName").val();
+		$
+				.ajax({
+
+					type : "GET",
+					url : "/pipeline/view-crm-pipeline-contactAutoComplete?id="
+							+ x,
+					dataType : 'json',
+					contentType : 'application/json',
+					success : function(response) {
+						console.log(response);
+						if (response.message == "success") {
+
+							if (response.body.length != 0) {
+								console.log("if: " + response);
+								$("#contactName").css("background", "#FFF");
+								var content = '<ul id="autocomplete-list">';
+								for (var i = 0; i < response.body.length; i++) {
+
+									console.log(response)
+									content += '<li onClick="selectAutocompleteValue1(\''
+											+ response.body[i].contactName
+											+ '\',\''
+											+ response.body[i].oppertunity
+											+ '\',\''
+											+ response.body[i].customer
+											+ '\',\''
+											+ response.body[i].email
+											+ '\',\''
+											+ response.body[i].phone
+											+ '\',\''
+											+ response.body[i].city
+											+ '\',\''
+											+ response.body[i].addressStreet
+											+ '\',\''
+											+ response.body[i].campanyName
+											+ '\',\''
+											+ response.body[i].states
+											+ '\',\''
+											+ response.body[i].country
+											+ '\',\''
+											+ response.body[i].zip
+											+ '\')">'
+											+ response.body[i].contactName
+											+ '</li>';
+								}
+								content += '</ul>';
+								$("#suggesstion-box1").show();
+								$("#suggesstion-box1").html(content);
+
+							} else {
+								console.log("else: " + response);
+								$("#contactName").css("background", "#FFF");
+								var content = '<ul id="autocomplete-list">';
+								content += '<li onClick="selectAutocompleteValue1(\''
+										+ ''
+										+ '\',\''
+										+ ''
+										+ '\')">'
+										+ "No Data Found" + '</li>';
+								content += '</ul>';
+								$("#suggesstion-box1").show();
+								$("#suggesstion-box1").html(content);
+							}
+						}
+					},
+					error : function(data) {
+						console.log(data);
+					}
+				})
+	}
+
+	function selectAutocompleteValue1(contactName, oppertunity, customer,
+			email, phone, city, addressStreet, campanyName, states, country,
+			zip) {
+		if (contactName) {
+			$("#contactName").val(contactName);
+			$("#oppertunity").val(campanyName);
+			$("#customer").val(customer);
+			$("#email").val(email);
+			$("#phone").val(phone);
+			$("#city").val(city);
+			$("#addressStreet").val(addressStreet);
+			$("#campanyName").val(campanyName);
+			$("#states").val(states);
+			$("#country").val(country);
+			$("#zip").val(zip);
+			$("#contactName").attr('data-procat', contactName);
+			$("#suggesstion-box1").hide();
+		} else {
+			$("#contactName").val("");
+			$("#oppertunity").val("");
+			$("#customer").val("");
+			$("#email").val("");
+			$("#phone").val("");
+			$("#city").val("");
+			$("#addressStreet").val("");
+			$("#campanyName").val("");
+			$("#states").val("");
+			$("#country").val("");
+			$("#zip").val("");
+			$("#contactName").attr('data-procat', "");
+			$("#suggesstion-box1").hide();
+		}
+	}
+	
+	
+	
+	
+	function deleteAccountInfo(id){
+		//alert("edit inside id:"+id)
+		
+		
+		 $.ajax({
+			type : "GET",
+			url : "view-crm-accounts-deleteDetails?id=" + id,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					console.log(response);
+					location.reload();
+				}
+			}
+		}); 
+	  }
+	
+	function showField(){
+		$('#searchAccountOwner').toggle();
+	}
+		function showField1(){
+		$('#searchrating').toggle();
+	}
+		function showField2(){
+		$('#searchAccountName').toggle();
+	}
+		function showField3(){
+		$('#searchContactName').toggle();
+	}
+		function showField4(){
+		$('#searchPhone').toggle();
+	}
+		function showField5(){
+		$('#searchaccountSite').toggle();
+	}
+		function showField6(){
+		$('#searchparentAccount').toggle();
+	}
+		function showField7(){
+		$('#searchWebsite').toggle();
+	}
+		function showField8(){
+		$('#"searchAccountNo"').toggle();
+	}
+		function showField10(){
+		$('#searchticketSymbol').toggle();
+	}
+		function showField11(){
+		$('#searchFax').toggle();
+	}
+		function showField12(){
+		$('#searchaccountType').toggle();
+	}
+		function showField13(){
+		$('#searchOwnership').toggle();
+	}
+		function showField15(){
+		$('#searchIndustry').toggle();
+	}
+		function showField16(){
+		$('#searchEmployee').toggle();
+	}
+		function showField17(){
+		$('#searchAccountRevenue').toggle();
+	}
+		function showField18(){
+		$('#searchsicCode').toggle();
+	}
+		function showField19(){
+		$('#searchbillingStreet').toggle();
+	}
+		function showField20(){
+		$('#searchShippingStreet').toggle();
+	}
+		function showField21(){
+		$('#searchBillingCity').toggle();
+	}
+		function showField22(){
+		$('#searchShippingCity').toggle();
+	}
+		function showField23(){
+		$('#searchBillingState').toggle();
+	}
+		function showField24(){
+		$('#searchShippingState').toggle();
+	}
+		function showField25(){
+		$('#searchBillingCode').toggle();
+	}
+		function showField26(){
+		$('#searchShippingCode').toggle();
+	}
+		function showField27(){
+		$('#searchBillingCountry').toggle();
+	}
+		function showField28(){
+		$('#searchShippingCountry').toggle();
+	}
+		
+		function filter(){
+	 
+		var obj = {};
+		
+		obj.accountOwner = $('#searchAccountOwner').val();
+		obj.rating = $('#searchrating').val();
+		obj.accountName = $('#searchAccountName').val();
+		obj.phone = $('#searchPhone').val();
+		obj.accountSite = $('#searchaccountSite').val();
+		obj.fax = $('#searchFax').val();
+		obj.parentAccount = $('#searchparentAccount').val();
+		obj.website = $('#searchWebsite').val();
+		obj.accountNo = $('#searchAccountNo').val();
+		obj.ticketSymbol = $('#searchticketSymbol').val();
+		obj.accountType = $('#searchaccountType').val();
+		obj.ownership = $('#searchOwnership').val();
+		obj.industry = $('#searchIndustry').val();
+		obj.employee = $('#searchEmployee').val();
+		obj.accountRevenue = $('#searchAccountRevenue').val();
+		obj.sicCode = $('#searchsicCode').val();
+		obj.billingStreet = $('#searchbillingStreet').val();
+		obj.shippingStreet = $('#searchShippingStreet').val();
+		obj.billingCity = $('#searchBillingCity').val();
+		obj.shippingCity = $('#searchShippingCity').val();
+		obj.billingState = $('#searchBillingState').val();
+		obj.shippingState = $('#searchShippingState').val();
+		obj.billingCode = $('#searchBillingCode').val();
+		obj.shippingCode = $('#searchShippingCode').val();
+		obj.billingCountry = $('#searchBillingCountry').val();
+		obj.shippingCountry = $('#searchShippingCountry').val();
+		obj.description = $('#description').val();
+			
+			
+			console.log(obj);
+			console.log("response of obj----"+JSON.stringify(obj));
+				$.ajax({
+					type : "POST",
+					url : "view-crm-accounts-view-Data-filter",
+					contentType : "application/json",
+					async : false,
+					data : JSON.stringify(obj),
+					success : function(response) {
+
+						if (response.message == "Success") {
+							console.log("in success"+response.body[0]);
+							//return false;
+						div = '';
+						$("#allDetails").empty();
+						for (var i = 0; i < response.body.length; i++) {
+							var im=response.body[i].imageName;
+							
+							//alert(im)<img src="'+im+'" width="80" alt="User" class="mr-3 img-thumbnail" />
+							var img = ' <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img"> </a>';
+							id=response.body[i].accountId;
+							
+							
+							var oim=response.body[i].ownerImage; 
+							var oimg = ' <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img"> <img src="'+oim+'" width="40" alt="User" class="mr-3 img-thumbnail" /></a>';
+							
+							var div = div+'<div class="card mb-2"><div class="card-body p-2 p-sm-3 d-flex"><div class="col-md-8">'
+								    + '<div class="media forum-item d-flex">'
+								    + '<div class="d-flex flex-column chk">'
+									+ '<input type="checkbox" id="myCheckbox" name="myCheckbox" class="checkbox_check mr-5" value="'+id
+									//+ '" onclick=clickCheckBox("'+id
+									+ '" onclick=clickCheckBox("'+id+'","'+response.body[i].phone		
+									+ '")>'
+									+ '<a href="#" data-toggle="collapse" onclick=editAccountInfo("'+id
+									+ '")><i class="fa fa-edit fa-icon img-hover" aria-hidden="true" '
+									+ '></i></a><div>'
+									+ '<a href="#" data-toggle="collapse" onclick=deleteAccountInfo("'+id
+									+ '")><i class="fa fa-trash fa-icon img-hover" aria-hidden="true" '
+									+ '></i></a></div></div>'
+									//+ img
+									+ '<div>'
+									+ '<div class="u_name">'
+									+ '<a href="#" onclick=viewAccountDetails("'+id+'")>'
+									+ response.body[i].accountName
+									+ '</div>'
+									+ '<div class="d-flex1">'
+									+ '<span>Phone : '
+									+ '<u>'
+									+ response.body[i].phone
+									+ '</u></span><span> | </span><span>Website : '
+									+ '<u>'
+									+ response.body[i].website
+									+ '</u></span> <span> | </span><span>Industry : <u>'
+									+ response.body[i].industry
+									+ '</u> </span> </div> <div class="d-flex1"> <span>Account Type : '
+									+ '<u>'
+									+ response.body[i].accountType
+									+ '</u></span> <span> | </span><span>Billing City : '
+									+ '<u>'
+									+ response.body[i].billingCity
+							    	+ '</u></div> </div> </div></div>'
+									+ '<div class="col-md-4"><div class="media forum-item d-flex">'
+									//+ '<a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img"> <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" class="mr-3 img-thumbnail" />'
+									+ oimg
+									+ '</a> <div> <div>'
+									+  response.body[i].accountOwner
+									+ '</div><div>'
+									+ response.body[i].createdDate
+									+ ' '
+									+ response.body[i].createdTime
+									+ '</div></div></div></div>'
+									+ '</div></div>';
+									
+							//div = xyx;
+							
+
+						} 
+						$("#allDetails").append(div);
+						
+						$("#runMacro").attr("disabled", true);
+						$("#sentMail").attr("disabled", true);
+						$("#createTask").attr("disabled", true);
+						$("#tags").attr("disabled", true);	
+					
+				 	}
+				},
+				error : function(data) {
+				} 
+			});
+			
+		}
+	
+	
+	$(document).ready(function() {
+	
+	//function viewDetails(){
+	 	$
+		.ajax({
+			type : "GET",
+			url : "view-crm-accounts-view-Data",
+			async : false,
+			success : function(response) {
+				console.log("in success-------------"+JSON.stringify(response),);
+				if (response.message == "Success") {
+						console.log("in success"+response.body[0]);
+						//return false;
+					div = '';
+					//alert("success")
+					for (var i = 0; i < response.body.length; i++) {
+						var im=response.body[i].imageName;
+						//alert(im)<img src="'+im+'" width="80" alt="User" class="mr-3 img-thumbnail" />
+						var img = ' <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img"> </a>';
+						id=response.body[i].accountId;
+						
+						
+						var oim=response.body[i].ownerImage; 
+						var oimg = ' <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img"> <img src="'+oim+'" width="40" alt="User" class="mr-3 img-thumbnail" /></a>';
+						
+						var xyx = '<div class="card mb-2"><div class="card-body p-2 p-sm-3 d-flex"><div class="col-md-8">'
+							    + '<div class="media forum-item d-flex">'
+							    + '<div class="d-flex flex-column chk">'
+								+ '<input type="checkbox" id="myCheckbox" name="myCheckbox" class="checkbox_check mr-5" value="'+id
+								//+ '" onclick=clickCheckBox("'+id
+								+ '" onclick=clickCheckBox("'+id+'","'+response.body[i].phone		
+								+ '")>'
+								+ '<a href="#" data-toggle="collapse" onclick=editAccountInfo("'+id
+								+ '")><i class="fa fa-edit fa-icon img-hover" aria-hidden="true" '
+								+ '></i></a><div>'
+								+ '<a href="#" data-toggle="collapse" onclick=deleteAccountInfo("'+id
+								+ '")><i class="fa fa-trash fa-icon img-hover" aria-hidden="true" '
+								+ '></i></a></div></div>'
+								//+ img
+								+ '<div>'
+								+ '<div class="u_name">'
+								+ '<a href="#" onclick=viewAccountDetails("'+id+'")>'
+								+ response.body[i].accountName
+								+ '</div>'
+								+ '<div class="d-flex1">'
+								+ '<span>Phone : '
+								+ '<u>'
+								+ response.body[i].phone
+								+ '</u></span><span> | </span><span>Website : '
+								+ '<u>'
+								+ response.body[i].website
+								+ '</u></span> <span> | </span><span>Industry : <u>'
+								+ response.body[i].industry
+								+ '</u> </span> </div> <div class="d-flex1"> <span>Account Type : '
+								+ '<u>'
+								+ response.body[i].accountType
+								+ '</u></span> <span> | </span><span>Billing City : '
+								+ '<u>'
+								+ response.body[i].billingCity
+						    	+ '</u></div> </div> </div></div>'
+								+ '<div class="col-md-4"><div class="media forum-item d-flex">'
+								//+ '<a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img"> <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" class="mr-3 img-thumbnail" />'
+								+ oimg
+								+ '</a> <div> <div>'
+								+ response.body[i].accountOwner
+								+'</div><div>'
+								+ response.body[i].createdDate
+								+ ' '
+								+ response.body[i].createdTime
+								+'</div></div></div></div>'
+								+ '</div></div>';
+								
+						div = xyx;
+						$("#allDetails").append(div);
+
+					} 
+					
+					$("#runMacro").attr("disabled", true);
+					$("#sentMail").attr("disabled", true);
+					$("#createTask").attr("disabled", true);
+					$("#tags").attr("disabled", true);	
+				
+			 	}
+			},
+			error : function(data) {
+			} 
+		});
+	 	
+	});
+	
+	
+///////////////editAccountInfo
+
+
+	function editAccountInfo(id){
+		//alert("edit inside id:"+id);return false;
+		
+		$.ajax({
+			type : "GET",
+			url : "view-crm-accounts-editDetails?id=" + id,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					newBtn();
+					
+					console.log('response------'+JSON.stringify(response));
+				    $('#accountId').text(response.body[0].accountId);
+				    $('#accountOwner').val(response.body[0].accountOwner);
+					$('#rating').val(response.body[0].rating);
+					$('#accountName').val(response.body[0].accountName);
+					$('#phone').val(response.body[0].phone);
+					$('#accountSite').val(response.body[0].accountSite);
+					$('#fax').val(response.body[0].fax);
+					
+					$('#parentAccountId').val(response.body[0].parentAccountId);
+					$('#parentAccount').val(response.body[0].parentAccount);
+					$('#website').val(response.body[0].website);
+					
+					$('#referenceContact').val(response.body[0].referenceContact);
+					
+					$('#accountNo').val(response.body[0].accountNo);
+					$('#ticketSymbol').val(response.body[0].ticketSymbol);
+					$('#accountType').val(response.body[0].accountType);
+					$('#ownership').val(response.body[0].ownership);
+					$('#industry').val(response.body[0].industry);
+					$('#employee').val(response.body[0].employee);
+					$('#accountRevenue').val(response.body[0].accountRevenue);
+					$('#sicCode').val(response.body[0].sicCode);
+					
+					
+					$('#billingStreet').val(response.body[0].billingStreet);
+					$('#shippingStreet').val(response.body[0].shippingStreet);
+					$('#billingCity').val(response.body[0].billingCity);			
+					$('#shippingCity').val(response.body[0].shippingCity);
+					$('#billingState').val(response.body[0].billingState);
+					$('#shippingState').val(response.body[0].shippingState);
+					$('#billingCode').val(response.body[0].billingCode);
+					$('#shippingCode').val(response.body[0].shippingCode);
+					$('#billingCountry').val(response.body[0].billingCountry);
+					$('#shippingCountry').val(response.body[0].shippingCountry);
+					
+					$('#description').val(response.body[0].description);
+					
+					/* $('#imgLoc').attr('src', '');
+					if(response.body[0].imageName!=null && response.body[0].imageName!="") {
+						//alert(response.body[0].imageName)
+						$('#imgLoc').attr('src', response.body[0].imageName);
+					} else {
+						$('#imgLoc').attr('src', '../assets/images/noimage.jpg');
+					} */
+				}
+			}
+		});
+	  }
+	
+
+
+</script>
+<!-- *************************             Activity Log                *************************************-->
+
+<script>
+
+	var activityDefs = [ {
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		sortable : false,
+		filter : false,
+		resizable : true,
+		width : 20
+	}, {
+		headerName : "Activity Name",
+		field : "operationName"
+	}, {
+		headerName : "User Name",
+		field : "operationBy"
+	}, {
+		headerName : "Created Date",
+		field : "operationOn",
+		cellStyle : {
+			textAlign : 'center'
+		}
+
+	} ];
+
+	var activityOptions = {
+		columnDefs : activityDefs,
+
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 420
+		}
+
+	};
+
+	document.addEventListener('DOMContentLoaded', function() {
+
+		var gridDiv = document.querySelector('#myGridActivity');
+		new agGrid.Grid(gridDiv, activityOptions);
+		
+		var gridDiv1 = document.querySelector('#activity');
+		new agGrid.Grid(gridDiv1, activityOptions);
+
+	});
+	function agGridActivity(accountId) {
+		agGrid.simpleHttpRequest({
+			url : 'view-crm-pipeline-activity-through-ajax?id=' + accountId
+		}).then(function(data) {
+			activityOptions.api.setRowData(data);
+		});
+	}
+	
+	function getAccountList() {
+		var search = $("#parentAccount").val();
+
+		if (search) {
+
+			$.ajax({
+						type : "POST",
+						url : "view-crm-contacts-get-account-list",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : search,
+						success : function(response) {
+							if (response.code == "Success") {
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutocompleteValue1(\''
+												+ response.body[i].custId
+												+ '\',\''
+												+ response.body[i].custName
+												+ '\',\''
+												+ response.body[i].custGSTNo
+												+ '\',\''
+												+ response.body[i].taxType
+												+ '\')">'
+												+ response.body[i].custName
+												+ '</li>';
+									}
+									content += '</ul>';
+									console.log("content " + content)
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1">';
+									content += '<li onClick="selectAutocompleteValue()">'
+											+ "No Data Found" + '</li>';
+									content += '</ul>';
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		}
+
+	}
+
+	function selectAutocompleteValue1(parentAccountId, parentAccount, custGSTNo, taxType) {
+
+		if (parentAccountId) {
+			
+
+			$("#parentAccountId").val(parentAccountId);
+
+			$("#parentAccount").val(parentAccount);
+			
+			$("#search").val(parentAccount);
+			$("#search").attr('data-procat', parentAccountId);
+			$("#suggesstion-box1_").hide();
+		//	hideShowS();
+			//checkForDuplicate(key,counter);
+
+		} else {
+
+			$("#parentAccountId").val("");
+
+			$("#parentAccount").val("");
+			
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box1_").hide();
+
+		}
+	}
+	function selectAutocompleteValue() {
+
+		$("#parentAccountId").val("");
+
+		$("#parentAccount").val("");
+		
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-box1_").hide();
+
+	}
+	
+	function viewAccountDetails(id){
+		var baseUrl = (window.location).href;
+		var rest = baseUrl.substring(0, baseUrl.lastIndexOf("/") + 1);
+		window.location.href = rest+"view-crm-accounts-detail?id="+id;
+	}
+	
+	
+	$(document).ready(function () {    
+	    
+        $('.numberonly').keypress(function (e) {    
+
+            var charCode = (e.which) ? e.which : event.keyCode    
+
+            if (String.fromCharCode(charCode).match(/[^0-9]/g))    
+
+                return false;                        
+
+        });    
+
+    });
+	//ag grid for activity log end
+</script>
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+					<div class="d-flex justify-content-between">
+						<div class="col-md-4 btn-hs">
+							<div class="font-design" id="totalReq">ALL ACCOUNTS</div>
+						</div>
+
+
+						<!-- Button to Open the Modal -->
+
+
+						<!-- The Modal -->
+						<div class="modal fade" id="myModal">
+							<div class="modal-dialog">
+								<div class="modal-content">
+
+									<!-- Modal Header -->
+									<div class="modal-header">
+										<h4 class="modal-title">Modal Heading</h4>
+										<button type="button" class="btn-close"
+											data-bs-dismiss="modal"></button>
+									</div>
+
+									<!-- Modal body -->
+									<div class="modal-body">Modal body..</div>
+
+									<!-- Modal footer -->
+									<div class="modal-footer">
+										<button type="button" class="btn btn-danger"
+											data-bs-dismiss="modal">Close</button>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<!-- 	<div class="col-md-4  btn-hs" id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+
+						</div> -->
+						<div class="buttonsec btn-hs">
+
+						<!-- 	<input type="button" class="btn2" id="action" value="Action"
+								onclick="newBtn()" readonly> -->
+							<!-- <div class="dropdown">
+									  <button class="dropbtn" id="action">Action</button>
+									  <div class="dropdown-content">
+									    <a href="#" id="setReminder" onclick="setReminder()">Set Reminder</a>
+									    <a href="#" id="massUpdate" onclick="massUpdate()">Mass Update</a>
+									    <a href="#" id="addToCampaign" onclick="addToCampaign()">Add to Campaign</a>
+									    <a href="#" id="updateResponse" onclick="updateResponse()">Update Response</a>
+									    <a href="#" id="printMailingLabes" onclick="printMailingLabes()">Print Mailing Labels</a>
+									    <a href="#" id="mailMerge" onclick="mailMerge()">Mail Merge</a>
+									    <a href="#" id="massConvert" onclick="massConvert()">Mass Convert</a>
+									    <a href="#" id="delete" onclick="deleteAction()">Delete</a>
+									  </div>
+									</div> -->
+
+
+
+							<!-- <input type="button" class="btn3" id="delete" value="DELETE"
+									data-toggle="modal" data-target="#delete" readonly>  
+									
+									<input type="button" class="btn3" id="tags" value="TAGS"
+									data-toggle="modal" data-target="#tags" onclick="createTags()" readonly> 
+									
+									<input type="button" class="btn3" id="createTask" value="CREATE TASK"
+									data-toggle="modal" data-target="#createTask" onclick="createTask()" readonly> 
+									
+									<input type="button" class="btn3" id="sentMail" value="SENT MAIL"
+									data-toggle="modal" data-target="#sentMail" onclick="sendEmail()" readonly> 
+									
+									
+									
+									<input type="button" class="btn3" id="runMacro" value="RUN MACRO"
+									data-toggle="modal" data-target="#runMacro" onclick="runMacro()" readonly> -->
+
+							<input type="button" class="btn11" id="add"
+								value="Create Account" onclick="newBtn()" readonly>
+
+
+						</div>
+					</div>
+
+					<!-- hello -->
+
+					<div class="container">
+						<div class="main-body p-0">
+							<div class="inner-wrapper">
+								<!-- Inner sidebar -->
+								<div class="inner-sidebar">
+									<!-- Inner sidebar header -->
+									<div class="inner-sidebar-header justify-content-center">
+										<button class="btn btn-primary has-icon btn-block"
+											type="button" data-toggle="modal" data-target="#threadModal"
+											onclick="filter()">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24"
+												height="24" viewBox="0 0 24 24" fill="none"
+												stroke="currentColor" stroke-width="2"
+												stroke-linecap="round" stroke-linejoin="round"
+												class="feather feather-plus mr-2">
+                        						<line x1="12" y1="5" x2="12" y2="19"></line>
+                        						<line x1="5" y1="12" x2="19" y2="12"></line>
+                   								 </svg>
+											Filter Leads By
+										</button>
+									</div>
+									<!-- /Inner sidebar header -->
+
+									<!-- Inner sidebar body -->
+									<div class="inner-sidebar-body p-0">
+										<div class="p-3 h-100" data-simplebar="init">
+											<div class="simplebar-wrapper" style="margin: -16px;">
+												<div class="simplebar-height-auto-observer-wrapper">
+													<div class="simplebar-height-auto-observer"></div>
+												</div>
+												<div class="simplebar-mask">
+													<div class="simplebar-offset"
+														style="right: 0px; bottom: 0px;">
+														<div class="simplebar-content-wrapper"
+															style="height: 100%;">
+															<div class="simplebar-content" style="padding: 16px;">
+
+
+
+																<!--  <div class="col-md-12">
+											<div class="form-group">
+												<input type="hidden" id="stageStatus" /> <input
+													type="hidden" id="accountId" /> 
+													
+													<label>System Defined Filters</label>
+													<div class="select">
+														<select id="leadOwner">
+																<option value="">System Defined Filters</option>
+															    <option value="Touched Records">Touched Records</option>
+																<option value="Untouched Records">Untouched Records</option>
+																<option value="Record Action">Record Action</option>
+																<option value="Related Record Action">Related Record Action</option>
+																<option value="Scoring Rules">Scoring Rules</option>
+																<option value="Latest Email Status">Latest Email Status</option>
+																<option value="Activities">Activities</option>
+																<option value="Notes">Notes</option>
+																<option value="Campaigns">Campaigns</option>
+      
+																
+														</select>
+													</div>
+											</div>
+										</div> -->
+
+																<!-- <div class="multiselect">
+																	<div class="selectBox" onclick="showCheckboxes()">
+																		<select>
+																			<option>System Defined Filters</option>
+																		</select>
+																		<div class="overSelect"></div>
+																	</div>
+																	<div id="checkboxes">
+																		<label for="one"> <input type="checkbox"
+																			id="Touched" />Touched Records
+																		</label> <label for="two"> <input type="checkbox"
+																			id="UnTouched" />UnTouched Records
+																		</label> <label for="three"> <input type="checkbox"
+																			id="Record" />Record Action
+																		</label> <label for="three"> <input type="checkbox"
+																			id="Related_Record" />Related Record Action
+																		</label> <label for="three"> <input type="checkbox"
+																			id="Scoring" />Scoring Rules
+																		</label> <label for="three"> <input type="checkbox"
+																			id="Email" />Latest Email Status
+																		</label> <label for="three"> <input type="checkbox"
+																			id="Activities" />Activities
+																		</label> <label for="three"> <input type="checkbox"
+																			id="Notes" />Notes
+																		</label> <label for="three"> <input type="checkbox"
+																			id="Campaigns" />Campaigns
+																		</label>
+																	</div>
+																</div> -->
+
+
+
+
+																
+																<div class="multiselect">
+																	<div class="selectBox" onclick="showCheckboxesSecond()">
+																		<select>
+																			<option>Filters By Fields</option>
+																		</select>
+																		<div class="overSelect"></div>
+																	</div>
+																	<div id="checkboxes2">
+
+																		<label for="one"> <input type="checkbox"
+																			id="accountOwner1" onclick="showField()" />Executive
+																		</label> <input style="display: none" type="text"
+																			id="searchAccountOwner" placeholder="Executive" />
+																		<label for="two"> <input type="checkbox"
+																			id="rating1" onclick="showField1()" />Rating
+																		</label> <input style="display: none" type="text"
+																			id="searchrating" placeholder="rating" /> <label
+																			for="three"> <input type="checkbox"
+																			id="accountName1" onclick="showField2()" />Account Name
+																		</label> <input style="display: none" type="text"
+																			id="searchAccountName" placeholder="Account Name" />
+																		<!-- <label for="four"> <input type="checkbox"
+																			id="contactName" onclick="showField3()"/>Contact Name</label>
+																			<input style="display:none" type="text" id="searchContactName" placeholder="Contact Name"/> -->
+																		<label for="five"> <input type="checkbox"
+																			id="phone1" onclick="showField4()" />Phone
+																		</label> <input style="display: none" type="text"
+																			id="searchPhone" placeholder="Phone" />
+																		<label for="six"> <input type="checkbox"
+																			id="createdBy1" onclick="showField5()" />Account Site
+																		</label> <input style="display: none" type="text"
+																			id="searchaccountSite" placeholder="Account Site" /> <label
+																			for="seven"> <input type="checkbox"
+																			id="parentAccount1" onclick="showField6()" />Parent Account
+																		</label> <input style="display: none" type="text"
+																			id="searchparentAccount" placeholder="parent Account" /> <label
+																			for="eight"> <input type="checkbox"
+																			id="website1" onclick="showField7()" />Website
+																		</label> <input style="display: none" type="text"
+																			id="searchWebsite" placeholder="Website" />
+																	    <labelfor="nine"> <input type="checkbox" id="accountNo1"
+																			onclick="showField8()" />AccountNo
+																		</label> <input style="display: none" type="text"
+																			id="searchAccountNo" placeholder="AccountNo" />
+																		<label for="eleven"> <input type="checkbox"
+																			id="ticketSymbol1" onclick="showField10()" />Ticket Symbol
+																		</label> <input style="display: none" type="text"
+																			id="searchticketSymbol" placeholder="ticketSymbol" />
+																		<label for="tweleve"> <input type="checkbox"
+																			id="fax1" onclick="showField11()" />Fax
+																		</label> <input style="display: none" type="text"
+																			id="searchFax" placeholder="Fax" /> <label
+																			for="thirteen"> <input type="checkbox"
+																			id="accountType1" onclick="showField12()" />Account Type
+																		</label> <input style="display: none" type="text"
+																			id="searchaccountType" placeholder="account Type" /> <label
+																			for="fourteen"> <input type="checkbox"
+																			id="ownership1" onclick="showField13()" />Ownership
+																		</label> <input style="display: none" type="text"
+																			id="searchOwnership" placeholder="Ownership" /> <label
+																			for="sixteen"> <input type="checkbox"
+																			id="industry1" onclick="showField15()" />Industry
+																		</label> <input style="display: none" type="text"
+																			id="searchIndustry" placeholder="Industry" /> <label
+																			for="twenty"> <input type="checkbox"
+																			id="employee1" onclick="showField19()" />Employee
+																		</label> <input style="display: none" type="text"
+																			id="searchEmployee" placeholder="Employee" /> <label
+																			for="eighteen"> <input type="checkbox"
+																			id="accountRevenue1" onclick="showField17()" />Account Revenue
+																		</label> <input style="display: none" type="text"
+																			id="searchAccountRevenue" placeholder="Account Revenue" />
+																		<label for="nineteen"> <input type="checkbox"
+																			id="sicCode1" onclick="showField18()" />Sic Code
+																		</label> <input style="display: none" type="text"
+																			id="searchsicCode"
+																			placeholder="sicCode" /> 
+																			<label for="twenty"><input type="checkbox"
+																			 id="billingStreet1" onclick="showField16()" />Billing Street
+																		</label> <input style="display: none" type="text"
+																			id="searchbillingStreet" placeholder="billing Street" />
+																		<label for="twentyone"> <input type="checkbox"
+																			id="shippingStreet1" onclick="showField20()" />Shipping Street
+																		</label> <input style="display: none" type="text"
+																			id="searchShippingStreet" placeholder="Shipping Street" />
+																		<label for="twentytwo"> <input type="checkbox"
+																			id="billingCity1" onclick="showField21()" />Billing City
+																		</label> <input style="display: none" type="text"
+																			id="searchBillingCity" placeholder="Billing City" /> <label
+																			for="twentythree"> <input type="checkbox"
+																			id="shippingCity1" onclick="showField22()" />Shipping City
+																		</label> <input style="display: none" type="text"
+																			id="searchShippingCity" placeholder="Shipping City" /> <label
+																			for="twentyfour"> <input type="checkbox"
+																			id="billingState1" onclick="showField23()" />Billing State
+																		</label> <input style="display: none" type="text"
+																			id="searchBillingState" placeholder="Billing State" /> <label
+																			for="twentyfive"> <input type="checkbox"
+																			id="shippingState1" onclick="showField24()" />Shipping State
+																		</label> <input style="display: none" type="text"
+																			id="searchShippingState" placeholder="Shipping State" />
+																		<label for="twentysix"> <input type="checkbox"
+																			id="billingCode1" onclick="showField25()" />Billing Code
+																		</label> <input style="display: none" type="text"
+																			id="searchBillingCode" placeholder="Billing Code" /> <label
+																			for="twentyseven"> <input type="checkbox"
+																			id="shippingCode1" onclick="showField26()" />Shipping Code
+																		</label> <input style="display: none" type="text"
+																			id="searchShippingCode" placeholder="Shipping Code" /> <label
+																			for="twentyeight"> <input type="checkbox"
+																			id="billingCountry1" onclick="showField27()" />Billing Country
+																		</label> <input style="display: none" type="text"
+																			id="searchBillingCountry" placeholder="Billing Country" />
+																		<label for="twentynine"> <input
+																			type="checkbox" id="shippingCountry1"
+																			onclick="showField28()" />Shipping Country
+																		</label> <input style="display: none" type="text"
+																			id="searchShippingCountry"
+																			placeholder="Shipping Country" />
+																			
+
+
+																	</div>
+
+																</div>
+
+
+
+
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="simplebar-placeholder"
+													style="width: 234px; height: 292px;"></div>
+											</div>
+											<div class="simplebar-track simplebar-horizontal"
+												style="visibility: hidden;">
+												<div class="simplebar-scrollbar"
+													style="width: 0px; display: none;"></div>
+											</div>
+											<div class="simplebar-track simplebar-vertical"
+												style="visibility: visible;">
+												<div class="simplebar-scrollbar"
+													style="height: 151px; display: block; transform: translate3d(0px, 0px, 0px);"></div>
+											</div>
+										</div>
+									</div>
+									<!-- /Inner sidebar body -->
+								</div>
+								<!-- /Inner sidebar -->
+
+								<!-- Inner main -->
+								<div class="inner-main">
+									<!-- Inner main header -->
+									<div class="inner-main-header">
+										<a
+											class="nav-link nav-icon rounded-circle nav-link-faded mr-3 d-md-none"
+											href="#" data-toggle="inner-sidebar"><i
+											class="material-icons">arrow_forward_ios</i></a> <select
+											class="custom-select custom-select-sm w-auto mr-1">
+											<option selected="">Latest</option>
+											<option value="1">Popular</option>
+											<option value="3">Solved</option>
+											<option value="3">Unsolved</option>
+											<option value="3">No Replies Yet</option>
+										</select> <span class="input-icon input-icon-sm ml-auto w-auto">
+											<input type="text"
+											class="form-control form-control-sm bg-gray-200 border-gray-200 shadow-none mb-4 mt-4"
+											placeholder="Search forum" />
+										</span>
+									</div>
+									<!-- /Inner main header -->
+
+									<!-- Inner main body -->
+
+									<!-- Forum List -->
+									<div
+										class="inner-main-body p-2 p-sm-3 collapse forum-content show">
+
+										<div class="col-md-12" id="allDetails"></div>
+										<!-- <div class="col-md-4" id="staticData"></div> -->
+
+
+									</div>
+									<!-- /Forum List -->
+
+									<!-- Forum List -->
+									<!-- <div class="inner-main-body p-2 p-sm-3 collapse forum-content show">
+                <div class="card mb-2">
+                    <div class="card-body p-2 p-sm-3 d-flex">
+                    <div class="col-md-8">
+                        <div class="media forum-item d-flex">
+                        <input type="checkbox" id="myCheckbox"/>
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="80" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+	                            <div class="u_name">King(Sample)</div>
+	                            <div class="d-flex1"><span>Phone : <u>8789376267</u></span><span> | </span><span>Website : www.google.com</span>
+	                            <span> | </span><span>Industry : <u>Manufacturing</u></span></div>
+	                            <div class="d-flex1"><span>Account Type : Vendor</span>
+	                            <span> | </span><span>Billing City : Baltmore</span></div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="media forum-item d-flex">
+                        
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+                            <div >Biraja P Nath</div>
+                            <div >Feb 3,2022 02:56PM</div>
+                           </div>
+                        </div>
+                         </div>
+                    </div>
+                </div>
+                 <div class="card mb-2">
+                    <div class="card-body p-2 p-sm-3 d-flex">
+                    <div class="col-md-8">
+                        <div class="media forum-item d-flex">
+                        <input type="checkbox" id="myCheckbox"/>
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="80" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                           <div>
+	                            <div class="u_name">King(Sample)</div>
+	                            <div class="d-flex1"><span>Phone : <u>8789376267</u></span><span> | </span><span>Website : www.google.com</span>
+	                            <span> | </span><span>Industry : <u>Manufacturing</u></span></div>
+	                            <div class="d-flex1"><span>Account Type : Vendor</span>
+	                            <span> | </span><span>Billing City : Baltmore</span></div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+                            <div >Biraja P Nath</div>
+                            <div >Feb 3,2022 02:56PM</div>
+                           </div>
+                        </div>
+                         </div>
+                    </div>
+                </div>
+                
+                   <div class="card mb-2">
+                    <div class="card-body p-2 p-sm-3 d-flex">
+                    <div class="col-md-8">
+                    <input type="checkbox" id="myCheckbox"/>
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="80" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+	                            <div class="u_name">King(Sample)</div>
+	                            <div class="d-flex1"><span>Phone : <u>8789376267</u></span><span> | </span><span>Website : www.google.com</span>
+	                            <span> | </span><span>Industry : <u>Manufacturing</u></span></div>
+	                            <div class="d-flex1"><span>Account Type : Vendor</span>
+	                            <span> | </span><span>Billing City : Baltmore</span></div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+                            <div >Biraja P Nath</div>
+                            <div >Feb 3,2022 02:56PM</div>
+                           </div>
+                        </div>
+                         </div>
+                    </div>
+                </div>
+                
+                   <div class="card mb-2">
+                    <div class="card-body p-2 p-sm-3 d-flex">
+                    <div class="col-md-8">
+                    <input type="checkbox" id="myCheckbox"/>
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="80" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+	                            <div class="u_name">King(Sample)</div>
+	                            <div class="d-flex1"><span>Phone : <u>8789376267</u></span><span> | </span><span>Website : www.google.com</span>
+	                            <span> | </span><span>Industry : <u>Manufacturing</u></span></div>
+	                            <div class="d-flex1"><span>Account Type : Vendor</span>
+	                            <span> | </span><span>Billing City : Baltmore</span></div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+                            <div >Biraja P Nath</div>
+                            <div >Feb 3,2022 02:56PM</div>
+                           </div>
+                        </div>
+                         </div>
+                    </div>
+                </div>
+                
+                   <div class="card mb-2">
+                    <div class="card-body p-2 p-sm-3 d-flex">
+                    <div class="col-md-8">
+                    
+                    <input type="checkbox" id="myCheckbox"/>
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="80" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+	                            <div class="u_name">King(Sample)</div>
+	                            <div class="d-flex1"><span>Phone : <u>8789376267</u></span><span> | </span><span>Website : www.google.com</span>
+	                            <span> | </span><span>Industry : <u>Manufacturing</u></span></div>
+	                            <div class="d-flex1"><span>Account Type : Vendor</span>
+	                            <span> | </span><span>Billing City : Baltmore</span></div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+                            <div >Biraja P Nath</div>
+                            <div >Feb 3,2022 02:56PM</div>
+                           </div>
+                        </div>
+                         </div>
+                    </div>
+                </div>
+                
+                
+                   <div class="card mb-2">
+                    <div class="card-body p-2 p-sm-3 d-flex">
+                    <div class="col-md-8">
+                    <input type="checkbox" id="myCheckbox"/>
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="80" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                           <div>
+	                            <div class="u_name">King(Sample)</div>
+	                            <div class="d-flex1"><span>Phone : <u>8789376267</u></span><span> | </span><span>Website : www.google.com</span>
+	                            <span> | </span><span>Industry : <u>Manufacturing</u></span></div>
+	                            <div class="d-flex1"><span>Account Type : Vendor</span>
+	                            <span> | </span><span>Billing City : Baltmore</span></div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+                            <div >Biraja P Nath</div>
+                            <div >Feb 3,2022 02:56PM</div>
+                           </div>
+                        </div>
+                         </div>
+                    </div>
+                </div>
+                
+                   <div class="card mb-2">
+                    <div class="card-body p-2 p-sm-3 d-flex">
+                    <div class="col-md-8">
+                    <input type="checkbox" id="myCheckbox"/>
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="80" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+	                            <div class="u_name">King(Sample)</div>
+	                            <div class="d-flex1"><span>Phone : <u>8789376267</u></span><span> | </span><span>Website : www.google.com</span>
+	                            <span> | </span><span>Industry : <u>Manufacturing</u></span></div>
+	                            <div class="d-flex1"><span>Account Type : Vendor</span>
+	                            <span> | </span><span>Billing City : Baltmore</span></div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="media forum-item d-flex">
+                            <a href="#" data-toggle="collapse" data-target=".forum-content" class="p_img">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" width="40" alt="User" 
+                            class="mr-3 img-thumbnail" /></a>
+                            <div>
+                            <div >Biraja P Nath</div>
+                            <div >Feb 3,2022 02:56PM</div>
+                           </div>
+                        </div>
+                         </div>
+                    </div>
+                </div>
+                
+                
+            </div> -->
+									<!-- /Forum List -->
+
+									<!-- Forum Detail -->
+									<div class="inner-main-body p-2 p-sm-3 collapse forum-content">
+										<a href="#" class="btn btn-light btn-sm mb-3 has-icon"
+											data-toggle="collapse" data-target=".forum-content"><i
+											class="fa fa-arrow-left mr-2"></i>Back</a>
+										<div class="card mb-2">
+											<div class="card-body">
+												<div class="media forum-item">
+													<a href="javascript:void(0)" class="card-link"> <img
+														src="https://bootdey.com/img/Content/avatar/avatar1.png"
+														width="50" alt="User" /> <small
+														class="d-block text-center text-muted">Newbie</small>
+													</a>
+													<div class="media-body ml-3">
+														<a href="javascript:void(0)" class="text-secondary">Mokrani</a>
+														<small class="text-muted ml-2">1 hour ago</small>
+														<h5 class="mt-1">Realtime fetching data</h5>
+														<div class="mt-3 font-size-sm">
+															<p>Hellooo :)</p>
+															<p>I'm newbie with laravel and i want to fetch data
+																from database in realtime for my dashboard anaytics and
+																i found a solution with ajax but it dosen't work if any
+																one have a simple solution it will be helpful</p>
+															<p>Thank</p>
+														</div>
+													</div>
+													<div class="text-muted small text-center">
+														<span class="d-none d-sm-inline-block"><i
+															class="far fa-eye"></i> 19</span> <span><i
+															class="far fa-comment ml-2"></i> 3</span>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="card mb-2">
+											<div class="card-body">
+												<div class="media forum-item">
+													<a href="javascript:void(0)" class="card-link"> <img
+														src="https://bootdey.com/img/Content/avatar/avatar2.png"
+														width="50" alt="User" /> <small
+														class="d-block text-center text-muted">Pro</small>
+													</a>
+													<div class="media-body ml-3">
+														<a href="javascript:void(0)" class="text-secondary">drewdan</a>
+														<small class="text-muted ml-2">1 hour ago</small>
+														<div class="mt-3 font-size-sm">
+															<p>What exactly doesn't work with your ajax calls?</p>
+															<p>Also, WebSockets are a great solution for realtime
+																data on a dashboard. Laravel offers this out of the box
+																using broadcasting</p>
+														</div>
+														<button class="btn btn-xs text-muted has-icon">
+															<i class="fa fa-heart" aria-hidden="true"></i>1
+														</button>
+														<a href="javascript:void(0)" class="text-muted small">Reply</a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- /Forum Detail -->
+
+									<!-- /Inner main body -->
+								</div>
+								<!-- /Inner main -->
+							</div>
+
+						</div>
+					</div>
+
+
+					<div class="collapse" id="demo">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="d-flex justify-content-between" id="main">
+									<div class="col-md-3" id="idDiv">
+										Account ID: <span id="accountId"></span>
+									</div>
+									<div>
+										<span class="accInfo">Account Information(Create
+											Account)</span>
+									</div>
+
+
+									<div class="col-md-2" align="center"></div>
+
+									<div class="col-md-3 padding-0" align="right">
+										<button class="btn4" id="cancel" onclick="cancelBtn()">CANCEL</button>
+										<button class="btn1" id="save" onclick="addAccountInfo()">SAVE</button>
+									</div>
+								</div>
+							</div>
+							<div class="innercontent">
+
+								<!-- <div class="row"> -->
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Executive</label>
+											<div class="select">
+												<select id="accountOwner">
+													<option value="">Select Executive</option>
+													<option th:each="c,iter:${ownerList}" th:value="${c.key}"
+														th:text="${c.name}"></option>
+
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Rating</label>
+											<div class="select">
+												<select id="rating">
+													<option value="">Select Rating</option>
+													<option th:each="c,iter:${ratingList}" th:value="${c.key}"
+														th:text="${c.name}"></option>
+
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Account Name</label> <input type="text"
+												class="form-control" id="accountName"
+												placeholder="Account Name">
+										</div>
+									</div>
+
+
+								</div>
+
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Phone</label> <input type="text" class="form-control numberonly"
+												id="phone" placeholder="Phone">
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Account Site</label> <input type="text"
+												class="form-control" id="accountSite"
+												placeholder="Account Site">
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Fax</label> <input type="text" class="form-control numberonly"
+												id="fax" placeholder="Fax">
+										</div>
+									</div>
+
+
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<div class="autocomplete">
+												<label>Parent Account</label> <input type="text"
+													id="parentAccount" placeholder="Parent Account"
+													class="form-control" onkeyup='getAccountList()'> <input
+													type="hidden" id="parentAccountId"> <input
+													type="hidden" id="custGSTNo"> <input type="hidden"
+													id="taxType" onclick="hideShowS()">
+											</div>
+											<div id="suggesstion-box1_" class="sugg-cls"></div>
+
+										</div>
+									</div>
+
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Website</label> <input type="text"
+												class="form-control" id="website" placeholder="Website">
+										</div>
+									</div>
+									
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Reference Contact Name</label> <input type="text"
+												class="form-control" id="referenceContact" placeholder="Reference Contact Name">
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Account Number</label> <input type="text"
+												class="form-control numberonly" id="accountNo"
+												placeholder="Account Number">
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Ticket Symbol</label> <input type="text"
+												class="form-control" id="ticketSymbol"
+												placeholder="Ticket Symbol">
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Account Type</label>
+											<div class="select">
+												<select id="accountType">
+													<option value="">Select Account Type</option>
+													<option th:each="c,iter:${accountTypeList}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Ownership</label>
+											<div class="select">
+												<select id="ownership">
+													<option value="">Select Ownership</option>
+													<option th:each="c,iter:${ownershipList}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Industry</label>
+											<div class="select">
+												<select id="industry">
+													<option value="">Select Industry</option>
+													<option th:each="c,iter:${industryList}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Employee</label> <input type="text"
+												class="form-control" id="employee" placeholder="Employee">
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Account Revenue</label> <input type="text"
+												class="form-control numberonly" id="accountRevenue"
+												placeholder="Account Revenue">
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>SIC Code</label> <input type="text"
+												class="form-control" id="sicCode" placeholder="SIC Code">
+										</div>
+									</div>
+								</div>
+
+
+
+								<!-- 	main div start here -->
+								<div id="main">
+
+									<!-- 	collapse for Contact InformationStart here -->
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="headingOne">
+											<button class="accordion-button" type="button"
+												data-bs-toggle="collapse" data-bs-target="#collapseOne"
+												aria-expanded="false" aria-controls="collapseOne">
+												Address Information</button>
+										</h2>
+										<div id="collapseOne" class="accordion-collapse collapse show"
+											aria-labelledby="headingOne"
+											data-bs-parent="#accordionExample">
+											<div class="accordion-body">
+												<div class="row">
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Billing Street</label> <input type="text"
+																class="form-control" id="billingStreet"
+																placeholder="Billing Street ">
+														</div>
+													</div>
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Shipping Street</label> <input type="text"
+																class="form-control" id="shippingStreet"
+																placeholder="Shipping Street">
+														</div>
+													</div>
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Billing City</label> <input type="text"
+																class="form-control" id="billingCity"
+																placeholder="Billing City ">
+														</div>
+													</div>
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Shipping City</label> <input type="text"
+																class="form-control" id="shippingCity"
+																placeholder="Shipping City ">
+														</div>
+													</div>
+
+
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Billing State</label>
+															<div class="select">
+																<select id="shippingState">
+																	<option th:value="NULL">Select State</option>
+																	<option th:each="c,iter:${statesList}"
+																		th:value="${c.key}" th:text="${c.name}"></option>
+																</select>
+															</div>
+														</div>
+													</div>
+
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Shipping State</label>
+															<div class="select">
+																<select id="billingState">
+																	<option th:value="NULL">Select State</option>
+																	<option th:each="c,iter:${statesList}"
+																		th:value="${c.key}" th:text="${c.name}"></option>
+																</select>
+															</div>
+														</div>
+													</div>
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Billing Zip Code</label> <input type="text"
+																class="form-control numberonly" id="billingCode"
+																placeholder="Billing zip Code">
+														</div>
+													</div>
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Shipping Zip Code</label> <input type="text"
+																class="form-control numberonly" id="shippingCode"
+																placeholder="Shipping Zip Code">
+														</div>
+													</div>
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Billing Country</label>
+															<div class="select">
+																<select id="billingCountry">
+																	<option th:value="NULL">Select Country</option>
+																	<option th:each="c,iter:${countryList}"
+																		th:value="${c.key}" th:text="${c.name}"></option>
+																</select>
+															</div>
+														</div>
+													</div>
+
+													<div class="col-md-6">
+														<div class="form-group">
+															<label>Shipping Country</label>
+															<div class="select">
+																<select id="shippingCountry">
+																	<option th:value="NULL">Select Country</option>
+																	<option th:each="c,iter:${countryList}"
+																		th:value="${c.key}" th:text="${c.name}"></option>
+																</select>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="headingTwo">
+											<button class="accordion-button" type="button"
+												data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+												aria-expanded="true" aria-controls="collapseTwo">
+												Description Information</button>
+										</h2>
+										<div id="collapseTwo" class="accordion-collapse collapse show"
+											aria-labelledby="headingTwo"
+											data-bs-parent="#accordionExample">
+											<div class="accordion-body">
+
+												<div class="row">
+													<div class="col-md-8">
+														<div class="modal-inrheading">Description</div>
+														<div class="position-text">
+															<textarea rows="4" cols="100" id="description"
+																onkeyup="textCount(event)"></textarea>
+															<div id="charNumSN" class="txtcounter" align="right">
+																<span>0</span> characters
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

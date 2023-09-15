@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#demo").hide();
+		$("#download").attr('disabled', false);
+		$("#reject").attr('disabled', true);
+		$("#approve").attr('disabled', true);
+		$("#delete").attr('disabled', true);
+		$("#new").attr('disabled', false);
+		
+			var gridDiv1 = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv1, gridOptions);
+		var data = [];
+		gridOptions.api.setRowData(data);
+ 
+		$('.loader').show();
+		var userid = $("#sessionId").val();
+		var userrole = $("#sessionRole").val();
+		var roleid = "";
+		for(var i = 6; i <= userrole.length; i=i+6){  
+		    roleid = roleid + '"' +userrole.slice(i-6, i)+ '",';
+		}
+		roleid = roleid.substring(0, roleid.length - 1);
+		gridOptions.api.setRowData();
+		agGrid.simpleHttpRequest({
+					url : "event-management-details-view?userid=" + userid+"&roleid="+roleid,
+				}).then(function(data) {
+					var len = data.length;
+					$('#totalReq').find('span').html(len);
+					gridOptions.api.setRowData(data);
+					$('.loader').hide();
+				})
+		
+		var dateFormat = localStorage.getItem("dateFormat");
+		$("#FromDateCalendarTime").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			datepicker : true,
+			scrollMonth : false,
+			minDate : new Date()
+		//step : 15
+		}).on("change", function() {
+			$('#eventFromDateId').val($(this).val());
+		})
+		$('#eventFromDateId').blur(function() {
+			$("#FromDateCalendarTime").val($(this).val());
+		})
+
+		$("#ToDateCalendarTime").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			datepicker : true,
+			scrollMonth : false,
+			minDate : new Date()
+		//step : 15
+		}).on("change", function() {
+			$('#eventTodateId').val($(this).val());
+		})
+		$('#eventTodateId').blur(function() {
+			$("#ToDateCalendarTime").val($(this).val());
+		})
+
+		$("#eventStartCalendarId").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			datepicker : true,
+			scrollMonth : false,
+			minDate : new Date()
+		//step : 15
+		}).on("change", function() {
+			$('#eventStartDateid').val($(this).val());
+		})
+		$('#eventStartDateid').blur(function() {
+			$("#eventStartCalendarId").val($(this).val());
+		})
+
+		$("#eventEndCalendarId").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			datepicker : true,
+			scrollMonth : false,
+			minDate : new Date()
+		//step : 15
+		}).on("change", function() {
+			$('#eventEndDateid').val($(this).val());
+		})
+		$('#eventEndDateid').blur(function() {
+			$("#eventEndCalendarId").val($(this).val());
+		})
+
+		var gridDiv = document.querySelector('#eventActivityId');
+		new agGrid.Grid(gridDiv, gridOptions1);
+		gridOptions1.api.setRowData();
+
+		var gridDiv = document.querySelector('#notificationId');
+		new agGrid.Grid(gridDiv, gridOptions2);
+		gridOptions2.api.setRowData();
+
+		$("#activityDateIdCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+			datepicker : true,
+			scrollMonth : false,
+			minDate : new Date()
+		//step : 15
+		}).on("change", function() {
+			$('#activityDateId').val($(this).val());
+		})
+		$('#activityDateId').blur(function() {
+			$("#activityDateIdCalendar").val($(this).val());
+		});
+
+		$("#activityCalendarStartTime").datetimepicker({
+			format : 'H:i',
+			closeOnDateSelect : true,
+			timepicker : true,
+			datepicker : false,
+		//scrollMonth : false,
+		//minDate : new Date()
+		//step : 15
+		}).on("change", function() {
+			$('#activityStartTimeId').val($(this).val());
+		})
+		$('#activityStartTimeId').blur(function() {
+			$("#activityCalendarStartTime").val($(this).val());
+		});
+
+		$("#activityCalendarEndTime").datetimepicker({
+			format : 'H:i',
+			closeOnDateSelect : true,
+			timepicker : true,
+			datepicker : false,
+		//	scrollMonth : false,
+		//	minDate : new Date()
+		//step : 15
+		}).on("change", function() {
+			$('#activityEndTimeId').val($(this).val());
+		})
+		$('#activityEndTimeId').blur(function() {
+			$("#activityCalendarEndTime").val($(this).val());
+		})
+	});
+	/*
+	 Event Activity
+	 */
+	 var columnDef = [
+			{
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : "Event Name",
+				field : "eventName",
+				width : 150,
+			 cellRenderer : function(params) {
+					if (params.data.eventName) {
+						return '<a onclick=editPage("'
+								+ params.data.eventId+','+params.data.createdBy
+								+ '") href="javascript:void(0)">'
+								+ params.data.eventName + '</a>';
+					}
+				}
+			},{
+				headerName : 'Event Created By',
+				field : "empName",
+				width : 180,
+			},
+			{
+				headerName : 'Apply Date',
+				field : "createdOn",
+				width : 150,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},
+			{
+				headerName : 'From Date',
+				field : "fromDate",
+				width : 150,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			}, {
+
+				headerName : 'To Date',
+				field : "toDate",
+				width : 150,
+				cellStyle : {
+					textAlign : 'center'
+				},
+			}, {
+				headerName : 'Event Organiser',
+				field : "eventOrganiser",
+			}, {
+				headerName : 'Registration Start Date',
+				field : "regdStartDate",
+				cellStyle : {
+					textAlign : 'center'
+				},
+			}, {
+				headerName : 'Registration End Date',
+				field : "regdEndDate",
+				cellStyle : {
+					textAlign : 'center'
+				},
+			},{
+				headerName : 'Approve Status',
+				field : "approveStatus",
+				width : 150,
+				cellRenderer : function(params) {
+					if (params.data.status == 0) { 
+						return '<div style="color:#a9a9a9">Pending</div>';
+					} else if (params.data.status == 1) {
+						return '<div style="color:#ffa500">Forwarded</div>';
+					} else if (params.data.status == 3) {
+						return '<div style="color:#0642f5">Approved</div>';
+					} else {
+						return '<div style="color:#ff8242">Rejected</div>';
+					}	
+				}
+			} ,{
+				headerName : 'Approved By',
+				field : "approvedBy",
+				width : 150,
+			} ,
+			{
+				headerName : 'Rejected By',
+				field : "rejectedBy",
+				width : 150,
+			} ,
+			{
+				headerName : 'Comments',
+				field : "approveComment",
+				width : 150,
+			} 
+			];
+	var gridOptions = {
+		columnDefs : columnDef,
+		rowSelection : 'multiple',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 210,
+			height : 10
+		},
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		onSelectionChanged : rowSelectId,
+		getRowNodeId : function(data) {
+			return data.eventId;
+		}
+	}; 
+	 
+	 var evntId="";
+	 id="";
+	function rowSelectId() {
+		 var selectedNodes = gridOptions.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		 evntId= selectedData.map(node => node.eventId);
+		 var empID= selectedData.map(node => node.createdBy);
+		var selectedRows = gridOptions.api.getSelectedRows();
+		id = "";
+		 var rowCount = 0;
+		for (var i = 0; i < selectedRows.length; i++) {
+			id = id + '"' + selectedRows[i].eventId+ '"';
+		     rowCount = rowCount + 1;
+		}
+		 var adRole=$("#adRole").val();
+		 var uid=$("#sessionId").val();
+		   if (rowCount > 0) {
+				$('#new').attr('disabled', true);
+				if(empID!=uid){
+					$('#delete').attr("disabled", true);
+					$('#approve').attr('disabled', false);
+					$('#reject').attr('disabled', false);
+		}else{
+			if(adRole=='rol001' || adRole=='rol010'){
+				$('#approve').attr('disabled', false);
+				$('#reject').attr('disabled', false);
+			}else{
+				$('#approve').attr('disabled', true);
+				$('#reject').attr('disabled', true);
+			}
+			if(selectedData.map(node => node.status)=='0'){
+				$('#delete').attr("disabled", false);
+			}else{
+				$('#delete').attr("disabled", true);
+			}
+			}
+    } else {
+    	$('#delete').attr("disabled", true);
+		$('#approve').attr('disabled', true);
+		$('#reject').attr('disabled', true);
+		$('#new').attr('disabled', false);
+
+    }
+	}
+
+	var colmnDefs = [
+			{
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : "Sequence",
+				field : "eventSlNo",
+				cellRenderer : function(params) {
+					if (params.data.eventSlNo) {
+						return '<a onclick=editProduct("'
+								+ params.data.eventSlNo
+								+ '") href="javascript:void(0)">'
+								+ params.data.eventSlNo + '</a>';
+					} else {
+						return '<a onclick=editProduct("'
+								+ params.data.eventSlNo
+								+ '") href="javascript:void(0)">'
+								+ params.data.eventSlNo + '</a>';
+					}
+				}
+			}, {
+				headerName : 'Date',
+				field : "eventActivityDate"
+			}, {
+
+				headerName : 'Start Time',
+				field : "eventAvtivityStartTime"
+			}, {
+				headerName : 'End Time',
+				field : "eventActivityEndTime",
+				width : 270,
+			}, {
+				headerName : 'Activity',
+				field : "eventActivity",
+				width : 270,
+			}, {
+				headerName : 'Remark',
+				field : "eventActivityRemark",
+				width : 280,
+			} ];
+	var gridOptions1 = {
+		columnDefs : colmnDefs,
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectActivityDetails,
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 210,
+			height : 10
+		},
+		getRowNodeId : function(data) {
+			return data.eventSlNo;
+		}
+	};
+	
+
+	var deleteid = "";
+	function rowSelectActivityDetails() {
+		var selectedRows = gridOptions1.api.getSelectedRows();
+
+		deleteid = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			deleteid = deleteid + '"' + selectedRows[i].eventSlNo + '",';
+
+		}
+		deleteid = deleteid.substring(0, deleteid.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#cancelId').attr("disabled", false);
+			$('#addId').attr("disabled", true);
+
+		} else {
+			$('#cancelId').attr("disabled", true);
+			$('#addId').attr("disabled", false);
+		}
+
+	}
+	
+	function deleteEvent() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+				 var id=selectedRows[0].eventId;
+				$.ajax({
+					type : "GET",
+					url : "event-management-delete?id=" + id,
+					async : false,
+					success : function(response) {
+
+						if (response.message == "Success") {
+							
+							$("#messageParagraph").text(
+							"Data Deleted Successfully");
+							$("#msgOkModal").removeClass("btn3");
+							$("#msgOkModal").addClass("btn1");
+							$("#msgModal").modal('show');
+							location.reload();
+							//profileSelect();
+							
+							$('#delete').attr("disabled", true);
+							$('#new').show();
+							
+						}
+
+					},
+					error : function(data) {
+					}
+				});
+	}
+	
+	
+	function editProduct(id) {
+		
+		openNavAddActivity();
+	    var x = parseInt(id);
+		var rowNode = gridOptions1.api.getRowNode(id);
+		var dataNode = rowNode.data;
+		
+		$("#activityDateId").val(dataNode.eventActivityDate);
+		$("#activityStartTimeId").val(dataNode.eventAvtivityStartTime);
+		$("#activityEndTimeId").val(dataNode.eventActivityEndTime);
+		$("#activityId").val(dataNode.eventActivity);
+		$('#activityRemarkId').val(dataNode.eventActivityRemark);
+		$('#slNo').val(dataNode.eventSlNo);
+		$("#rowId").val(id);
+		
+	}
+	
+	function editProduct1(id) {
+		
+		openNavAddNoti();
+	    var x = parseInt(id);
+		var rowNode = gridOptions2.api.getRowNode(id);
+		var dataNode = rowNode.data;
+
+		$("#sendNotiId").val(dataNode.notiSend);
+		$("#activityNotiId").val(dataNode.notiAction);
+		$("#notiIntervalId").val(dataNode.notiInterval);
+		$("#notiUnitId").val(dataNode.nitoUnit);
+		$('#notiRuleId').val(dataNode.notiRule);
+		$('#notiSentId').val(dataNode.notiSent);
+		$("#rowId").val(id);
+		
+	}
+	
+
+	var del= "";
+	function rowSelectNotificationDetails() {
+		var selectedRows = gridOptions2.api.getSelectedRows();
+
+		del = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			del = del + '"' + selectedRows[i].notiSend + '",';
+
+		}
+		del = deleteid.substring(0, del.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#cancelNotiId').attr("disabled", false);
+			$('#addNotiId').attr("disabled", true);
+
+		} else {
+			$('#cancelNotiId').attr("disabled", true);
+			$('#addNotiId').attr("disabled", false);
+		}
+
+	}
+	
+	function updateActivityRowData(data) {
+		
+		var rowNode = gridOptions1.api.getRowNode(data.rowId);
+		rowNode.setDataValue('activityDateId', data.eventActivityDate);
+		rowNode.setDataValue('activityStartTimeId', data.eventActivityEndTime);
+		rowNode.setDataValue('activityEndTimeId', data.totalLeave);
+		rowNode.setDataValue('activityId', data.eventActivity);
+		rowNode.setDataValue('activityRemarkId', data.eventActivityRemark);
+		$("#activityDateId").val("");
+		$("#activityStartTimeId").val("");
+		$("#activityEndTimeId").val("");
+		$("#activityId").val("");
+		$("#activityRemarkId").val("");
+		//$("#availableLeave").val("");
+		$("#rowId").val("");
+		closeNav();
+	}
+	
+	function updateNotificationRowData(data) {
+
+		var rowNode = gridOptions2.api.getRowNode(data.notiSend);
+		rowNode.setDataValue('sendNotiId', data.notiSend);
+		rowNode.setDataValue('activityNotiId', data.notiAction);
+		rowNode.setDataValue('notiIntervalId', data.notiInterval);
+		rowNode.setDataValue('notiRuleId', data.nitoUnit);
+		rowNode.setDataValue('notiRuleId', data.notiRule);
+		rowNode.setDataValue('notiSentId', data.notiSent);
+		$("#sendNotiId").val("");
+		$("#activityNotiId").val("");
+		$("#notiIntervalId").val("");
+		$("#notiRuleId").val("");
+		$("#availableLeave").val("");
+		$("#notiSentId").val("");
+		//$("#notiSend").val("");
+		//closeNav();
+	}
+	
+	 function editPage(id) {
+		 var datas = id.split(",");
+			var userid= datas[0];
+			var empid = datas[1];
+			var uid=$("#sessionId").val();
+			$("#eventId").html(userid);
+		    $("#demo").show();	
+			$("#myGrid").hide();
+	agGrid.simpleHttpRequest({
+		url : "event-management-details-edit?userid=" + userid,
+	}).then(function(data) {
+		gridOptions1.api.setRowData(data);
+		gridOptions2.api.setRowData(data);
+		
+		
+						$("#createdBy").val(data[0].createdBy);
+						$("#eventId").val(data[0].eventId);
+						$("#eventNameId").val(data[0].eventName);
+						$("#eventFromDateId").val(data[0].fromDate);
+						$("#eventTodateId").val(data[0].toDate);
+						$("#eventOrganiseId").val(data[0].eventOrganiser);
+						
+						$("#eventTypeId").val(data[0].eventType);
+						$("#eventResponseId").val(data[0].eventResponsible);
+						$("#eventMaxRegdId").val(data[0].evantMaxRegd);
+						$("#eventVanueId").val(data[0].eventVanue);
+						
+						$("#eventStartDateid").val(data[0].regdStartDate);
+						$("#eventEndDateid").val(data[0].regdEndDate); 
+						$("#cancelId").attr('disabled', true);
+						$("#cancelNotiId").attr('disabled', true);
+						
+						   // $("#addId").hide();
+						   // $("#addNotiId").hide();
+						    $("#download").hide();
+							$("#reject").hide();
+							$("#approve").hide();
+							$("#delete").hide();
+							$("#new").hide();
+							$("#demo1").hide();
+							$("#searchRowDiv").hide();
+							$("#totalReq").hide();
+						
+				       if(empid==uid){		
+							$("#mainSave").attr('disabled', false);
+							$("#saveTableData").attr('disabled', false);
+						      $("#saveTableData").attr('disabled', false);
+						      $("#addId").attr('disabled', false);
+						      $("#addNotiId").attr('disabled', false);
+				       }else{		
+					      $("#mainSave").attr('disabled', true);
+					      $("#saveTableData").attr('disabled', true);
+					      $("#saveTableData").attr('disabled', true);
+					      $("#addId").attr('disabled', true);
+					      $("#addNotiId").attr('disabled', true);
+		                  }
+	})
+	 }
+					
+			
+	function openNavAddActivity() {
+		$("#activityDateId").val("");
+		$("#activityStartTimeId").val("");
+		$("#activityEndTimeId").val("");
+		$("#activityId").val("");
+		$("#activityRemarkId").val("");
+		document.getElementById("mySidenav").style.cssText = "width:25%; position: absolute; right:-10px; overflow: hidden; height:auto; top:465px;";
+		document.getElementById("eventActivityId").style.width = "75%";
+		document.getElementById("notificationId").style.width = "75%";
+		$("#addNotiId").hide();
+		$("#cancelNotiId").hide();
+		$("#addId").hide();
+		$("#cancelId").hide();
+	}
+	function openAddActivity() {
+	
+		var event = {};
+		var valid = true;
+		event.eventId = $("#eventId").val();
+		event.eventName = $("#eventNameId").val();
+		event.fromDate = $("#eventFromDateId").val();
+		event.toDate = $("#eventTodateId").val();
+		event.eventOrganiser = $("#eventOrganiseId").val();
+		event.eventType = $("#eventTypeId").val();
+		event.eventResponsible = $("#eventResponseId").val();
+		event.evantMaxRegd = $("#eventMaxRegdId").val();
+		event.eventVanue = $("#eventVanueId").val();
+		event.regdStartDate = $("#eventStartDateid").val();
+		event.regdEndDate = $("#eventEndDateid").val();
+		event.eventCreatedBy = $("#eventEndDateid").val();
+		
+		if (event.eventName == null || event.eventName == "") {
+			valid = validationUpdated("Event Name Required", "eventNameId");
+		}
+		if (event.fromDate == null || event.fromDate == "") {
+			valid = validationUpdated("From Date Required","eventFromDateId");
+		}
+		if (event.toDate == null || event.toDate == "") {
+			valid = validationUpdated("To date Required", "eventTodateId");
+		}
+		if (event.eventOrganiser == null || event.eventOrganiser == "") {
+			valid = validationUpdated("Organiser Required", "eventOrganiseId");
+		}
+		if (event.eventType == null || event.eventType == "") {
+			valid = validationUpdated("Event Type Required", "eventTypeId");
+		}
+		if (event.eventResponsible == null || event.eventResponsible == "") {
+			valid = validationUpdated("Responsible Required", "eventResponseId");
+		}
+		if (event.evantMaxRegd == null || event.evantMaxRegd == "") {
+			valid = validationUpdated("Maximum Required", "eventMaxRegdId");
+		}
+		if (event.eventVanue == null || event.eventVanue == "") {
+			valid = validationUpdated("Venue Required", "eventVanueId");
+		}
+		if (event.regdStartDate == null || event.regdStartDate == "") {
+			valid = validationUpdated("Start Date Required", "eventStartDateid");
+		}
+		if (event.regdEndDate == null || event.regdEndDate == "") {
+			valid = validationUpdated("End Date Required", "eventEndDateid");
+		}
+	
+	
+	if (valid) {
+		openNavAddActivity();
+	}
+	else{
+
+		$("#messageParagraph").text(
+		"Add Create Event Details First");
+		$("#msgOkModal").removeClass("btn3");
+		$("#msgOkModal").addClass("btn1");
+		$("#msgModal").modal('show');
+	}
+	}
+	
+	
+	
+	function closeNav() {
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("eventActivityId").style.width = "100%";
+		document.getElementById("notificationId").style.width = "100%";
+		$("#addId").show();
+		$("#cancelId").show();
+		$("#addNotiId").show();
+		$("#cancelNotiId").show();
+	}
+	/*   table add activity*/
+function newBtn(){
+		$("#demo").show();
+		$("#myGrid").hide();
+		$("#myGrid1").show();
+		$("#demo1").hide();
+		$("#new").hide();
+		$("#delete").hide();
+		$("#reject").hide();
+		$("#approve").hide();
+		$("#searchRowDiv").hide();
+		$("#download").hide();
+		$("#totalReq").hide();
+		$("#cancelId").attr('disabled', true);
+		$("#cancelNotiId").attr('disabled', true);
+		
+	}
+	function saveTableData() {
+		var eventActivity = {};
+		var data1 = 1;
+		var validation = true;
+		eventActivity.eventSlNo = data1;
+		eventActivity.eventActivityDate = $("#activityDateId").val();
+		eventActivity.eventAvtivityStartTime = $("#activityStartTimeId").val();
+		eventActivity.eventActivityEndTime = $("#activityEndTimeId").val();
+		eventActivity.eventActivity = $("#activityId").val();
+		eventActivity.eventActivityRemark = $("#activityRemarkId").val();
+
+		if (eventActivity.eventActivityDate == null
+				|| eventActivity.eventActivityDate == "") {
+			validation = validationUpdated("Date Required", 'activityDateId');
+		}
+		if (eventActivity.eventAvtivityStartTime == null
+				|| eventActivity.eventAvtivityStartTime == "") {
+			validation = validationUpdated("Start Time Required",
+					'activityStartTimeId');
+		}
+		if (eventActivity.eventActivityEndTime == null
+				|| eventActivity.eventActivityEndTime == "") {
+			validation = validationUpdated("End Time Required",
+					'activityEndTimeId');
+		}
+		if (eventActivity.eventActivity == null
+				|| eventActivity.eventActivity == "") {
+			validation = validationUpdated("Activity Required", 'activityId');
+		}
+		if (eventActivity.eventActivityRemark == null
+				|| eventActivity.eventActivityRemark == "") {
+			validation = validationUpdated("Remark Required",
+					'activityRemarkId');
+		}
+		
+
+		 var datas = [];
+	    var rowEdit = $("#rowId").val();
+	    if (rowEdit) {
+           var rowNode = gridOptions1.api.getRowNode(rowEdit);
+           rowNode.setData(eventActivity);
+           closeNav();
+           
+       } 
+
+	     if (validation) {
+	    	 
+	    	 gridOptions1.api.forEachNode(function(rowNode, index) {
+	                datas.push(rowNode.data);
+	            });
+	            datas.push(eventActivity)
+	            gridOptions1.api.setRowData(datas);
+	            closeNav();
+	        }
+
+	}
+
+
+	/*
+	 Event Activity
+	 */
+	var colmnDefs2 = [
+			{
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},
+			{
+				headerName : "Send",
+				field : "notiSend",
+				cellRenderer : function(params) {
+					if (params.data.notiSend) {
+						return '<a onclick=editProduct1("'
+								+ params.data.notiSend
+								+ '") href="javascript:void(0)">'
+								+ params.data.notiSend + '</a>';
+					} else {
+						return '<a onclick=editProduct1("'
+								+ params.data.notiSend
+								+ '") href="javascript:void(0)">'
+								+ params.data.notiSend + '</a>';
+					}
+				}
+			}, {
+				headerName : 'Action',
+				field : "notiAction"
+			}, {
+
+				headerName : 'Interval',
+				field : "notiInterval",
+				width : 250,
+			}, {
+				headerName : 'Unit',
+				field : "nitoUnit",
+				width : 250,
+			}, {
+				headerName : 'Rule',
+				field : "notiRule",
+				width : 270,
+			}, {
+				headerName : 'Sent',
+				field : "notiSent",
+				width : 270,
+			} ];
+
+	
+	var gridOptions2 = {
+			columnDefs : colmnDefs2,
+			rowSelection : 'multiple',
+			onSelectionChanged : rowSelectNotificationDetails,
+			groupSelectsChildren : true,
+			suppressRowClickSelection : true,
+			suppressAggFuncInHeader : true,
+			defaultColDef : {
+				sortable : true,
+				filter : true,
+				resizable : true,
+				width : 210,
+				height : 10
+			},
+			getRowNodeId : function(data) {
+				return data.notiSend;
+			}
+		};
+	
+	
+	
+	function openNavAddNoti() {
+		$("#sendNotiId").val("");
+		$("#activityNotiId").val("");
+		$("#notiIntervalId").val("");
+		$("#notiUnitId").val("");
+		$("#notiRuleId").val("");
+		$("#notiSentId").val("");
+
+		$("#addNotiId").hide();
+		$("#cancelNotiId").hide();
+		$("#addId").hide();
+		$("#cancelId").hide();
+		document.getElementById("mySidenavNoti").style.cssText = "width: 25%; position: absolute; right:-10px; overflow: hidden; height:auto; top:698px;";
+		document.getElementById("notificationId").style.width = "75%";
+		document.getElementById("eventActivityId").style.width = "75%";
+	}
+	function openAddNoti() {
+		var event = {};
+		var valid = true;
+		event.eventId = $("#eventId").val();
+		event.eventName = $("#eventNameId").val();
+		event.fromDate = $("#eventFromDateId").val();
+		event.toDate = $("#eventTodateId").val();
+		event.eventOrganiser = $("#eventOrganiseId").val();
+		event.eventType = $("#eventTypeId").val();
+		event.eventResponsible = $("#eventResponseId").val();
+		event.evantMaxRegd = $("#eventMaxRegdId").val();
+		event.eventVanue = $("#eventVanueId").val();
+		event.regdStartDate = $("#eventStartDateid").val();
+		event.regdEndDate = $("#eventEndDateid").val();
+		event.eventCreatedBy = $("#eventEndDateid").val();
+		
+		if (event.eventName == null || event.eventName == "") {
+			valid = validationUpdated("Event Name Required", "eventNameId");
+		}
+		if (event.fromDate == null || event.fromDate == "") {
+			valid = validationUpdated("From Date Required","eventFromDateId");
+		}
+		if (event.toDate == null || event.toDate == "") {
+			valid = validationUpdated("To date Required", "eventTodateId");
+		}
+		if (event.eventOrganiser == null || event.eventOrganiser == "") {
+			valid = validationUpdated("Organiser Required", "eventOrganiseId");
+		}
+		if (event.eventType == null || event.eventType == "") {
+			valid = validationUpdated("Event Type Required", "eventTypeId");
+		}
+		if (event.eventResponsible == null || event.eventResponsible == "") {
+			valid = validationUpdated("Response Required", "eventResponseId");
+		}
+		if (event.evantMaxRegd == null || event.evantMaxRegd == "") {
+			valid = validationUpdated("Maximum Required", "eventMaxRegdId");
+		}
+		if (event.eventVanue == null || event.eventVanue == "") {
+			valid = validationUpdated("Venue Required", "eventVanueId");
+		}
+		if (event.regdStartDate == null || event.regdStartDate == "") {
+			valid = validationUpdated("Start Date Required", "eventStartDateid");
+		}
+		if (event.regdEndDate == null || event.regdEndDate == "") {
+			valid = validationUpdated("End Date Required", "eventEndDateid");
+		}
+	
+		if (valid) {
+			openNavAddNoti();
+		}
+		else{
+
+			$("#messageParagraph").text(
+			"Add Create Event Details First");
+			$("#msgOkModal").removeClass("btn3");
+			$("#msgOkModal").addClass("btn1");
+			$("#msgModal").modal('show');
+		}
+		}
+		
+		
+	
+	
+	function closeNavNoti() {
+		document.getElementById("mySidenavNoti").style.width = "0";
+		document.getElementById("notificationId").style.width = "100%";
+		document.getElementById("eventActivityId").style.width = "100%";
+		$("#addId").show();
+		$("#cancelId").show();
+		$("#addNotiId").show();
+		$("#cancelNotiId").show();
+
+		$("#sendNotiId").val("");
+		$("#activityNotiId").val("");
+		$("#notiIntervalId").val("");
+		$("#notiUnitId").val("");
+		$("#notiRuleId").val("");
+		$("#notiSentId").val("");
+	}
+	/* function deleteItem() {
+		$('#deleteProduct').modal('show');
+	} */
+	/*   table add activity*/
+
+	function saveTableNotiData() {
+		var notification = {};
+		var validation = true;
+		
+		notification.notiSend = $("#sendNotiId").val();
+		notification.notiAction = $("#activityNotiId").val();
+		notification.notiInterval = $("#notiIntervalId").val();
+		notification.nitoUnit = $("#notiUnitId").val();
+		notification.notiRule = $("#notiRuleId").val();
+		notification.notiSent = $("#notiSentId").val();
+		if (notification.notiSend == null || notification.notiSend == "") {
+			validation = validationUpdated("Send Required", 'sendNotiId');
+		}
+		if (notification.notiAction == null || notification.notiAction == "") {
+			validation = validationUpdated("Activity Required",
+					'activityNotiId');
+		}
+		if (notification.notiInterval == null
+				|| notification.notiInterval == "") {
+			validation = validationUpdated("Interval Required",
+					'notiIntervalId');
+		}
+		if (notification.nitoUnit == null || notification.nitoUnit == "") {
+			validation = validationUpdated("Unit Required", 'notiUnitId');
+		}
+		if (notification.notiRule == null || notification.notiRule == "") {
+			validation = validationUpdated("Rule Required", 'notiRuleId');
+		}
+		if (notification.notiSent == null || notification.notiSent == "") {
+			validation = validationUpdated("Sent Required", 'notiSentId');
+		}
+		//updateNotificationRowData(notification);
+		
+		
+		 var datas = [];
+	    var rowEdit = $("#rowId").val();
+	    if (rowEdit) {
+	    	
+            var rowNode = gridOptions2.api.getRowNode(rowEdit);
+            rowNode.setData(notification);
+            closeNavNoti();
+            
+        } 
+ 
+	     if (validation) {
+	    	 
+	    	 gridOptions2.api.forEachNode(function(rowNode, index) {
+	                datas.push(rowNode.data);
+	            });
+	            datas.push(notification)
+	            gridOptions2.api.setRowData(datas);
+	            closeNavNoti();
+	        }
+	     
+		/* if (validation) {
+
+			var datarow = [];
+			gridOptions2.api.forEachNode(function(rowNode, index) {
+				datarow.push(rowNode.data);
+			});
+			datarow.push(notification)
+			console.log(datarow)
+			gridOptions2.api.setRowData(datarow);
+			closeNavNoti();
+		} */
+	}
+
+	/*** master save function ***/
+	function saveEvent() {
+	
+		var event = {};
+		var valid = true;
+		var activity = [];
+		var notification = [];
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+			activity.push(rowNode.data);
+		});
+
+		gridOptions2.api.forEachNode(function(rowNode, index) {
+			notification.push(rowNode.data);
+		});
+		event.eventId = $("#eventId").val();
+		event.eventName = $("#eventNameId").val();
+		event.fromDate = $("#eventFromDateId").val();
+		event.toDate = $("#eventTodateId").val();
+		event.eventOrganiser = $("#eventOrganiseId").val();
+		event.eventType = $("#eventTypeId").val();
+		event.eventResponsible = $("#eventResponseId").val();
+		event.evantMaxRegd = $("#eventMaxRegdId").val();
+		event.eventVanue = $("#eventVanueId").val();
+		event.regdStartDate = $("#eventStartDateid").val();
+		event.regdEndDate = $("#eventEndDateid").val();
+		event.eventCreatedBy = $("#eventEndDateid").val();
+		event.activity = activity;
+		event.notification = notification;
+		console.log(event)
+		if (event.eventName == null || event.eventName == "") {
+			valid = validationUpdated("Event Name Required", "eventNameId");
+		}
+		if (event.fromDate == null || event.fromDate == "") {
+			valid = validationUpdated("From Date Required","eventFromDateId");
+		}
+		if (event.toDate == null || event.toDate == "") {
+			valid = validationUpdated("To date Required", "eventTodateId");
+		}
+		if (event.eventOrganiser == null || event.eventOrganiser == "") {
+			valid = validationUpdated("Organiser Required", "eventOrganiseId");
+		}
+		if (event.eventType == null || event.eventType == "") {
+			valid = validationUpdated("Event Type Required", "eventTypeId");
+		}
+		if (event.eventResponsible == null || event.eventResponsible == "") {
+			valid = validationUpdated("Response Required", "eventResponseId");
+		}
+		if (event.evantMaxRegd == null || event.evantMaxRegd == "") {
+			valid = validationUpdated("Maximum Required", "eventMaxRegdId");
+		}
+		if (event.eventVanue == null || event.eventVanue == "") {
+			valid = validationUpdated("Venue Required", "eventVanueId");
+		}
+		if (event.regdStartDate == null || event.regdStartDate == "") {
+			valid = validationUpdated("Registration Start Date Required", "eventStartDateid");
+		}
+		if (event.regdEndDate == null || event.regdEndDate == "") {
+			valid = validationUpdated("Registration End Date Required", "eventEndDateid");
+		}
+		if (valid) {
+			$('.loader').show();
+			$.ajax({
+				type : "POST",
+				url : "event-management-add",
+				dataType : "json",
+				contentType : "application/json",
+				data : JSON.stringify(event),
+				success : function(response) {
+					if (response.message == "Success") {
+						$('.loader').hide();
+						$("#messageParagraph").text("Data Saved Successfully");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+						
+						location.reload();
+						
+					}
+
+				},
+				error : function(response) {
+					console.log(response);
+
+				}
+			})
+		}
+	}
+
+	function profileSelect() {
+		
+		$("#eventNameId").val('');
+		$("#eventFromDateId").val('');
+		$("#eventTodateId").val('');
+		$("#eventOrganiseId").val('');
+		$("#eventTypeId").val('');
+		$("#eventResponseId").val('');
+		$("#eventMaxRegdId").val('');
+		$("#eventVanueId").val('');
+		$("#eventStartDateid").val('');
+		$("#eventEndDateid").val('');
+
+		var rowData = [];
+		gridOptions1.api.setRowData(rowData);
+		gridOptions2.api.setRowData(rowData);
+		gridOptions.api.setRowData(rowData);
+		//$("#demo1").show();
+		//$("#demo").hide();
+		location.reload();
+	}
+	function Cancel() {
+		$('#deleteDetails').modal('show');
+	}
+	function deleteNoti() {
+		$('#deleteDetails').modal('show');
+	}
+	function deleteDetailsOnclick() {
+		$('.modal').hide();
+		var selectedRows = gridOptions1.api.getSelectedRows();
+		gridOptions1.api.applyTransaction({
+			remove : selectedRows
+		});
+
+		cancelModalProductBtn();
+	}
+	function cancelModalProductBtn() {
+		$("#deleteModalBtn").removeAttr("disabled");
+		$('#deleteDetails').modal('hide');
+		$('#deleteDetail').modal('hide');
+	}
+	function deleteNoti() {
+		$('#deleteDetail').modal('show');
+	}
+	function deleteDetailsOn() {
+		$('.modal').hide();
+		var selectedRows = gridOptions2.api.getSelectedRows();
+		gridOptions2.api.applyTransaction({
+			remove : selectedRows
+		});
+
+		cancelModalProductBtn();
+	}
+	
+	/* Function for commentModal show */
+	function rejectEventModal() {
+	    $('#commentModal').modal('toggle');
+	    $("#approveEventSubmitBtn").hide();
+	    $("#rejectEventSubmitBtn").show();
+	}
+	function approveEventModal() {
+
+	    $('#commentModal').modal('toggle');
+	    $("#approveEventSubmitBtn").show();
+	    $("#rejectEventSubmitBtn").hide();
+
+	}
+	/* -------------------function for approve button----------------- */
+	var empid = "";
+	var empname = "";
+	function approveEvent() {
+		var userrole = $("#sessionRole").val();
+		var roleid = "";
+		for(var i = 6; i <= userrole.length; i=i+6){  
+		    roleid = roleid + '"' +userrole.slice(i-6, i)+ '",';
+		}
+		roleid = roleid.substring(0, roleid.length - 1); 
+		
+		empid = $("#sessionId").val();
+		comment = $("#comment").val();
+	
+		$.ajax({
+			type : "GET",
+			url : "event-management-details-approve?approveId=" + evntId + "&name=" + empid+"&comment="+comment+"&roleid="+roleid,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+				location.reload();
+					 $('#commentModal').modal('hide');
+					$('#delete').attr("disabled", true);
+					$('#approve').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+					$("#comment").val(null);
+					
+					closeNav();
+					
+					
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	/*-----------------------function for reject button------------------- */
+	var rejempid = "";
+	var rejempname = "";
+	function rejectEvent() {
+		rejempid = $("#sessionId").val();
+		comment = $("#comment").val();
+ 
+		$.ajax({
+			type : "GET",
+			url : "event-management-details-reject?rejectId=" + evntId + "&name=" + rejempid+"&comment="+comment,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					location.reload();
+					
+					$('#commentModal').modal('hide');
+					$('#delete').attr("disabled", true);
+					$('#approve').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+					$("#comment").val(null);
+					closeNav();
+					
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+	
+	
+	
+function cancelModalDeleteBtn() {
+	
+		$('#eventFromDateId').val(null);
+		$('#eventTodateId').val(null);
+		$('#dateModal').hide();
+	}
+function cancelModalDeleteBtn1() {
+		
+	$('#eventStartDateid').val(null);
+	$('#eventEndDateid').val(null);
+		$('#dateModal1').hide();
+	}
+	
+function cancelModalDeleteBtn2() {
+	
+	$('#activityStartTimeId').val(null);
+	$('#activityEndTimeId').val(null);
+	$('#timeModal').hide();
+}
+
+	function dateChange() {
+		
+		var fromdate = $('#eventFromDateId').val();
+		var todate = $('#eventTodateId').val();
+		if (fromdate != '' && todate != '') {
+			if (fromdate <= todate) {
+				var fromdate1 = fromdate.split("-").reverse().join("-");
+				var todate1 = todate.split("-").reverse().join("-");
+				var date1 = new Date(fromdate1);
+				var date2 = new Date(todate1);
+				var diffDays = ((date2.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+				$('#totalLeave').val(diffDays);
+			} else {
+				$('#dateModal').modal('show');
+			}
+		}
+	}
+	function eventdateChange() {
+		
+		var fromdate = $('#eventStartDateid').val();
+		var todate = $('#eventEndDateid').val();
+		if (fromdate != '' && todate != '') {
+			if (fromdate <= todate) {
+				var fromdate1 = fromdate.split("-").reverse().join("-");
+				var todate1 = todate.split("-").reverse().join("-");
+				var date1 = new Date(fromdate1);
+				var date2 = new Date(todate1);
+				var diffDays = ((date2.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+				$('#totalLeave').val(diffDays);
+			} else {
+				$('#dateModal1').modal('show');
+			}
+		}
+	}
+	
+	
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+	
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+	
+	 function check(fieldId) {
+			var tempVal = $("#" + fieldId).val().replace(/[^0-9 ]/g, '');
+			$("#" + fieldId).val(tempVal);
+		}
+	
+	function activitytimeChange() {
+		
+		var fromdate = $('#activityStartTimeId').val();
+		var todate = $('#activityEndTimeId').val();
+		if (fromdate != '' && todate != '') {
+			if (fromdate < todate) {
+				var fromdate1 = fromdate.split("-").reverse().join("-");
+				var todate1 = todate.split("-").reverse().join("-");
+				var date1 = new Date(fromdate1);
+				var date2 = new Date(todate1);
+				var diffDays = ((date2.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+				$('#totalLeave').val(diffDays);
+			} else {
+				$('#timeModal').modal('show');
+			}
+		}
+	}
+	function checkAmt(fieldId) {   
+		var myField = document.getElementById("eventMaxRegdId")
+		 var reg = /^\d{0,6}?$/;   
+		 if (reg.test(myField.value))
+		 {       
+			 $("#" + fieldId).val();
+			 reg = '';  
+		 }else{        
+			 $("#" + fieldId).val(null);    
+			 }
+		 } 
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<!-- <div class="innercontent" > -->
+
+					<div class="d-flex justify-content-between" id="demo1"
+						style="display: none;">
+						<div class="btn-hs">
+							<div class="font-design" id="totalReq">
+								Event Management(<span></span>)
+							</div>
+						</div>
+						<div id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter" autocomplete="off">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+						</div>
+						<div class="buttonsec btn-hs" id="btndiv">
+							<button class="download-btn" id="download"
+								onclick="downloadDetails()">Download</button>
+							<button class="approve-btn" id="approve"
+								onclick="approveEventModal()" th:if="${hrRole != null}">Approve</button>
+							<button class="reject-btn" id="reject"
+								onclick="rejectEventModal()" th:if="${hrRole != null}">Reject</button>
+							<button class="delete-btn" id="delete" onclick="deleteEvent()">Delete</button>
+							<input type="button" class="new-btn" id="new" value="NEW"
+								onclick="newBtn()" readonly>
+						</div>
+					</div>
+
+					<input type="hidden" id="sessionId" th:value="${userId}" /> <input
+						type="hidden" id="sessionName" th:value="${userName}" /> <input
+						type="hidden" id="hrRole" th:value="${hrRole}" /> <input
+						type="hidden" id="sessionRole" th:value="${userRole}" /> <input
+						type="hidden" id="adRole" th:value="${adRole}" />
+					<!------------- parent table my grid ---------------------->
+
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+
+
+					<div class="innercontent" id="demo" style="display: none;">
+						<input type="hidden" id="eventId"> <input type="hidden"
+							id="createdBy">
+						<!-- <span id="eventId"></span> -->
+						<div class="innerstickybg">
+							<div class="row">
+								<div class="col-md-6">
+									Create Event <span id="trReqId"></span>
+								</div>
+
+								<div class="col-md-6" align="right">
+									<button class="cancel-btn" id="newBtn"
+										onclick="profileSelect()">Cancel</button>
+									<button class="approve-btn" id="mainSave"
+										onclick="saveEvent();">Save</button>
+								</div>
+							</div>
+
+						</div>
+						<div class="row innersticky_contentgap">
+
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Event Name: </label> <input type="text"
+										name="Email Subject" value="" id="eventNameId"
+										class="form-control" onblur="removeValid(event)">
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group calendar_box">
+									<label>From Date</label> <input type="text"
+										id="eventFromDateId" onchange="dateChange()"
+										autocomplete="off" class="form-control"
+										onblur="removeValid(event)"
+										th:attr="onkeyup=|formatDate('eventFromDateId','${session.DATEFORMAT_JS}')|"
+										readonly> <i class="ti-calendar picker_calendar"
+										id="FromDateCalendarTime" onchange="dateChange();"></i>
+								</div>
+							</div>
+
+
+							<div class="col-md-3">
+								<div class="form-group calendar_box">
+									<label>To Date</label> <input type="text" id="eventTodateId"
+										onchange="dateChange()" autocomplete="off"
+										class="form-control" onblur="removeValid(event)"
+										th:attr="onkeyup=|formatDate('eventTodateId','${session.DATEFORMAT_JS}')|"
+										readonly> <i class="ti-calendar picker_calendar"
+										id="ToDateCalendarTime" onchange="dateChange();"></i>
+								</div>
+							</div>
+
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Organiser : </label>
+									<div class="select">
+										<select id="eventOrganiseId" onblur="removeValid(event)">
+											<option value="">Select</option>
+											<option th:each="c,iter:${organiserList}" th:value="${c.key}"
+												th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Event Type: </label>
+									<div class="select">
+										<select id="eventTypeId" onblur="removeValid(event)">
+											<option value="">Select</option>
+											<option th:each="c,iter:${eventTypeList}" th:value="${c.key}"
+												th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Responsible : </label>
+									<div class="select">
+										<select id="eventResponseId" onblur="removeValid(event)">
+											<option value="">Select</option>
+											<option th:each="c,iter:${responsibleList}"
+												th:value="${c.key}" th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Maximum Registration: </label> <input type="text" maxLength="6"
+										name="Email Subject" value="" id="eventMaxRegdId" onkeyup="checkAmt('eventMaxRegdId')"
+										class="form-control" onblur="removeValid(event)">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Venue: </label>
+									<div class="select">
+										<select id="eventVanueId" onblur="removeValid(event)">
+											<option value="">Select</option>
+											<option th:each="c,iter:${vanueList}" th:value="${c.key}"
+												th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group calendar_box">
+									<label>Registration Start Date: </label> <input type="text"
+										name="Email Subject" value="" id="eventStartDateid"
+										class="form-control" onblur="removeValid(event)"
+										th:attr="onkeyup=|formatDate('eventStartDateid','${session.DATEFORMAT_JS}')|"
+										readonly> <i class="ti-calendar picker_calendar"
+										id="eventStartCalendarId" onchange="eventdateChange()"></i>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group  calendar_box">
+									<label>Registration End Date: </label> <input type="text"
+										name="Email Subject" value="" id="eventEndDateid"
+										class="form-control" onblur="removeValid(event)"
+										th:attr="onkeyup=|formatDate('eventEndDateid','${session.DATEFORMAT_JS}')|"
+										readonly> <i class="ti-calendar picker_calendar"
+										id="eventEndCalendarId" onchange="eventdateChange()"></i>
+								</div>
+							</div>
+
+						</div>
+						<div id="main">
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingOne">
+									<button class="accordion-button" type="button"
+										data-bs-toggle="collapse" data-bs-target="#collapseOne"
+										aria-expanded="false" aria-controls="collapseOne">
+										Event Activities and Notifications</button>
+								</h2>
+
+								<div id="collapseOne" class="accordion-collapse collapse show"
+									aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+									<div class="accordion-body">
+
+										<div id="mySidenav" class="sidenav">
+											<div class="slidebox">
+												<div class="row">
+													<div class="chartbtnsec">
+														<div align="right">
+															<button class="btn3" onclick="closeNav()">CANCEL</button>
+															<button class="btn1" id="saveTableData"
+																onclick="saveTableData()">SAVE</button>
+
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group calendar_box">
+															<label>Date</label> <input type="text"
+																id="activityDateId" class="form-control" onblur="removeValid(event)"
+																th:attr="onkeyup=|formatDate('activityDateId','${session.DATEFORMAT_JS}')|">
+															<i class="ti-calendar picker_calendar"
+																id="activityDateIdCalendar"></i>
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group calendar_box">
+															<label>Start Time</label><input type="text"
+																id="activityStartTimeId"  onblur="removeValid(event)" class="form-control" readonly>
+															<i class="ti-calendar picker_calendar"
+																id="activityCalendarStartTime"
+																onchange="activitytimeChange()"></i>
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group calendar_box">
+															<label>End Time</label><input type="text"
+																id="activityEndTimeId"  onblur="removeValid(event)"class="form-control" readonly>
+															<i class="ti-calendar picker_calendar"
+																id="activityCalendarEndTime"
+																onchange="activitytimeChange()"></i>
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Activity</label> <input type="text"
+																id="activityId" class="form-control" onblur="removeValid(event)">
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Remark</label> <input type="text"
+																id="activityRemarkId" class="form-control" onblur="removeValid(event)">
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div id="mySidenavNoti" class="sidenav">
+											<div class="slidebox">
+												<div class="row">
+													<div class="chartbtnsec">
+														<div align="right">
+															<button class="btn3" onclick="closeNavNoti()">CANCEL</button>
+															<button class="btn1" id="saveTableData"
+																onclick="saveTableNotiData()">SAVE</button>
+
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Send Type</label> <input type="text"
+																id="sendNotiId" class="form-control" onblur="removeValid(event)">
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Action</label><input type="text"
+																id="activityNotiId" class="form-control" onblur="removeValid(event)">
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Interval</label><input type="text"
+																id="notiIntervalId" class="form-control" onblur="removeValid(event)">
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Unit</label> <input type="text" id="notiUnitId"
+																class="form-control" onkeyup="check('notiUnitId')"  onblur="removeValid(event)">
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Rule</label> <input type="text" id="notiRuleId"
+																class="form-control" onblur="removeValid(event)">
+														</div>
+													</div>
+													<div class="col-lg-6">
+														<div class="form-group">
+															<label>Sent</label> <input type="text" id="notiSentId"
+																class="form-control" onblur="removeValid(event)">
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+
+										<div class="row">
+											<input type="hidden" id="rowId" />
+											<div class="col-md-12 buttonsec btn-hs">
+												<button class="delete-btn" id="cancelId" onClick="Cancel()">delete</button>
+												<button class="new-btn" id="addId"
+													onclick="openAddActivity()">Add</button>
+											</div>
+											<div class="font-design mb-30" id="activity">Activities</div>
+											<div id="eventActivityId" style="width: 100%; height: 200px;"
+												class="ag-theme-alpine"></div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-12 buttonsec btn-hs">
+												<button class="delete-btn" id="cancelNotiId"
+													onClick="deleteNoti()">delete</button>
+												<button class="new-btn" id="addNotiId"
+													onclick="openAddNoti()">Add</button>
+											</div>
+											<div class="font-design mb-30" id="notification">Notification</div>
+											<div id="notificationId" style="width: 100%; height: 200px;"
+												class="ag-theme-alpine"></div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+
+							<div id="dateModal" class="modal fade show" aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-header flex-column">
+											<button type="button" class="close" data-bs-dismiss="modal"
+												aria-hidden="true" onclick="cancelModalDeleteBtn()">
+												<i class="ti-close modal-close"></i>
+											</button>
+										</div>
+										<div class="modal-body">
+											<p>From Date must be equal or lesser than To Date</p>
+										</div>
+										<div class="modal-footer justify-content-center"
+											style="margin-top: -30px;">
+                                         <!-- 
+											<button type="button" class="btn1"
+												onclick="cancelModalDeleteBtn()">OK</button> -->
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							
+							<div id="dateModal1" class="modal fade show" aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-header flex-column">
+											<button type="button" class="close" data-bs-dismiss="modal"
+												aria-hidden="true" onclick="cancelModalDeleteBtn1()">
+												<i class="ti-close modal-close"></i>
+											</button>
+										</div>
+										<div class="modal-body">
+											<p>Registration Start Date must be equal or lesser than Registration End Date</p>
+										</div>
+										<div class="modal-footer justify-content-center"
+											style="margin-top: -30px;">
+
+											<!-- <button type="button" class="btn1"
+												onclick="cancelModalDeleteBtn()">OK</button> -->
+										</div>
+									</div>
+								</div>
+							</div>
+							
+
+
+
+
+
+							<div id="deleteDetails" class="modal fade show" aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-header flex-column"></div>
+										<div class="modal-body">
+											<p>Do you really want to delete these records? This
+												process cannot be undone.</p>
+										</div>
+										<div class="modal-footer justify-content-center"
+											style="margin-top: -30px;">
+
+											<button type="button" class="btn1" data-bs-dismiss="modal"
+												onclick="cancelModalBtn();">Cancel</button>
+											<button type="button" class="btn3"
+												onclick="deleteDetailsOnclick()">Delete</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="deleteDetail" class="modal fade show" aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-header flex-column"></div>
+										<div class="modal-body">
+											<p>Do you really want to delete these records? This
+												process cannot be undone.</p>
+										</div>
+										<div class="modal-footer justify-content-center"
+											style="margin-top: -30px;">
+
+											<button type="button" class="btn1" data-bs-dismiss="modal"
+												onclick="cancelModalBtn();">Cancel</button>
+											<button type="button" class="btn3"
+												onclick="deleteDetailsOn()">Delete</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+
+							<div id="deleteDetails" class="modal fade show" aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-header flex-column"></div>
+										<div class="modal-body">
+											<p>Do you really want to delete these records? This
+												process cannot be undone.</p>
+										</div>
+										<div class="modal-footer justify-content-center"
+											style="margin-top: -30px;">
+
+											<button type="button" class="btn1" data-bs-dismiss="modal"
+												onclick="cancelModalBtn();">Cancel</button>
+											<button type="button" class="btn3"
+												onclick="deleteDetailsOnclick()">Delete</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							<div id="timeModal" class="modal fade show" aria-modal="true">
+								<div class="modal-dialog modal-confirm">
+									<div class="modal-content">
+										<div class="modal-header flex-column">
+											<button type="button" class="close" data-bs-dismiss="modal"
+												aria-hidden="true" onclick="cancelModalDeleteBtn2()">
+												<i class="ti-close modal-close"></i>
+											</button>
+										</div>
+										<div class="modal-body">
+											<p>Start-time must be lesser than End-time</p>
+										</div>
+										<div class="modal-footer justify-content-center"
+											style="margin-top: -30px;">
+
+											<!-- <button type="button" class="btn1"
+												onclick="cancelModalDeleteBtn()">OK</button> -->
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+				<div id="commentModal" class="modal fade">
+					<div class="modal-dialog">
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title">Comments</h4>
+								<button type="button" class="close" data-bs-dismiss="modal"
+									aria-label="Close">
+									<i class="ti-close"></i>
+								</button>
+
+							</div>
+							<div class="modal-body">
+								<!-- text input -->
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label>Comment</label> <input class="form-control"
+												type="text" id="comment" autocomplete="off">
+										</div>
+									</div>
+
+								</div>
+							</div>
+							<div class="modal-footer justify-content-left">
+								<button type="button" class="btn1" data-bs-dismiss="modal"
+									aria-hidden="true" id="approveEventSubmitBtn"
+									onclick="approveEvent()">Submit</button>
+								<button type="button" class="btn1" data-bs-dismiss="modal"
+									aria-hidden="true" id="rejectEventSubmitBtn"
+									onclick="rejectEvent()">Submit</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>

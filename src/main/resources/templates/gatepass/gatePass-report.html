@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style type="text/css">
+.highcharts-exporting-group {
+	display: none;
+}
+
+.slidebox {
+	padding: 14px;
+	margin-top: 0px;
+	margin: 0px 10px;
+}
+
+/* .form-group label {
+	font-size: 12px;
+	position: relative;
+	top: 4px;
+} */
+.holdCls {
+	background-color: rgb(0, 143, 0);
+}
+
+.bg_white {
+	background: #ffffff !important;
+}
+.totalHour {
+ border: 1px solid #ddd;
+ border-top: none;
+ border-left: none;
+ border-right: none; 
+  border-radius: 2px; 
+  
+  padding: 10px; 
+  font-size: 12px;
+  color: #333;
+  transition: border-color 0.3s ease-in-out;
+    width: 580px;
+    height: 23px;
+}
+.sugg-cls ul {
+	height: 150px;
+	overflow-x: scroll;
+	position: relative;
+}
+</style>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+		var rowData = [];
+		gridOptions.api.setRowData(rowData);
+		agGrid.simpleHttpRequest({
+			url : "report-view-data"
+		}).then(function(data) {
+			var jsonData = JSON.parse(data.body);
+			console.log("json",jsonData);
+			var allData=jsonData.ReportData;
+			console.log("allData",allData);
+			var len = allData.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(allData);
+			
+		}); 
+		
+	
+		
+		
+			
+		var gridDiv = document.querySelector('#activity');
+		new agGrid.Grid(gridDiv, activityOptions);
+		 activityOptions.api.setRowData();
+		$('#reqDltBtn').attr('disabled', true);
+		$('#assignBtn').attr('disabled', true);
+		$('#deleteChild').attr('disabled', true);
+		$('.collapse').on('show.bs.collapse', function() {
+			$(this).siblings('.panel-heading').addClass('active');
+		});
+
+		$('.collapse').on('hide.bs.collapse', function() {
+			$(this).siblings('.panel-heading').removeClass('active');
+		});
+		$("#newBtn").click(function() {
+
+		})
+		
+
+
+var dateFormat = localStorage.getItem("dateFormat");
+		
+		var dateFormat = localStorage.getItem("dateFormat");
+		$("#DateCalendar3").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+			datepicker : true,
+			scrollMonth : false,
+		}).on("change", function() {
+			$('#pdate').val($(this).val());
+		})
+
+		$('#pdate').blur(function() {
+			$("#DateCalendar3").val($(this).val());
+		})
+
+
+	});
+	
+	
+	
+	/* -------------------search bar for mygrid------------------------ */
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+	var columnDefs = [
+		{
+			headerCheckboxSelection : false,
+			headerCheckboxSelectionFilteredOnly : false,
+			checkboxSelection : true,
+			width : 10,
+			sortable : false,
+			filter : false,
+			resizable : true
+
+		},
+		{
+			headerName : 'Register Id',
+			width : 150,
+			field : "registerId",
+				cellRenderer : function(params) {
+				return '<a id="registerId" onclick=editRegister("'
+				+params.data.registerId+'","'+params.data.approvestatus
+				+ '") href="javascript:void(0)">'
+				+ params.data.registerId + '</a>';
+
+			}
+
+		}, {
+			headerName : 'Date',
+			field : "pdate",
+			cellStyle : {
+				textAlign : 'center'
+			}
+		}, {
+			headerName : 'Shift',
+			field : "shift",
+			cellStyle : {
+				textAlign : 'center'
+			}
+		}, {
+		
+			headerName : 'Approve Status',
+			field : "approvestatus",
+			cellStyle : {
+				textAlign : 'center'
+			},cellRenderer : function(params) {
+				if (params.data.approvestatus =="Approved") { 
+					return '<div style="color:#0642f5">'+params.data.approvestatus+'</div>';
+				}else {
+					return '<div style="color:#a9a9a9">'+params.data.approvestatus+'</div>';
+				}
+				
+
+			}
+		}, {
+		/* 	headerName : 'Report',
+			field : "downloaddoc",
+			cellStyle : {
+				textAlign : 'center'
+			},cellRenderer : function(params) {
+				if(params.data.approvestatus=="Approved"){
+					return '<a id="registerId" onclick=reportPdfDownload("'
+					+params.data.registerId
+					+ '") href="javascript:void(0)"><i class="bi bi-cloud-download">Download</i></a>';
+				}else{
+					return '';
+				}
+				
+
+			} */
+			headerName : "Report",
+			field : "downloaddoc",
+			cellStyle : {
+				textAlign : 'center'
+			},
+		
+			cellRenderer : function(params) {
+				return '<a id="registerId" onclick=reportPdfDownload("'
+				+params.data.registerId
+				+ '") href="javascript:void(0)"><i class="bi bi-cloud-download">Download</i></a>';
+			},
+		}, {
+			headerName : 'Reported By',
+			field : "reportedBy",
+			cellStyle : {
+				textAlign : 'center'
+			},
+		}, {
+			headerName : 'Reported On',
+			field : "reportedOn",
+			cellStyle : {
+				textAlign : 'center'
+			}
+		
+		}];
+
+// let the grid know which columns and what data to use
+var gridOptions = {
+	columnDefs : columnDefs,
+	rowSelection : 'single',
+	groupSelectsChildren : true,
+	suppressRowClickSelection : true,
+	suppressAggFuncInHeader : true,
+	defaultColDef : {
+		sortable : true,
+		filter : true,
+		resizable : true,
+		width : 190
+	},
+	onSelectionChanged : onSelectionChanged,
+};
+//function for row select parents
+var id = "";
+var approvestatus="";
+function onSelectionChanged() {
+	
+	var selectedNodes = gridOptions.api.getSelectedNodes();
+	 var selectedData = selectedNodes.map(node => node.data);
+	 id= selectedData.map(node => node.pcroId);
+	 approvestatus=selectedData.map(node => node.approvestatus);
+	
+	var selectedRows = gridOptions.api.getSelectedRows();
+	var rowCount = 0;
+	selectedRows.forEach(function(i) {
+		rowCount = rowCount + 1;
+	});
+	if (rowCount > 0) {
+		if(approvestatus=='Approved'){
+			$('#reqDltBtn').attr("disabled", true);
+			$('#assignBtn').attr("disabled", true);
+			$('#newBtn').attr('disabled', false);
+		}else{
+		$('#newBtn').attr('disabled', true);
+		$('#reqDltBtn').attr("disabled", false);
+		$('#assignBtn').attr("disabled", false);
+		}
+	}else {
+		$('#reqDltBtn').attr("disabled", true);
+		$('#assignBtn').attr("disabled", true);
+		$('#newBtn').attr('disabled', false);
+	}
+}
+// for activity table
+
+var activityDefs = [
+	{
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		sortable : false,
+		filter : false,
+		resizable : true,
+		width : 20
+	},
+	{
+		headerName : "SlNo",
+		field : "slNo",
+		width : 100,
+		cellRenderer : function(params) {
+			if (params.data.slNo) {
+				return '<a onclick=editProduct("' + params.data.slNo
+						+ '") href="javascript:void(0)">'
+						+ (parseInt(params.rowIndex) + 1) + '</a>';
+			} else {
+				return '<a onclick=editProduct("' + params.data.slNo
+						+ '") href="javascript:void(0)">'
+						+ (parseInt(params.rowIndex) + 1) + '</a>';
+			}
+		}
+	},{
+		
+			headerName : "Category",
+			field : "category",
+			width : 400,
+			
+			},{
+			headerName : "Man Power",
+			field : "manPower",
+			width: 800,
+			
+			
+}];
+
+
+//let the grid know which columns and what data to use product table
+var activityOptions = {
+	columnDefs : activityDefs,
+	rowSelection : 'single',
+	groupSelectsChildren : true,
+	suppressRowClickSelection : true,
+	suppressAggFuncInHeader : true,
+	defaultColDef : {
+		sortable : true,
+		filter : true,
+		resizable : true,
+		
+	},
+	getRowNodeId : function(data) {
+		return data.slNo;
+	},
+	onSelectionChanged : onSelectionChangedItem,
+};
+
+function onSelectionChangedItem() {
+	var selectedRows = activityOptions.api.getSelectedRows();
+	var rowCount = 0;
+	selectedRows.forEach(function(selectedRow, index) {
+		rowCount = rowCount + 1;
+	});
+	var selectedNodes = activityOptions.api.getSelectedNodes();
+	 var selectedData = selectedNodes.map(node => node.data);
+	 var approvestatus= selectedData.map(node => node.approvestatus);
+	if (rowCount > 0) {
+			$('#rfq').attr('disabled', false);
+			$('#dltProduct').attr('disabled', false);
+			$('#addProduct').attr('disabled', true);
+	} else {
+		$('#rfq').attr('disabled', true);
+		$('#dltProduct').attr('disabled', true);
+		$('#addProduct').attr('disabled', false);
+	}
+
+}
+//function for row select parents
+var childid = "";
+function onSelectionChangeChild() {
+	 var selectedNodes = activityOptions.api.getSelectedNodes();
+	 var selectedData = selectedNodes.map(node => node.data);
+	 childid= selectedData.map(node => node.slnoId);
+	var selectedRows = activityOptions.api.getSelectedRows();
+	var rowCount = 0;
+	selectedRows.forEach(function(i) {
+		rowCount = rowCount + 1;
+	});
+	if (rowCount > 0) {
+		$('#newchild').attr('disabled', true);
+		$('#deleteChild').attr('disabled', false);
+	}else{
+		$('#newchild').attr('disabled', false);
+		$('#deleteChild').attr('disabled', true);
+	}
+}
+function changeDateFormat(inputDate){  // expects Y-m-d
+    var splitDate = inputDate.split('-');
+    if(splitDate.count == 0){
+        return null;
+    }
+    var year = splitDate[0];
+    var month = splitDate[1];
+    var day = splitDate[2]; 
+    return day + '-' + month + '-' + year;
+}
+//parents new plan
+function newPlan() {
+	var date = (new Date()).toISOString().split('T')[0];
+	var newDate = changeDateFormat(date);
+	$("#pdate").val(newDate);
+	$("#myGrid").hide();
+	$("#reqTable").hide();
+	$(".btn-hs").show();
+	$("#btndiv").hide();
+	$("#listdiv").hide();
+	$("#totalReq").hide();
+	$("#searchRowDiv").hide();
+	$("#ttbtn").hide();
+	$("#demo").show();
+	$("#deleteChild").attr('disabled', true);
+	$("#newchild").attr('disabled', false);
+	$('#dltProduct').attr('disabled', true);
+}
+//function for cancel
+function cancel() {
+
+	 $(".formValidation").remove();
+		$("#totalReq").show();
+		$("#searchRowDiv").show();
+		$(".btn-hs").show();
+		$("#myGrid").show();
+		$("#demo").hide();
+		$("#reqDltBtn").attr('disabled', true);
+		$("#assignBtn").attr('disabled', true);
+		$("#newBtn").attr('disabled', false);
+		agGrid.simpleHttpRequest({
+			url : "report-view-data"
+		}).then(function(data) {
+			var jsonData = JSON.parse(data.body);
+			console.log(data.body)
+			var allData=jsonData.ReportData;
+			if(allData==null){
+				allData="";
+			}
+			var len = allData.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(allData);
+			
+		}); 
+		$("#pcroId").val("");
+		$("#pdate").val("");
+		$("#shift").val("");
+		$("#pcrobox").html("");
+		$("#desc").val('');
+		
+		activityOptions.api.setRowData();
+	}
+function validFormData() {
+	var allValid = true;
+	if (!validationUpdated("Date can't be Left Blank", 'pdate'))
+		allValid = false;
+	if (!validationUpdated("Shift can't be Left Blank",
+			'shift'))
+		allValid = false;
+	return allValid;
+}
+
+ 
+ function masterSaveData() {
+		if (validFormData()) {
+			var datas = [];
+			var rowCount = activityOptions.api.getDisplayedRowCount();
+			if(rowCount > 0){
+				$('.loader').show();
+				$("body").addClass("overlay");
+				activityOptions.api.forEachNode(function(rowNode, index) {
+				var item = rowNode.data;
+				item.desc = $("#desc").val();
+				item.registerId = $("#pcroId").val();
+				item.registerId = $("#pcrobox").html();
+				item.pdate = $("#pdate").val();
+				item.shift = $("#shift").val();
+				datas.push(item);
+			});
+			console.log(datas)
+			saveReportData(datas);
+			}else{
+				$("#messageParagraph").text(
+				"Add Category Details");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+			}
+		} 
+
+	}
+
+
+function saveReportData(datas) {
+	$('.loader').show();
+	//console.log(datas)
+	$.ajax({
+		type : "POST",
+		url : "report-gate-data-add",
+		dataType : "json",
+		contentType : "application/json",
+		data : JSON.stringify(datas),
+		success : function(response) {
+			$('.loader').hide();
+			$("body").removeClass("overlay");
+			if (response.code == "success") {
+				$("#messageParagraph").text("Data Saved Successfully");
+				$("#msgOkModal").removeClass("btn3");
+				$("#msgOkModal").addClass("btn1");
+				$("#msgModal").modal('show');
+				
+				agGrid.simpleHttpRequest({
+					url : "report-view-data"
+				}).then(function(data) {
+					var jsonData = JSON.parse(data.body);
+					
+					var allData=jsonData.ReportData;
+					var len = allData.length;
+					$('#totalReq').find('span').html(len);
+					gridOptions.api.setRowData(allData);
+					
+				}); 
+				
+				cancel();
+			} else {
+				$('.loader').hide();
+				$("body").removeClass("overlay");
+			}
+		},
+		error : function(data) {
+			console.log(data);
+			$('.loader').hide();
+			$("body").removeClass("overlay");
+		}
+	}) 
+
+}
+
+// save data in aggrid table sidenav save
+
+
+
+	// for editing child table of shift 
+	function editRow(parameterId,parameterName,minRange,maxRange) {
+		var rowNode = activityOptions.api.getRowNode(parameterId);
+		openNav();
+		$("#rowEdit").val(parameterId);
+		$("#parameterId").val(rowNode.data.parameterId);
+		$("#parameterName").val(rowNode.data.parameterId);
+		$("#minRange").val(rowNode.data.minRange);
+		$("#maxRange").val(rowNode.data.maxRange);
+	}
+	//editing the qc master parent table
+	function editRegister(registerId,approvestatus) {
+		cancel();
+		$("#searchRowDiv").hide();
+		$("#myGrid").hide();
+		$("#reqTable").hide();
+		$(".btn-hs").hide();
+		  if(approvestatus=="Approved"){
+	        	 $("#save").hide(); 
+	        	 closeNav();
+	        	 $("#dltProduct").hide(); 
+	        	 $("#addProduct").hide(); 
+	 		
+	         }else{
+	        	 $("#save").show(); 
+	 
+	        	 $("#dltProduct").attr('disabled', true);
+	        	 $("#addProduct").show(); 
+	        	 
+	         }
+		
+		agGrid.simpleHttpRequest(
+				{
+					url : 'report-data-edit?id='+ registerId
+				}).then(function(data) {
+					console.log("allDATA",data);
+					var jsonData = JSON.parse(data.body);
+					var allData=jsonData.edit;
+					
+					$("#myGrid").hide();
+					$("#demo").show();
+					
+					//var rowCount = activityOptions.api.getDisplayedRowCount();
+					
+					$("#pcrobox").html(allData[0].registerId);
+					$("#pcroId").val(allData[0].registerId);
+					$("#pdate").val(allData[0].pdate);
+					$("#shift").val(allData[0].shift);
+					$("#desc").val(allData[0].desc);
+					$("#tdiv").hide();
+					$("#searchRowDiv").hide();
+					$("#totalReq").hide();
+					$("#ttbtn").hide(); 
+					activityOptions.api.setRowData(allData);
+				});
+		
+	}
+	
+	
+// function for delete qc  
+function deleteOnclick() {
+	var selectedRows = gridOptions.api.getSelectedRows();
+					 var id=selectedRows[0].registerId;
+					 console.log("vvv",id);
+					$.ajax({
+						type : "GET",
+						url : "report-details-delete?id=" + id,
+						async : false,
+						success : function(response) {
+
+							if (response.code == "success") {
+								
+								$("#messageParagraph").text("Deleted Successfully");
+								$("#msgOkModal").removeClass("btn3");
+								$("#msgOkModal").addClass("btn1");
+								$("#msgModal").modal('show');
+								$('#delete').modal('hide');
+								cancel();
+								
+							}
+
+						},
+					});
+	
+
+}
+
+	// delete selected record from child ag grid
+	function deleteDetailsOnclick() {
+		$('.modal').hide();
+		var selectedRows = activityOptions.api.getSelectedRows();
+		activityOptions.api.applyTransaction({
+			remove : selectedRows
+		});
+		cancelModalProductBtn();
+	}
+	//for closeing modal box for dlt  product
+	function cancelModalProductBtn() {
+		$("#deleteModalBtn").removeAttr("disabled");
+		$('#deleteDetails').modal('hide');
+	}
+
+	function deleteFun() {
+		$('#delete').modal('show');
+	}
+
+	function deleteDetails() {
+		$('#deleteDetails').modal('show');
+	}
+
+	function cancelModalBtn() {
+		$("#deleteModalBtn").removeAttr("disabled");
+	}
+//function for download
+function downloadDetails() { 
+	var dataset = [];
+	gridOptions.api.forEachNodeAfterFilterAndSort(function(rowNode, index) {
+		dataset.push(rowNode.data);
+	});
+    gridOptions.api.exportDataAsCsv(dataset);
+}
+
+
+function getParameterId(){
+	var parameterId= $("#parameterName").val();
+	$("#parameterId").val(parameterId);
+}
+
+function getItemid(){
+	var parameterId= $("#itemname").val();
+	$("#itemid").val(parameterId);
+}
+
+ 
+      
+	function approveFun(){
+		$('#approveModal').modal('show');
+	}
+	function approveResultbtn(){
+		$('#approveModal').modal('hide');
+	}
+	
+	function approveResult(){
+      var selectedRows = gridOptions.api.getSelectedRows();
+			 var id=selectedRows[0].registerId;
+			 console.log("vvv",id);
+			$.ajax({
+				type : "GET",
+				url : "report-details-approve?id=" + id,
+				async : false,
+				success : function(response) {
+
+					if (response.code == "success") {
+						cancel();
+						$("#messageParagraph").text("Approved Successfully");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+						 $('#approveModal').modal('hide');
+						
+					}
+
+				},
+			});
+		
+	}
+	
+	function reportPdfDownload(registerId) {
+		
+		window.open("/gatepass/report-pdf-downloads?registerId="+window.btoa(registerId), '_blank');  
+	}
+	
+	function productDetails(){
+		var productid=$("#product").val();
+		agGrid.simpleHttpRequest(
+				{
+					url : 'pcro-product_detls_drop?id='+ productid
+				}).then(function(data) {
+					console.log("allDATA",data);
+					var jsonData = JSON.parse(data.body);
+					var allData=jsonData.edit;
+					console.log(jsonData[0].variant);
+					$("#variant").val(jsonData[0].variant);
+					$("#packsize").val(jsonData[0].packsize);
+					 
+				});
+	};
+	
+/* 	function getCategory(){
+		var shift = $("#shift").val();
+		var datas = [];
+		  var item = {};
+		console.log(shift);
+		if (shift == "G"){
+			//alert("ok");
+			agGrid.simpleHttpRequest({
+				url : 'report_category_list?shift=' + 'G'
+			}).then(function(data) {
+				var jsonData = JSON.parse(data.body[0]);
+				var allData=jsonData.categoryList;
+				console.log(allData);
+				var len = allData[0].categoryList;
+				console.log("dataccc",datas);
+				activityOptions.api.setRowData(allData);
+			});
+		}else{
+			//alert("done");
+			agGrid.simpleHttpRequest({
+				url : 'report_category_list?shift=' + 'A'
+			}).then(function(data) {
+				var jsonData = JSON.parse(data.body[0]);
+				var allData=jsonData.categoryList;
+				console.log(allData);
+				var len = allData[0].categoryList;
+				console.log("dataccc",datas);
+				activityOptions.api.setRowData(allData);
+			});
+		}
+		
+	} */
+	
+	function openNav() {
+		$('#manPowetr').val('');
+		$('#categoryName').val('');
+		
+		document.getElementById("mySidenav").style.cssText = "width: 30%; position: absolute; right:-10px; overflow: hidden; height:auto; top:186px;";
+		document.getElementById("main").style.width = "70%";
+	}
+
+	function closeNav() {
+		$('#manPower').val('');
+		$('#categoryName').val('');
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main").style.width = "100%";
+	}
+	
+	function saveTableData() {
+		var editProduct = $("#productEdit").val();
+		var item = {};
+		var data = 1;
+		var validation = true;
+		if (!validationUpdated("Enter Category", 'categoryName'))
+			 validation = false; 
+		 if (!validationUpdated("Enter Man Power", 'manPower'))
+			 validation = false; 
+		if (validation) {
+			item.slNo = data;
+			activityOptions.api.forEachNode(function(rowNode, index) {
+				if (!editProduct) {
+					data = data + 1;
+					item.slNo = data;
+				}
+				else{
+					item.slNo = editProduct;
+				}
+				
+			});
+			//item.slNo = $('#slNo').val();
+			item.manPower = $('#manPower').val();
+			item.category = $('#categoryName').val();
+			
+			//item.slNo = data;
+			var quot = [];
+
+			if (editProduct) {
+				var rowNode = activityOptions.api.getRowNode(editProduct);
+				rowNode.setData(item);
+			} else {
+				activityOptions.api.forEachNode(function(rowNode, index) {
+					quot.push(rowNode.data);
+				});
+				quot.push(item)
+				activityOptions.api.setRowData(quot);
+
+			}
+			closeNav();
+			$("#manPower").val('');
+			$("#categoryName").val('');
+			$('#dltProduct').attr('disabled', true);
+			
+		}
+
+	}
+	
+	
+	function editProduct(slNo) {
+		openNav();
+		var registerId = $("#pcrobox").html();
+		var rowNode = activityOptions.api.getRowNode(slNo);
+        $("#productEdit").val(slNo);
+        
+		$("#categoryName").val(rowNode.data.category);
+		$("#manPower").val(rowNode.data.manPower);
+		
+	}
+	
+	function deleteProduct() {
+		$('#deleteCatModel').modal('show');
+	}
+	function deleteProductOnclick() {
+		var selectedRows = activityOptions.api.getSelectedRows();
+		activityOptions.api.applyTransaction({
+			remove : selectedRows
+		});
+		cancelCatModel();
+
+	}
+	function cancelCatModel() {
+		$('#deleteCatModel').modal('hide');
+	}
+	//Category Auto Search
+	function getCategoryList() {
+		
+		var search = $("#categoryName").val();
+	
+		if (search) {
+			$.ajax({
+						type : "GET",
+						url : 'report-category-get-list?searchValue='+ search,
+						async : false,
+						success : function(response) {
+							console.log(response)
+							var jsonData = JSON.parse(response.body);
+							console.log(jsonData)
+								if (jsonData !=null) {
+								
+									$("#categoryName").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1">';
+									for (var i = 0; i < jsonData.length; i++) {
+							content += '<li style="margin-left:-30px; font-weight:100; font-size:14px; color:#ccc; background-color: #0909e4;"  class="autocompletedata cp" onClick="selectAutocompleteValueCategory(\''
+								                   
+								                     + jsonData[i].catname
+								                     + '\')">'
+								                     + jsonData[i].catname
+								                     + '</li>';
+								         	}
+									
+									content += '</ul>';
+									$("#suggesstion-box_").show();
+									$("#suggesstion-box_").html(content);
+
+								} else {
+									$("#categoryName").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1">';
+									
+ 
+									content += '</ul>';
+									$("#suggesstion-box_").show();
+									$("#suggesstion-box_").html(content);
+								}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		}else{
+			
+			$("#categoryName").val("");
+		$("#suggesstion-box_").hide();
+		}
+	}
+	
+	function selectAutocompleteValueCategory(catname) {
+		if (catname) {
+			
+			$("#categoryName").val(catname);
+			$("#search").val(catname);
+			$("#search").attr('data-procat', catname);
+			$("#suggesstion-box_").hide();
+			
+		} else {
+			
+			$("#categoryName").val("");
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box_").hide();
+
+		}
+	}
+	function selectAutocompleteValueCategoryName() {
+        $("#categoryName").val("");
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-box_").hide();
+
+	}
+
+	//Man Power Auto Search
+	function getManpowerList() {
+		
+		var search = $("#manPower").val();
+	
+		if (search) {
+			$.ajax({
+						type : "GET",
+						url : 'report-manpower-get-list?searchValue='+ search,
+						async : false,
+						success : function(response) {
+							console.log(response)
+							var jsonData = JSON.parse(response.body);
+							console.log(jsonData)
+								if (jsonData !=null) {
+								
+									$("#manPower").css("background", "#FFF");
+									var content = '<ul id="autocomplete-listm">';
+									for (var i = 0; i < jsonData.length; i++) {
+							content += '<li style="margin-left:-30px; font-weight:100; font-size:14px; color:#ccc; background-color: #0909e4;"  class="autocompletedata cp" onClick="selectAutocompleteValueManpower(\''
+								                   
+								                     + jsonData[i].manPower
+								                     + '\')">'
+								                     + jsonData[i].manPower
+								                     + '</li>';
+								         	}
+									
+									content += '</ul>';
+									$("#suggesstion-boxm_").show();
+									$("#suggesstion-boxm_").html(content);
+
+								} else {
+									$("#manPower").css("background", "#FFF");
+									var content = '<ul id="autocomplete-listm">';
+									
+ 
+									content += '</ul>';
+									$("#suggesstion-boxm_").show();
+									$("#suggesstion-boxm_").html(content);
+								}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		}else{
+			
+			$("#manPower").val("");
+		$("#suggesstion-boxm_").hide();
+		}
+	}
+	
+	function selectAutocompleteValueManpower(manPower) {
+		if (manPower) {
+			
+			$("#manPower").val(manPower);
+			$("#search").val(manPower);
+			$("#search").attr('data-procat', manPower);
+			$("#suggesstion-boxm_").hide();
+			
+		} else {
+			
+			$("#manPower").val("");
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-boxm_").hide();
+
+		}
+	}
+	function selectAutocompleteValueManpowerName() {
+        $("#manPower").val("");
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-boxm_").hide();
+
+	}
+
+    </script>
+
+</head>
+<body>
+
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+
+						<div class="d-flex justify-content-between" id="tdiv">
+							<div class="btn-hs">
+								<div class="font-design" id="totalReq">
+									Register List(<span></span>)
+								</div>
+							</div>
+							<div id="searchRowDiv">
+								<div class="input-style">
+									<input type="text" placeholder="Search.." name="search"
+										class="searchboxinput" onkeyup="cancelBar()"
+										oninput="onQuickFilterChanged()" id="quickFilter"
+										autocomplete="off">
+									<div class="searchicon">
+										<a href="javascript:void(0)"><span
+											style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+											id="closeKey"
+											onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+											class="close_i"><i class="ti-close srchicon"></i></span></a><a
+											href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+									</div>
+								</div>
+							</div>
+							<div class="buttonsec btn-hs" id="ttbtn">
+								<button class="download-btn" id="download"
+									onclick="downloadDetails()">Download</button>
+								<button class="delete-btn" id="reqDltBtn" onclick="deleteFun()">DELETE</button>
+								<button class="new-btn" id="assignBtn" onclick="approveFun()">APPROVE</button>
+								<button class="new-btn" id="newBtn" onclick="newPlan()">NEW</button>
+							</div>
+						</div>
+
+						<input type="hidden" id="sessionId" th:value="${userId}" /> <input
+							type="hidden" id="sessionName" th:value="${userName}" /> <input
+							type="hidden" id="hrRole" th:value="${hrRole}" /> <input
+							type="hidden" id="sessionRole" th:value="${userRole}" /> <input
+							type="hidden" id="adRole" th:value="${adRole}" />
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+						<div class="collapse" id="demo">
+							<div class="innercontent">
+								<div class="innerstickybg">
+									<div class="row">
+
+										<div class="col-md-6">
+											Register: <span id="pcrobox"></span>
+										</div>
+
+										<div class="col-md-6" align="right">
+											<button class="cancel-btn" id="cancelBtn" onclick="cancel()">Cancel</button>
+											<button class="approve-btn" id="save"
+												onclick="masterSaveData()">Save</button>
+										</div>
+									</div>
+
+								</div>
+								<div class="row">
+									<input type="hidden" id="pcroId">
+									
+								<div class="col-lg-3">
+										<div class="form-group calendar_box">
+												<label>Register Date</label> <input type="text" id="pdate"
+												class="form-control" onblur="removeValid(event)"
+												th:attr="onkeyup=|formatDate('date','${session.DATEFORMAT_JS}')|"
+												readonly> <i
+												class="ti-calendar picker_calendar" id="DateCalendar3"></i>
+										</div>
+								</div>
+						
+									<div class="col-md-3">
+											<div class="form-group">
+												<label> Shift </label>
+												<div class="select">
+													<select id="shift">
+														<option value="">Select</option>
+														<option th:each="c:${shiftLists}" th:value='${c.key}'
+															th:text="${c.name}"></option>
+													</select> <span class="focus"></span>
+												</div>
+											</div>
+									</div>
+									
+									<div class="col-md-6">
+									<div class="form-group">
+										<label>Remarks</label>
+										<textarea class="form-control" id="desc"
+											style="line-height: 13px !important;"></textarea>
+										
+									</div>
+								</div>
+									
+								</div>
+								<div id="main" class="mt-4">
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="headingOne">
+											<button class="accordion-button" type="button"
+												data-bs-toggle="collapse" data-bs-target="#collapseOne"
+												aria-expanded="false" aria-controls="collapseOne">
+												Category Details</button>
+										</h2>
+
+										<div id="collapseOne" class="accordion-collapse collapse show"
+											aria-labelledby="headingOne"
+											data-bs-parent="#accordionExample">
+											<div class="accordion-body">
+                                               <div class="row">
+																			<div class="row">
+
+													<div class="col-md-4 btn-hs1">
+														<div class="font-design"></div>
+													</div>
+													<div class="col-md-8 butttonsec">
+														<button class="btn1" id="addProduct" onclick="openNav()">NEW</button>
+														<button class="btn3" id="dltProduct"
+															onclick="deleteProduct()">DELETE</button>
+													</div>
+												</div>
+
+                                                <div id="activity" style="width: 100%; height: 200px;"
+														class="ag-theme-alpine"></div>
+												
+											
+											  </div>
+											</div>
+										</div>
+										
+										<div id="mySidenav" class="sidenav">
+										<div class="slidebox">
+											<div class="row">
+												<div class="chartbtnsec">
+													<div align="right">
+														<button class="cancel-btn" onclick="closeNav()">CANCEL</button>
+														<button class="approve-btn" id="saveTableData"
+															onclick="saveTableData()">SAVE</button>
+														<input type="hidden" id="productEdit">
+													</div>
+												</div>
+
+
+											<!-- <div class="col-md-12" id="categoryDiv">
+									<div class="form-group">
+										<label>Category</label> <input type="text"
+											class="form-control" id="categoryName" autocomplete="off" />
+									</div>
+								</div> -->
+								
+									<div class="col-md-12" id="categoryDiv">
+													<div class="form-group">
+														<div class="autocomplete" style="width: 330px;">
+															 <label>Category
+																</label> <input type="text" id="categoryName"
+																class="form-control" autocomplete="off"
+																onkeyup='getCategoryList()'
+																onblur="removeValid(event)">
+														</div>
+														<div id="suggesstion-box_" class="sugg-cls"></div>
+													</div>
+												</div>
+								
+								
+								<!-- <div class="col-md-12" id="manPowerDiv">
+									<div class="form-group">
+										<label>Man Power</label> <input type="text"
+											class="form-control" id="manPower" autocomplete="off" />
+									</div>
+								</div>
+								 -->
+									<div class="col-md-12" id="manPowerDiv">
+													<div class="form-group">
+														<div class="autocomplete" style="width: 330px;">
+															 <label>Man Power
+																</label> <input type="text" id="manPower"
+																class="form-control" autocomplete="off"
+																onkeyup='getManpowerList()'
+																onblur="removeValid(event)">
+														</div>
+														<div id="suggesstion-boxm_" class="sugg-cls"></div>
+													</div>
+												</div>
+											
+											</div>
+										</div>
+									</div>
+										
+										
+										
+									</div>
+								</div>
+							
+
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
+				<!-- delete modal start -->
+				<div id="delete" class="modal fade show" aria-modal="true">
+					<div class="modal-dialog modal-confirm">
+						<div class="modal-content">
+							<div class="modal-header flex-column"></div>
+							<div class="modal-body">
+								<p>Do you really want to delete these records? This process
+									cannot be undone.</p>
+							</div>
+							<div class="modal-footer justify-content-center"
+								style="margin-top: 0px;">
+
+								<button type="button" class="cancel-btn" data-bs-dismiss="modal"
+									onclick="cancelModalBtn();">Cancel</button>
+								<button type="button" class="delete-btn"
+									onclick="deleteOnclick()">Delete</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- delete product modal start -->
+				<div id="deleteDetails" class="modal fade show" aria-modal="true">
+					<div class="modal-dialog modal-confirm">
+						<div class="modal-content">
+							<div class="modal-header flex-column"></div>
+							<div class="modal-body">
+								<p>Do you really want to delete these records? This process
+									cannot be undone.</p>
+							</div>
+							<div class="modal-footer justify-content-center"
+								style="margin-top: -30px;">
+
+								<button type="button" class="cancel-btn" data-bs-dismiss="modal"
+									onclick="cancelModalBtn();">Cancel</button>
+								<button type="button" class="delete-btn"
+									onclick="deleteDetailsOnclick()">Delete</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="approveModal" class="modal fade show"
+												aria-modal="true">
+												<div class="modal-dialog modal-confirm">
+													<div class="modal-content">
+														<div class="modal-header flex-column"></div>
+														<div class="modal-body">
+															<p>Are you sure ?</p>
+														</div>
+														<div class="modal-footer justify-content-center"
+															style="margin-top: -30px;">
+															<button type="button" class="cancel-btn"
+																onclick="approveResultbtn()">Don't Approve</button>
+															<button type="button" class="approve-btn"
+																onclick="approveResult()">Approve</button>
+														</div>
+													</div>
+												</div>
+											</div>
+				<!-- alert modal start -->
+				<div id="alert" class="modal fade show" aria-modal="true">
+					<div class="modal-dialog modal-confirm">
+						<div class="modal-content">
+							<div class="modal-header flex-column">
+								<button type="button" class="close" data-bs-dismiss="modal"
+									aria-hidden="true" onclick="cancelModalBtn()">
+									<i class="ti-close modal-close"></i>
+								</button>
+							</div>
+							<div class="modal-body">
+								<p id="textId"></p>
+							</div>
+							<div class="modal-footer justify-content-center"
+								style="margin-top: 0px;">
+
+								<button type="button" class="btn1" data-bs-dismiss="modal">SELECT</button>
+								<button type="button" class="btn3" onclick="deleteOnclick()">Delete</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				
+						<!-- delete product modal start -->
+						<div id="deleteCatModel" class="modal fade show" aria-modal="true">
+							<div class="modal-dialog modal-confirm">
+								<div class="modal-content">
+									<div class="modal-header flex-column">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-hidden="true" onclick="cancelCatModel()">
+											<i class="ti-close modal-close"></i>
+										</button>
+									</div>
+									<div class="modal-body">
+										<p>Do you really want to delete these records? This
+											process cannot be undone.</p>
+									</div>
+									<div class="modal-footer justify-content-center"
+										style="margin-top: -30px;">
+
+										<button type="button" class="btn1" data-dismiss="modal"
+											onclick="cancelCatModel();">Cancel</button>
+										<button type="button" class="btn3"
+											onclick="deleteProductOnclick()">Delete</button>
+									</div>
+								</div>
+							</div>
+						</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

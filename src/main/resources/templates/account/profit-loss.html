@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+
+<style>
+
+.hvrbox .hvrbox-layer_top {
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 25%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	color: #fff;
+	padding: 15px;
+}
+
+.btn1 {
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    background-color: #5784c4;
+    color: #fff!important;
+    margin-left: 5px;
+    margin-bottom: 8px;
+    width: 105px;
+    height: 28px;
+    line-height: 12px;
+    float: right;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.taskInfo{
+	padding-left: 10px;
+    color: #45166a;
+}
+
+.rating {
+	float: left;
+}
+
+.rating:not(:checked)>input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0, 0, 0, 0);
+}
+
+.rating:not(:checked)>label {
+	float: right;
+	width: 1em;
+	padding: 0 .1em;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	font-size: 200%;
+	line-height: 1.2;
+	color: rgba(0, 0, 0, 0.6);
+	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:before {
+	content: '★ ';
+}
+
+.rating>input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:hover, .rating:not(:checked)>label:hover ~
+	label {
+	color: black;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
+	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
+	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>label:active {
+	position: relative;
+	top: 2px;
+	left: 2px;
+}
+
+.btn-outline-primary {
+	color: #007bff;
+	background-color: rgb(240 243 241/ 90%);
+	background-image: none;
+	border-color: #007bff;
+	cursor: pointer;
+}
+.picker_calendar5 {
+ cursor: pointer;
+    position: absolute;
+    bottom: 361px;
+    left: 742px;
+}
+.picker_calendar6 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 361px;
+    left: 1132px;
+}
+</style>
+<script>
+	
+$(function() {
+	$("#shtable").show();
+
+	
+	$("#fromDate").datetimepicker({
+		format : 'd-m-Y',
+		closeOnDateSelect : true,
+		timepicker : false,
+	})
+	
+	$("#toDate").datetimepicker({
+		format : 'd-m-Y',
+		closeOnDateSelect : true,
+		timepicker : false,
+	})
+
+	getProfitLossData();
+
+
+
+
+})
+
+function getProfitLossData() {
+		
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#toDate").val();
+
+		$.ajax({
+			type : "GET",
+			url : "profile-and-loss-data?fromDate" + fromDate + "&toDate=" + toDate,
+			async : false,
+			success : function(response) {
+				if (response.code == "Success") {
+					
+						 var receiptAmnt=parseFloat(response.body[0].receiptAmnt);
+						 var paymentAmount=parseFloat(response.body[0].paymentAmount);
+						 var contraJournalAmount=parseFloat(response.body[0].contraJournalAmount);
+						 var saleReturnAmount=parseFloat(response.body[0].saleReturnAmount);
+						 var purchaseReturnAmount=parseFloat(response.body[0].purchaseReturnAmount);
+						 var totalEarningAmonut=parseFloat(response.body[0].totalEarningAmonut);
+						 var totalExpenditure=parseFloat(response.body[0].totalExpenditure);
+						 var profitLossAmnt=parseFloat(response.body[0].profitLossAmnt);
+						
+						//alert("totalEarningAmonut1-------"+totalEarningAmonut)
+						$("#totalEarningAmonut1").text("₹"+totalEarningAmonut.toFixed(2));
+						$("#totalEarningAmonut2").text("₹"+totalEarningAmonut.toFixed(2));
+						$("#netProfitLossAmonut").text("₹"+profitLossAmnt.toFixed(2));
+						$("#totalIndirectAmnt").text("₹"+contraJournalAmount.toFixed(2));
+						
+						$("#totalPurchaseAmonut1").text("₹"+paymentAmount.toFixed(2));
+						$("#totalPurchaseAmonut2").text("₹"+paymentAmount.toFixed(2));
+						
+						$("#totalSaleAmonut1").text("₹"+receiptAmnt.toFixed(2));
+						$("#totalSaleAmonut2").text("₹"+receiptAmnt.toFixed(2));
+						
+						$("#totalSaleReturnAmonut1").text("₹"+saleReturnAmount.toFixed(2));
+						$("#totalSaleReturnAmonut2").text("₹"+saleReturnAmount.toFixed(2));
+						
+						$("#totalPurchaseReturnAmonut1").text("₹"+purchaseReturnAmount.toFixed(2));
+						$("#totalPurchaseReturnAmonut2").text("₹"+purchaseReturnAmount.toFixed(2));
+					
+						
+				}
+			}
+		})
+		
+		
+	}
+
+</script>
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+					
+					
+						
+				<div class="innercontent">
+					<div class="row">
+					<div class="ledgertable">
+				<!-- 	<div class="d-flex justify-content-between">
+					<h2 class="font-design" >Profit & Loss:</h2>
+					
+							<button type="button" class="d-inline-flex align-items-center btn btn-primary rounded  mb-2">
+									<i class="ti-printer"></i>&nbsp Print Order
+								</button>
+					</div> -->
+					
+					
+					<!-- Start -->
+					<div class="row d-flex justify-content-between mb-2">
+						<div class="col-md-2  btn-hs">
+						<h2 class="font-design" >Profit & Loss:</h2>
+						</div>
+						
+					<div class="col-md-3">
+						<div class="form-group d-flex">
+								<div class="col-md-4"><label>Fiscal Year</label> </div>
+								<div class="col-md-8">
+								<div class="select">
+									<select id="orderStatusFilter" class="form-control" >
+										<option  value="">--Select--</option>
+										<option th:each="c,iter:${fiscalList}" th:value="${c.key}"
+											th:text="${c.name}"></option>
+									</select>
+								</div>
+								</div>
+							</div>
+						
+				     </div>
+					
+					
+					<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="fromDate" placeholder="From Date" class="form-control"> 
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="toDate" placeholder="To Date" class="form-control">
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-1">
+						<input type="button" id="filter" value="Filter" class="fltbtn" onclick="viewDayBook()" readonly>
+					   </div>
+					
+					
+					  <div class="col-md-2  btn-hs">
+							<button type="button" class="d-inline-flex align-items-center btn btn-primary rounded  mb-2 float-end">
+									<i class="ti-printer"></i>&nbsp Print Order
+								</button>
+						</div>
+					</div>	
+					
+					<!-- End -->
+					
+								
+								
+			<!-- 		<div class="d-flex justify-content-between">
+					<div><p> <strong>Profit & Loss</strong></p></div>
+					<div>
+						<input type="text" id="fromDate" placeholder="From Date"> to
+						<input type="text" id="toDate" placeholder="To Date">
+						<input type="button" id="filter" value="Filter" onclick="viewDayBook()" readonly>
+					</div>
+					
+					<div><p> <strong>1st April <span id="thisYear">2023</span> to 31 March <span id="nextYear">2024</span></strong></p></div>
+					</div> -->
+					
+					
+					<table  class="table table-bordered table-striped">
+								
+							<thead>
+								<tr align="center" style="background:#f5f6f7;">
+									<th width="30%"><strong>Particulars </strong> </th>
+									
+									<th width="20%"><strong>Shoukeen (1st April <strong>1st April <span id="thisYear">2023</span> to 31 March <span id="nextYear">2024</span>)</strong></th>
+									<th width="30%"><strong>Particulars </strong> </th>
+									
+									<th width="20%"><strong>Shoukeen (1st April <span id="thisYear">2023</span>  to 31 March <span id="nextYear">2024</span>)</strong></th>																	
+								</tr>
+							</thead>
+
+						<tbody>
+								<tr align="left" valign="top">																	
+									<td>
+									<div class="tblttl"> Purchase A/C</div>
+										<table width="100%" class="prls">
+											<tr>
+												<td> Purchase A/C</td>
+												<td align="right"><span id="totalPurchaseAmonut1"></span></td>									
+											</tr>
+																			
+										</table>
+									<td align="right"><b><span id="totalPurchaseAmonut2"></span></b></td>
+									</td>									
+																	
+								<td>
+									<div class="tblttl"> Sales A/C</div>
+										<table width="100%" class="prls">
+											<tr>
+												<td> Sales A/C</td>
+												<td align="right"><span id="totalSaleAmonut1"></span></td>									
+											</tr>
+																			
+										</table>
+									<td align="right"><b><span id="totalSaleAmonut2"></span> </b></td>
+																
+								</tr>
+
+								
+								<tr align="left" valign="top">																	
+									<td>
+									<div class="tblttl">Sales Return A/C</div>
+									
+										<table width="100%" class="prls">
+											<tr>
+												<td>Sales Return A/C</td>
+												<td align="right"><span id="totalSaleReturnAmonut1"></span></td>										
+											</tr>
+																			
+										</table>									
+									
+									</td>									
+																	
+									<td align="right"><b><span id="totalSaleReturnAmonut2"></span></b></td>
+									<td>
+									<div class="tblttl">Purchase Return A/C</div>
+									
+										<table width="100%" class="prls">
+											<tr>
+												<td>Purchase Return A/C</td>
+												<td align="right"><span id="totalPurchaseReturnAmonut1"></span></td>										
+											</tr>
+																			
+										</table>									
+									
+									</td>									
+																	
+									<td align="right"><b><span id="totalPurchaseReturnAmonut2"></span></b></td>
+								</tr>
+								
+								
+								<tr align="left" valign="top">																	
+									<td>
+									<div class="tblttl">Indirect Expense</div>
+										<table width="100%" class="prls">
+											<!-- <tr>
+												<td>Commission Charges</td>
+												<td align="right"></td>										
+											</tr>
+											<tr>
+												<td>Misc. Exp.</td>
+												<td align="right">₹2000.00</td>										
+											</tr>
+											<tr>
+												<td>Rent. Exp.</td>
+												<td align="right">₹8000.00</td>										
+											</tr>
+											<tr>
+												<td>Salary Exp.</td>
+												<td align="right">₹5000.00</td>										
+											</tr>
+											<tr>
+												<td>Transport Charges</td>
+												<td align="right"></td>										
+											</tr> -->
+										
+										</table>
+									
+									</td>									
+																		
+									<td align="right"><b><span id="totalIndirectAmnt"></span></b></td>
+									<td></td>
+									
+									<td></td>
+								</tr>
+								
+							
+								<tr align="left" valign="top">																	
+									<td><div class="tblttl">Net Profit</div></td>									
+																	
+									<td align="right"><div class="tblttl"><span id="netProfitLossAmonut"></span></div></td>
+									
+									<td></td>
+									<td></td>
+								</tr>
+						
+							<tr align="left" valign="top">																	
+									<td><div class="tblttl">Total</div></td>									
+																	
+									<td align="right"><div class="tblttl"><span id="totalEarningAmonut1"></span></div></td>
+									
+									<td class="tblttl"><div class="tblttl">Total</div></td>									
+																	
+									<td align="right"><div class="tblttl"><span id="totalEarningAmonut2"></span></div></td>
+								</tr>
+								
+							</tbody>
+							
+							
+							</table>
+					
+							</div>
+							</div>
+					
+					
+					    	</div>
+
+
+
+				<!-- Right Sec End -->
+
+				
+				
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

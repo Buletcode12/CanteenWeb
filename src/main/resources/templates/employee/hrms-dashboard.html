@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+
+<head>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script> -->
+        	<!-- <img src="classpath:static/assets/images/profile_img.jpg" /> -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <!-- <script src="https://code.highcharts.com/modules/series-label.js"></script> -->
+     <link rel="stylesheet" href="../assets/css/extend/hrms-dashboard.css" />
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    
+    <script src="../assets/hrms/recruitment.js"></script>
+    <script src="../assets/hrms/talent.js"></script>
+    <script src="../assets/hrms/workforce.js"></script>
+    <!-- maps -->
+    <!-- <script src="https://code.highcharts.com/maps/highmaps.js"></script> -->
+
+  <!--   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <!-- <script src="https://kit.fontawesome.com/038792bdf1.js" crossorigin="anonymous"></script> -->
+   <script>
+   $(document).ready(function () {
+      $('body').bootstrapMaterialDesign(); 
+     // operationalHighChat();  
+   });
+   
+   
+   function tabView(type){
+	   if (type=="operationall"){	
+		 }else if(type=="recruitmentt"){
+		   recruitmentHighChat();
+	   }else if(type=="talentt"){
+		   talentHighchart();
+	   }else{
+		   workforceHighChat();   
+		   }
+		   
+   } 
+   </script>
+</head>
+
+<body>
+<div layout:fragment="content" class="maincontent">
+    <section>
+        <div class="">
+            <!-- Tabs -->
+            <div class="card card-nav-tabs card-plain">
+                <div class="card-header card-header-primary">
+                    <!-- <h3 class="dashboard-header">HRMS Dashboard</h3> -->
+                    <div class="nav-tabs-navigation">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item" onclick="tabView('operationall')">
+                                    <a class="nav-link active" href="#operational" data-toggle="tab">Operational</a>
+                                </li>
+                                <li class="nav-item" onclick="tabView('recruitmentt')">
+                                    <a class="nav-link" href="#recruitment" data-toggle="tab">Recruitment</a>
+                                </li>
+                                <li class="nav-item" onclick="tabView('talentt')">
+                                    <a class="nav-link" href="#talent" data-toggle="tab">Talent</a>
+                                </li>
+                                <li class="nav-item" onclick="tabView('workforcee')">
+                                    <a class="nav-link" href="#workforce" data-toggle="tab">Workforce</a>
+                                </li>
+                                <!-- <li class="nav-item">
+                                    <a class="nav-link" href="#diversity" data-toggle="tab">Diversity</a>
+                                </li> -->
+                                <!-- <li class="nav-item">
+                                    <a class="nav-link" href="#CFO" data-toggle="tab">CFO</a>
+                                </li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <div class="tab-content text-center">
+                        <!-- operational tab -->
+                        <div class="tab-pane active" id="operational">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="box box-1">
+                                            <p>Gates</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="box box-2">
+                                            <p>total entries</p>
+                                            <p>(2)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="box box-3">
+                                            <p>total exits</p>
+                                            <p>(10)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="box box-4">
+                                            <p>staff entry/exit</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="box box-5">
+                                            <p>visitors entry/exit</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="box box-6">
+                                            <p>Vehicle entry/exit</p>
+                                            <p>(12)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane active" id="operational">
+                                <div class="row mt-10">
+                                    <div class="col-md-2">
+                                        <h3 class="kpi-heading">KPIs</h3>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Number of Gates</p>
+                                                <p class="numbers">120</p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Visitors - Meeting</p>
+                                                <p class="numbers">11,88,888<span class="profit">(+1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Visitors - Delivery</p>
+                                                <p class="numbers">88,888<span class="profit">(+1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Visitors - Service</p>
+                                                <p class="numbers">11,88,888<span class="loss">(-1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Visitors - Other</p>
+                                                <p class="numbers">11,88,888<span class="loss">(-1%)</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="grey-bg">
+                                            <div class="numbers-box">
+                                                <p class="numbers-box-text">Visitors - Unique</p>
+                                                <p class="numbers">11,88,888<span class="loss">(-1%)</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h3 class="kpi-heading">Gate Details</h3>
+                                        <table class="indents-table mt-10">
+                                            <tr>
+                                                <th>Gate</th>
+                                                <th>Office</th>
+                                                <th>Location</th>
+                                                <th>Type</th>
+                                                <th>Security Officer</th>
+                                            </tr>
+                                            <tr>
+                                                <td>GATE 1</td>
+                                                <td>Nirmalya</td>
+                                                <td>BBSR</td>
+                                                <td>ENTRY & EXIT</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>GATE 1</td>
+                                                <td>Nirmalya</td>
+                                                <td>BBSR</td>
+                                                <td>ENTRY & EXIT</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>GATE 1</td>
+                                                <td>Nirmalya</td>
+                                                <td>BBSR</td>
+                                                <td>ENTRY & EXIT</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>GATE 1</td>
+                                                <td>Nirmalya</td>
+                                                <td>BBSR</td>
+                                                <td>ENTRY & EXIT</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>GATE 1</td>
+                                                <td>Nirmalya</td>
+                                                <td>BBSR</td>
+                                                <td>ENTRY & EXIT</td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- recruitment tab -->
+                        <div class="tab-pane" id="recruitment">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container">
+                                        <h6 class="recruitment-h6">Anna F.</h6>
+                                        <div class="row w-100">
+                                            <div class="col-md-3 d-flex align-items-center">
+                                                <img class="rec-prof-img" src="../assets/images/profile_img.jpg">
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div id="recruitmentConversionRate1"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h6 class="recruitment-h6">Anna F.</h6>
+                                        <div class="row w-100">
+                                            <div class="col-md-3 d-flex align-items-center">
+                                                <img class="rec-prof-img" src="../assets/images/profile_img.jpg">
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div id="recruitmentConversionRate2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h6 class="recruitment-h6">Anna F.</h6>
+                                        <div class="row w-100">
+                                            <div class="col-md-3 d-flex align-items-center">
+                                                <img class="rec-prof-img "src="../assets/images/profile_img.jpg">
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div id="recruitmentConversionRate3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container">
+                                        <h6 class="recruitment-h6">Avg. Cost of Hiring by Seniority Level</h6>
+                                        <div class="row w-100">
+                                            <div class="col-md-9">
+                                                <div id="avgCostHiringSeniorityLevel"></div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rec-avg-box" style="background:#544fc5"></div>
+                                                    <div class="rec-avg-text">Junior</div>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rec-avg-box" style="background:#00e272"></div>
+                                                    <div class="rec-avg-text">Mid-Level</div>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rec-avg-box" style="background:#2caffe"></div>
+                                                    <div class="rec-avg-text">Senior</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h6 class="recruitment-h6">Recruiting Funnel</h6>
+                                        <div class="d-flex">
+                                            <div>
+                                                <img class="rec-arrow-left" src="../assets/images/down-arrow-left.jpg">
+                                                <div class="rec-perc">10%</div>
+                                            </div>
+                                            <div class="rec-sales-funnel w-100">
+                                                <div class="rec-trapezoid-1">
+                                                    <span>267</span><br>Application
+                                                </div>
+                                                <div class="rec-trapezoid-2">
+                                                    <span>167</span><br>Interviews
+                                                </div>
+                                                <div class="rec-trapezoid-3">
+                                                    <span>67</span><br>Assessments
+                                                </div>
+                                                <div class="rec-trapezoid-4">
+                                                    <span>26</span><br>Hires
+                                                </div>
+                                            </div>
+                                            <div class="rec-arrow-cont-right">
+                                                <div>
+                                                    <img class="rec-arrow-right" src="../assets/images/down-arrow-right.jpg">
+                                                    <div class="rec-perc-right">50%</div>
+                                                </div>
+                                                <div style="position: relative;top: 20px;">
+                                                    <img class="rec-arrow-right" src="../assets/images/down-arrow-right.jpg">
+                                                    <div class="rec-perc-right">36%</div>
+                                                </div>
+                                                <div style="position: relative;top: 31px;">
+                                                    <img class="rec-arrow-right" src="../assets/images/down-arrow-right.jpg">
+                                                    <div class="rec-perc-right">10%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container">
+                                        <h6 class="recruitment-h6">Turnover Rate By Age Group</h6>
+                                        <div id="turnoverRateByAgeGroup"></div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h6 class="recruitment-h6">Avg. Time To Fill By Department(in days)</h6>
+                                        <div id="avgTimeToFillByDepartment"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- talent tab -->
+                        <div class="tab-pane" id="talent">
+                            <div class="compliance-dashboard-heading">
+                                <h2>Talent Management Dashboard</h2>
+                                <div class="compliance-dds">
+                                    <div class="mx-1">
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Year</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-separator mt-10"></div>
+                            <div class="row mt-10">
+                                <div class="col-md-5">
+                                    <div class="d-flex justify-content-space-between">
+                                        <div class="w-100 mr-16">
+                                            <div class="kpi-card-container">
+                                                <p class="tmd-stats-head">Employees</p>
+                                                <h6 class="tmd-stats-num">2222</h6>
+                                            </div>
+                                        </div>
+                                        <div class="w-100 mr-16">
+                                            <div class="kpi-card-container">
+                                                <p class="tmd-stats-head">Monthly Salary</p>
+                                                <h6 class="tmd-stats-num"><span>&#8377;</span>2222222</h6>
+                                            </div>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="kpi-card-container justify-content-center">
+                                                <p class="tmd-stats-head">Vacancies</p>
+                                                <h6 class="tmd-stats-num">22</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10 align-items-center">
+                                        <h6 class="recruitment-h6 align-self-start">Hiring Stats</h6>
+                                        <div class="row mt-10 w-100">
+                                            <div class="col-md-6">
+                                                <div class="hiring-stats-cont">
+                                                    <h6 class="recruitment-h6 w-100">Time to fill</h6>
+                                                    <h6 class="tmd-stats-num">48 days</h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="hiring-stats-cont">
+                                                    <h6 class="recruitment-h6 w-100">New hires</h6>
+                                                    <h6 class="tmd-stats-num">48 days</h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mt-10">
+                                                <div class="hiring-stats-cont">
+                                                    <h6 class="recruitment-h6 w-100">Net training costs</h6>
+                                                    <h6 class="tmd-stats-num">48 days</h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mt-10">
+                                                <div class="hiring-stats-cont">
+                                                    <h6 class="recruitment-h6 w-100">costs per hire</h6>
+                                                    <h6 class="tmd-stats-num">48 days</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex mt-10">
+                                        <div class="w-100 mr-16">
+                                            <div class="kpi-card-container">
+                                                <h6 class="recruitment-h6">Talent Turnover Rate</h6>
+                                                <p class="recruitment-p-sub">by department</p>
+                                                <div id="talentTurnoverRate"></div>
+                                            </div>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="kpi-card-container">
+                                                <h6 class="recruitment-h6">Fired Talents</h6>
+                                                <p class="recruitment-p-sub">by employment period</p>
+                                                <div id="firedTalents"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="d-flex justify-content-space-between w-100">
+                                        <div style="width:40%;">
+                                            <div class="kpi-card-container mr-16">
+                                                <h6 class="recruitment-h6">talent satisfaction (nfs)</h6>
+                                                <div id="talentSatisfactionNFS"></div>
+                                            </div>
+                                        </div>
+                                        <div style="width:60%;">
+                                            <div class="kpi-card-container">
+                                                <h6 class="recruitment-h6">trend</h6>
+                                                <div class="d-flex w-100">
+                                                    <div style="width:40%">
+                                                        <h6 class="w-100 recruitment-h6-sub mr-16">Last 6 months</h6>
+                                                        <div id="trendLastSixMonths"></div>
+                                                    </div>
+                                                    <div style="width:60%">
+                                                        <div class="trend-cont">
+                                                            <p>1 year</p>
+                                                            <h6>75</h6>
+                                                        </div>
+                                                        <div class="trend-cont">
+                                                            <p>2 years</p>
+                                                            <h6>55</h6>
+                                                        </div>
+                                                        <div class="trend-cont">
+                                                            <p>5 years</p>
+                                                            <h6>80</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-space-between mt-10 w-100">
+                                        <div style="width:40%;">
+                                            <div class="kpi-card-container mr-16">
+                                                <h6 class="recruitment-h6">Talent rating</h6>
+                                                <h2 class="w-100 tr-h2">3.33</h2>
+                                                <div id="talentRating"></div>
+
+                                                <h6 class="recruitment-h6 mt-10">% of talent by rating</h6>
+                                                <table class="talent-rating-table">
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex">
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                            </div>
+                                                        </td>
+                                                        <td>excellent</td>
+                                                        <td>6%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex">
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                            </div>
+                                                        </td>
+                                                        <td>very good</td>
+                                                        <td>6%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex">
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                            </div>
+                                                        </td>
+                                                        <td>good</td>
+                                                        <td>6%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex">
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                            </div>
+                                                        </td>
+                                                        <td>fair</td>
+                                                        <td>6%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex">
+                                                                <i class="fa-solid fa-star" style="color: #0084ff;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                                <i class="fa-regular fa-star"
+                                                                    style="color: #000000;"></i>
+                                                            </div>
+                                                        </td>
+                                                        <td>poor</td>
+                                                        <td>6%</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div style="width:60%;">
+                                            <div class="kpi-card-container">
+                                                <h6 class="recruitment-h6">Trend By Category</h6>
+                                                <h6 class="recruitment-h6-sub w-100">last 6 months</h6>
+                                                <div id="trendByCategory6Months"></div>
+                                                <div class="d-flex w-100">
+                                                    <div class="w-100" style="border-right: 2px solid #cccccc;">
+                                                        <h6 class="recruitment-h6-sub">last 1 year</h6>
+                                                        <div id="trendByCategoryOneYear"></div>
+                                                    </div>
+                                                    <div class="w-100" style="border-right: 2px solid #cccccc;">
+                                                        <h6 class="recruitment-h6-sub">last 2 years</h6>
+                                                        <div id="trendByCategoryTwoYears"></div>
+                                                    </div>
+                                                    <div class="w-100">
+                                                        <h6 class="recruitment-h6-sub">last 3 years</h6>
+                                                        <div id="trendByCategoryFiveYears"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- workforce management tab -->
+                        <div class="tab-pane" id="workforce">
+                            <div class="compliance-dashboard-heading">
+                                <h2>Workforce Management Dashboard</h2>
+                            </div>
+                            <div class="dashboard-separator mt-10"></div>
+                            <div class="row mt-10">
+                                <div class="col-md-5">
+                                    <div class="kpi-card-container">
+                                        <h6 class="recruitment-h6">Part Time vs Full Time Employees</h6>
+                                        <div id="partTimeVsFullTime"></div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h6 class="recruitment-h6">Time to quit job</h6>
+                                        <p class="recruitment-p-sub">(Employees are most likely to leave their job
+                                            around their first year anniversary)
+                                        </p>
+                                        <div id="timeToQuitJob"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="kpi-card-container">
+                                        <h6 class="recruitment-h6">Female to male ratio</h6>
+                                        <div id="femaleMaleRatio"></div>
+                                        <div class="d-flex justify-content-center w-100 male-female">
+                                            <div class="d-flex align-items-center mr-16">
+                                                <div class="rec-avg-box" style="background:#544fc5"></div>
+                                                <div class="rec-avg-text">Female</div>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="rec-avg-box" style="background:#2caffe"></div>
+                                                <div class="rec-avg-text">Male</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card-container mt-10">
+                                        <h6 class="recruitment-h6">notices during first year by age group</h6>
+                                        <p class="recruitment-p-sub">(Employees under the age of 25 are most likely to
+                                            leave their job
+                                            during their firt year of employment)
+                                        </p>
+                                        <div id="noticesDuringFirstYear"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="kpi-card-container">
+                                        <h6 class="recruitment-h6 w-100">Internal Mobility 2023</h6>
+                                        <div class="internal-mob-card">
+                                            <i class="fa-solid fa-user-tie"></i>
+                                            <div class="internal-mob-card-text-cont">
+                                                <h5>47%</h5>
+                                                <p>of all Directors and Managing Directors positions
+                                                    were filled internally.</p>
+                                            </div>
+                                        </div>
+                                        <div class="internal-mob-card">
+                                            <i class="fa-solid fa-handshake"></i>
+                                            <div class="internal-mob-card-text-cont">
+                                                <h5>21 positions</h5>
+                                                <p>of 51 open positions were internal recruiting initiatives.</p>
+                                            </div>
+                                        </div>
+                                        <div class="internal-mob-card">
+                                            <i class="fa-regular fa-circle-check"></i>
+                                            <div class="internal-mob-card-text-cont">
+                                                <h5>41%</h5>
+                                                <p>of all vacancies were filled internally.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- diversity tab -->
+                        <!-- <div class="tab-pane" id="diversity">
+                            
+                        </div> -->
+                        <!-- CFO tab -->
+                        <!-- <div class="tab-pane" id="CFO">
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- End Tabs on plain Card -->
+        </div>
+    </section>
+    </div>
+   <!--  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+        integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+        integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+        crossorigin="anonymous"></script> -->
+   
+</body>
+
+</html>

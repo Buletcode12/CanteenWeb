@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style type="text/css">
+.highcharts-exporting-group {
+	display: none;
+}
+
+.sugg-cls ul {
+	height: 150px;
+	overflow-x: scroll;
+	position: relative;
+}
+
+.autocomplete {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+}
+
+.slidebox {
+	padding: 14px;
+	margin-top: 0px;
+	margin: 0px 10px;
+}
+
+/* .form-group label {
+	font-size: 12px;
+	position: relative;
+	top: 4px;
+} */
+.holdCls {
+	background-color: rgb(0, 143, 0);
+}
+
+.bg_white {
+	background: #ffffff !important;
+}
+
+.text {
+    color: black;
+    font-weight: bold;
+    font-size: 12px;
+}
+</style>
+<script type="text/javascript">
+	function openNav() {
+		document.getElementById("mySidenav").style.cssText = "width: 350px; position: absolute; right:-10px; overflow: hidden; height:auto; top:300px;";
+
+		document.getElementById("main_content").style.width = "70%";
+		$("#gstCalS").hide();
+	}
+
+	function closeNav() {
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main_content").style.width = "100%";
+		$("#gstCalS").show();
+		
+		
+		$("#itemId").val('');
+		$("#itemName").val('');
+		$("#productMode").val('');
+		$("#productSize").val('');
+		$("#quantity").val('');
+		$("#returnQuantity").val('');
+		$("#priceRate").val('');
+		$("#discountCode").val('');
+		$("#gstRate").val('');
+		$("#totalAmount").val('');
+		$("#extraDiscount").val('');
+		$("#editProduct").val(null);
+		
+	}
+
+	var count1 = 0;
+	function allCheck1() {
+		count1++;
+
+		if (count1 == 1) {
+			$('.checkCls1').prop("checked", true);
+		} else {
+			count1 = 0;
+			$('.checkCls1').prop("checked", false);
+		}
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+		if ($('#searchBar').val() == null || $('#searchBar').val() == "") {
+			id.style.display = "none";
+		}
+	}
+</script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#gstCalS").hide();
+		$("#statusDiv").hide();
+		$('#reqDltBtn').attr('disabled', true);
+		$('#dwnldBtn').attr('disabled', true);
+
+		$('.collapse').on('show.bs.collapse', function() {
+			$(this).siblings('.panel-heading').addClass('active');
+		});
+
+		$('.collapse').on('hide.bs.collapse', function() {
+			$(this).siblings('.panel-heading').removeClass('active');
+		});
+		$("#newBtn").click(function() {
+			getVoucherNumber();
+			$("#gstCalS").show();
+			$("#myGrid").hide();
+			$("#reqTable").hide();
+			$(".btn-hs").hide();
+			$("#demo").show();
+			$("#addProduct").show();
+			$("#dltProduct").show();
+			$("#save1").show();
+			$("#creditHeadId").text("");
+			$("#partyLedgerId").val("");
+			$("#partyLedger").val("");
+			$("#creditNoteDate").val("");
+			$("#costCenter").val("");
+			$("#orderNumber").val("");
+			$("#subTotal").val("");
+			$("#qSGST").val("");
+			$("#qCGST").val("");
+			$("#qIGST").val("");
+			$("#grandTotal").val("");
+			productOptions.api.setRowData("");
+		})
+
+		$("#quarter").click(function() {
+			$("#myTbl").hide();
+			$(".btn-hs").hide();
+			$("#demo").show();
+		})
+
+		$("#receiveDate").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+		})
+
+		$("#browseBtn").click(function() {
+			$("#myModal").modal('show');
+			getCategoryList();
+		})
+		
+		productOptions.api.setRowData("");
+		gridOptions.api.setRowData("");
+		agGrid.simpleHttpRequest({
+			url : 'credit-note-view'
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(data);
+		});
+		
+		
+		
+		const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
+		var weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+		var d = new Date();
+		var month = monthNames[d.getMonth()];
+		var day = d.getDate();
+		var output =(day<10 ? '0' : '') + day +'-'+(month<10 ? '0' : '') + month +'-'+  d.getFullYear();
+		$("#creditDate").text(output);
+		var a = new Date(output);
+		var b=weekday[a.getDay()];
+		$("#creditDay").text(b);
+		
+		$("#creditNoteDate").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+		})
+		
+	});
+	
+	
+	function getVoucherNumber(){
+		$.ajax({
+			type : "GET",
+			url : "credit-note-vouchernumber",
+			async : false,
+			success : function(response) {
+				if (response.message == "Success") {
+					$("#voucherNumber").text(response.body[0].key);
+				}
+			}
+		});
+		
+	}	
+
+	$("input[class='myCheckbox']").click(function() {
+		if ($("#formID input:checkbox:checked").length > 0) {
+			$(".checkSubmit").addClass('active');
+		} else {
+			$(".checkSubmit").removeClass('active');
+		}
+	});
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+	
+	
+
+	
+	function getOrderNUmber(id) {
+		if (id) {
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$.ajax({
+				type: "GET",
+				url: "credit-note-getorderList?id=" + id,
+				success: function(response) {
+					if (response.message == "success") {
+						$("#orderNumber").empty();
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select Order Number");
+						$("#orderNumber").append(option);
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#orderNumber").append(option);
+						}
+					}
+				},
+				error: function(e) {
+				}
+			});
+		}
+	}
+	
+	function getOrderNUmber2(id1,id2) {
+		if (id1) {
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$.ajax({
+				type: "GET",
+				url: "credit-note-getorderList?id=" + id1,
+				success: function(response) {
+					if (response.message == "success") {
+						$("#orderNumber").empty();
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select Order Number");
+						$("#orderNumber").append(option);
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#orderNumber").append(option);
+						}
+						
+						if(id2){
+							$("#orderNumber").val(id2);
+						}
+					}
+				},
+				error: function(e) {
+				}
+			});
+			
+		}
+		
+	}
+	
+	function getProductList(){
+		var ord=$("#orderNumber").val();
+		if (ord) {
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$.ajax({
+				type: "GET",
+				url: "credit-note-getProductList?id=" + ord,
+				success: function(response) {
+					if (response.message == "success") {
+						$("#quantity").val("");
+						$("#priceRate").val("");
+						$("#productMode").val("");
+						$("#productSize").val("");
+						$("#discountCode").val("");
+						$("#discount").val("");
+						$("#gstRate").val("");
+						$("#discount").val("");
+						$("#totalAmount").val("");
+						$("#itemSgst").val("");
+						$("#itemCgst").val("");
+						$("#returnQuantity").val("");
+						$("#extraDiscount").val("");
+						productOptions.api.setRowData("");
+						$("#itemName").empty();
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select Product");
+						$("#itemName").append(option);
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#itemName").append(option);
+						}
+					}
+				},
+				error: function(e) {
+				}
+			});
+		}
+	}
+	
+	
+	 function getProductDetails(){
+		 var proname=$("#itemName :selected").text();
+		 $("#proName").val(proname);
+		var proid=$("#itemName").val();
+		var ord=$("#orderNumber").val();
+				
+		$.ajax({
+			type: "GET",
+			url: "credit-note-getProductDetails?oid=" + ord+"&proid="+proid,
+			success: function(response) {
+				if (response.message == "Success") {
+					$("#quantity").val(response.body[0].quantity);
+					$("#priceRate").val(response.body[0].itemUnitPrice);
+					$("#productMode").val(response.body[0].toggleRegularCustom);
+					$("#productSize").val(response.body[0].productDimension);
+					$("#discountCode").val(response.body[0].dealerCode);
+					$("#discount").val(response.body[0].discount);
+					$("#gstRate").val(response.body[0].gstRate);
+					$("#totalAmount").val(response.body[0].lineTotal);
+					$("#itemSgst").val(response.body[0].itemSgst);
+					$("#itemCgst").val(response.body[0].itemCgst);
+					if(response.body[0].extraDiscount !=''){
+						$("#extraDiscount").val(response.body[0].extraDiscount);
+					}else{
+						$("#extraDiscount").val('0');
+					}
+					
+				}
+			},
+			error: function(e) {
+			}
+		});
+		
+	} 
+	 
+	 
+	 
+	 var grandTotal=0;
+		var subTotal=0;
+		var totalGst=0;
+		var totalSgst=0;
+		var totalCgst=0;
+		var totalIgst=0;
+		function calculateLineTotal() {
+			
+			var itemUnitPrice =parseFloat($("#priceRate").val());
+			var quantity =parseFloat($("#returnQuantity").val());
+			var itemDiscount=parseInt($("#discount").val());
+			var gstRate=($("#gstRate").val());
+			
+						
+		if(quantity){
+			if(itemDiscount>0){
+				var priceAfterDiscount=((itemUnitPrice*quantity)*(100-itemDiscount))/100;
+			}else{
+				var priceAfterDiscount=(itemUnitPrice*quantity);
+			}
+			
+			priceAfterDiscount = priceAfterDiscount.toFixed(2)
+			$("#totalAmount").val(priceAfterDiscount);
+		}else{
+			$("#totalAmount").val("");
+			return false;
+		}
+			
+		}
+		
+		
+		function alphabetCheck(){
+			var ordQty = $("#quantity").val();
+			var qty = $("#returnQuantity").val();
+			var reg = /^[a-zA-Z]*$/;
+			if(qty != ""){
+				if(reg.test(qty)){
+					swal("Invalid Input");
+					$("#returnQuantity").val("");
+					return false;
+				}
+				if(qty){
+					if(qty>ordQty){
+						swal("Return quantity should be less than ordered quantity");
+						$("#returnQuantity").val("");
+						return false;
+					}
+				}
+			}
+			
+		}
+		
+</script>
+
+<script>
+	var columnDefs = [
+			{
+			//	headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				sortable : false,
+				filter : false,
+				resizable : true,
+				width : 20
+			},
+			{
+				headerName : "Credit Note Id",
+				field : "creditNoteId",
+				cellRenderer : function(params) {
+					return '<a onclick=editCreditNOte("' + params.data.creditNoteId
+					+'") href="javascript:void(0)">'
+							+ params.data.creditNoteId + '</a>';
+				}
+
+			}, {
+				headerName : "Party Name",
+				field : "partyLedger",
+				width : 205,
+			}, {
+				headerName : "Ledger Account",
+				field : "salesLedger"
+			}, {
+				headerName : "Credit Date(dd-mm-yyyy)",
+				field : "creditNoteDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+
+			}, {
+				headerName : "Order Number",
+				field : "orderNumber",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : "Total Amount",
+				field : "grandTotal",
+				//valueFormatter: params => params.data.grandTotal.toFixed(2),
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : "Cost Center",
+				field : "costCenter",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : "Created By",
+				field : "createdBy"
+
+			}, {
+				headerName : "Created Date",
+				field : "createdOn",
+				width : 175,
+				cellStyle : {
+					textAlign : 'center'
+				}
+
+			} ];
+
+	// for product table
+
+
+	var productDefs = [
+	{
+		headerCheckboxSelection : false,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+
+	},
+	{
+		headerName : "SlNo",
+		field : "slNo",
+		width : 110,
+		cellStyle : {
+			textAlign : 'center'
+		}
+	},{
+
+		headerName : 'Product Name',
+		field : "categoryName",
+		width : 170,
+		cellStyle : {
+			textAlign : 'center'
+		},
+		cellRenderer : function(params) {
+			return '<div style="color:black;font-weight: bold;">'
+			+ params.data.categoryName 
+			+ '</div>';
+     	}
+	},
+	{
+		headerName : 'Product Size',
+		field : "productDimension",
+		width : 170,
+		cellStyle : {
+			textAlign : 'center'
+		},
+		cellRenderer : function(params) {
+			return '<div style="color:black;font-weight: bold;">'
+			+ params.data.productDimension 
+			+ '</div>';
+     	}
+	},{
+		headerName : 'Quantity',
+		field : "quantity",	
+		width : 150,
+		valueFormatter : currencyFormatter,
+		cellStyle : {
+			textAlign : 'center'
+		},
+		cellRenderer : function(params) {
+			return '<div style="color:black;font-weight: bold;">'
+			+ params.data.quantity 
+			+ '</div>';
+     	}
+	}, {
+		headerName : 'Unit Price',
+		field : "itemUnitPrice",
+		width : 180,
+		cellStyle : {
+			textAlign : 'right'
+		},
+		cellRenderer : function(params) {
+			return '<div style="color:black;font-weight: bold;">'
+			+ params.data.itemUnitPrice 
+			+ '</div>';
+     	}
+	},
+	 {
+		headerName : 'GST Rate',
+		field : "gstRate",
+		width : 160,
+		valueFormatter : currencyFormatter,
+		cellStyle : {
+			textAlign : 'center'
+		},
+		cellRenderer : function(params) {
+			return '<div style="color:black;font-weight: bold;">'
+			+ params.data.gstRate 
+			+ '</div>';
+     	}
+	}, {
+		headerName : 'Amount',
+		field : "lineTotal",
+		width : 188,
+		cellStyle : {
+			textAlign : 'right'
+		},
+		cellRenderer : function(params) {
+			return '<div style="color:black;font-weight: bold;">'
+			+ params.data.lineTotal 
+			+ '</div>';
+     	}
+	}, {
+		headerName : 'Extra Discount',
+		field : "extraDiscount",
+		width : 188,
+		cellStyle : {
+			textAlign : 'center'
+		},
+		cellRenderer : function(params) {
+			return '<div style="color:black;font-weight: bold;">'
+			+ params.data.extraDiscount 
+			+ '</div>';
+     	}
+	}
+	];
+
+	// let the grid know which columns and what data to use activity table
+	var productOptions = {
+		columnDefs : productDefs,
+		rowSelection : 'multiple',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 153
+		},
+		getRowNodeId : function(data) {
+			return data.slNo;
+		}
+
+	};
+
+	// let the grid know which columns and what data to use
+	var gridOptions = {
+		columnDefs : columnDefs,
+		rowSelection : 'single',
+		groupSelectsChildren : true,
+		suppressRowClickSelection : true,
+		suppressAggFuncInHeader : true,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 153
+		},
+		onSelectionChanged : onSelectionChanged,
+
+	};
+
+	// setup the grid after the page has finished loading
+	document.addEventListener('DOMContentLoaded', function() {
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		var gridDiv = document.querySelector('#product');
+		new agGrid.Grid(gridDiv, productOptions);
+
+
+	});
+	gridOptions.api.setRowData("");
+	agGrid.simpleHttpRequest({
+		url : 'credit-note-view'
+	}).then(function(data) {
+		var len = data.length;
+		$('#totalReq').find('span').html(len);
+		gridOptions.api.setRowData(data);
+	});
+	
+	
+
+	function resetState() {
+		gridOptions.columnApi.resetColumnState();
+
+	}
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+	function cancel(){
+		 $("#searchRowDiv").show();
+		$("#reqTable").show();
+		$(".btn-hs").show();
+		$("#myGrid").show();
+		$("#demo").hide();
+		gridOptions.api.setRowData("");
+		agGrid.simpleHttpRequest({
+			url : 'credit-note-view'
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(data);
+		});
+		$("#desc").val('');
+		$("#reqType").val('');
+		$("#reqPrior").val('');
+		$("#receiveDate").val('');
+		$("#isHold").val('');
+		$("#source").html('');
+		//$("#rfqId").val(rfqId);
+		$("#reqHeadId").html('');
+		$("#createdDate").append('');
+		$("#sku").val('');
+		$("#skuEditId").val('');
+		$("#itemId").val('');
+		$("#itemName").val('');
+		$("#locationId").val('');
+		$("#quantity").val('');
+		$("#unit").val('');
+		 
+		$("#search").val('');
+	}
+	function onSelectionChanged() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var rowCount = 0;
+		selectedRows.forEach(function(selectedRow, index) {
+			rowCount = rowCount + 1;
+		});
+		var selectedNodes = gridOptions.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		 var approveStatus= selectedData.map(node => node.approveStatus);
+		if (rowCount > 0) {
+			$('#reqDltBtn').attr('disabled', false);
+			$('#newBtn').attr('disabled', true);
+			$('#dwnldBtn').attr('disabled', false);
+		} else {
+			$('#reqDltBtn').attr('disabled', true);
+			$('#newBtn').attr('disabled', false);
+			$('#dwnldBtn').attr('disabled', true);
+		}
+
+	}
+	
+	// for edit indivisual product
+	function editProduct(slNo) {
+
+		var rowNode = productOptions.api.getRowNode(slNo);
+      
+		$("#itemId").val(rowNode.data.itemId);
+		$("#hsnCode").val(rowNode.data.hsnCode);
+		$("#itemName").val(rowNode.data.itemName);
+		$("#locationId").val(rowNode.data.locationId);
+		 $("#productEdit").val(slNo);
+		 $("#quantity").val(rowNode.data.quantity);
+		$("#unit").val(rowNode.data.unit);
+		$("#unitPrice").val(rowNode.data.unitPrice);
+		$("#skuTemp").val(rowNode.data.sku);
+		$("#lineTotal").val(rowNode.data.lineTotal);
+		$("#itemIdTemp").val(rowNode.data.itemId);
+
+		openNav();
+
+	}
+	
+	
+	function editCreditNOte(id){
+		//alert(id)
+		
+		$.ajax({
+			type: "GET",
+			url: "credit-note-editVoucher?id=" + id,
+			success: function(response) {
+				if (response.code == "Success") {
+					console.log(JSON.stringify(response));
+					$("#creditHeadId").text(response.body.creditNoteId);
+					$("#voucherNumber").text(response.body.creditNoteId);
+					$("#partyLedgerId").val(response.body.partyLedgerId);
+					$("#partyLedger").val(response.body.partyLedger);
+					$("#creditNoteDate").val(response.body.creditNoteDate);
+					$("#costCenter").val(response.body.costCenter);
+					$("#description").val(response.body.description);
+					$("#prtyLedgerCurBal").val(response.body.currentBalance);
+					
+					getOrderNUmber2(response.body.partyLedgerId,response.body.orderNumber);
+					//$("#orderNumber").val(response.body.orderNumber);
+					$("#subTotal").val(response.body.subTotal);
+					$("#qSGST").val(response.body.qSGST);
+					$("#qCGST").val(response.body.qCGST);
+					$("#qIGST").val(response.body.qIGST);
+					$("#grandTotal").val(response.body.grandTotal);
+					productOptions.api.setRowData(response.body.itemattribute);
+					
+					$("#myGrid").hide();
+					$("#reqTable").hide();
+					$(".btn-hs").hide();
+					$("#gstCalS").show();
+					$("#demo").show();
+					$("#addProduct").hide();
+					$("#dltProduct").hide();
+					$("#save1").hide();
+					
+					
+				}
+			},
+			error: function(e) {
+			}
+		});
+	}
+
+
+
+	
+	
+
+	function deleteFun() {
+		$('#delete').modal('show');
+	}
+	function deleteProduct() {
+		$('#deleteProduct').modal('show');
+	}
+	function deleteProductIndConfirm() {
+		$('#deleteProductInd').modal('show');
+	}
+	
+	// delete requisition 
+	function deleteOnclick() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var selectedRowsString = '';
+		selectedRows.forEach(function(selectedRow, index) {
+			if (index > 0) {
+				selectedRowsString += ',';
+			}
+			selectedRowsString += selectedRow.reqId;
+		});
+		if (selectedRowsString) {
+			var item = {};
+			item.moduleId = localStorage.getItem('module');
+			item.componentId = localStorage.getItem('function');
+			item.subComponentId = localStorage.getItem('activity');
+			item.reqId = selectedRowsString;
+			$('.loader').show();
+			$("body").addClass("overlay");
+			$.ajax({
+				type : "POST",
+				url : "view-requisition-delete-th-ajax",
+				dataType : "json",
+				contentType : "application/json",
+				data : JSON.stringify(item),
+				success : function(response) {
+					$('.loader').hide();
+					if (response.message == "Success") {
+						gridOptions.api.setRowData("");
+						agGrid.simpleHttpRequest({
+							url : 'credit-note-view'
+						}).then(function(data) {
+							var len = data.length;
+							$('#totalReq').find('span').html(len);
+
+							gridOptions.api.setRowData(data);
+						});
+						$('.loader').hide();
+						$("body").addClass("overlay");
+					} else {
+						swal({
+							title : response.code,
+							text : response.message,
+							type : "warning"
+						})
+					}
+				},
+				error : function(data) {
+					console.log(data)
+				}
+			})
+		} else {
+			$("#alert").modal('show');
+			document.getElementById("textId").innerHTML = "Please Select Atleast one Record !";
+		}
+
+	}
+	// delete selected record from ag grid
+	function deleteProductOnclick() {
+		var selectedRows = productOptions.api.getSelectedRows();
+		productOptions.api.applyTransaction({
+			remove : selectedRows
+		});
+		cancelModalProductBtn();
+
+	}
+
+	function cancelModalBtn() {
+		$("#deleteModalBtn").removeAttr("disabled");
+	}
+	//for closeing modal box for dlt  product
+	function cancelModalProductBtn() {
+		$("#deleteModalBtn").removeAttr("disabled");
+		$('#deleteProduct').modal('hide');
+	}
+	//for closeing modal box for dlt ind product
+	function cancelModalBtnDPI() {
+		$('#deleteProductInd').modal('hide');
+	}
+	//for approve requisition
+	
+</script>
+
+
+<script>
+
+	function saveTableData() {
+		var editProduct = $("#editProduct").val();
+		
+		var item = {};
+		var data = 1;
+		var validation = true;
+		var sum = 0.0;
+		var gstRate = 0.0;
+		var qSGST = 0.0;
+		var qCGST = 0.0;
+		var qIGST = 0.0;
+		
+		var itemIgst = 0.0;
+		var itemCgst = 0.0;
+		var itemSgst = 0.0;
+		var subtotal =0.0;
+		
+		var perItemCGST=0.0;
+		var perItemSGST=0.0;
+
+		
+		var sizeId = $('#productDimensionId').val();
+		
+		if (validation) {
+			productOptions.api.forEachNode(function(rowNode, index) {
+				if (!editProduct) {
+					data = data + 1;
+				}
+			});
+		
+			var line= $('#lineTotal').val();
+			var gst= $('#gstRate').val();
+			perItemCGST = (parseFloat(line) - (parseFloat(line) / ((parseFloat(gst)+100)/100))) / 2;
+			perItemSGST = (parseFloat(line) - (parseFloat(line) / ((parseFloat(gst)+100)/100))) / 2;
+			item.itemId = $('#itemName').val();
+			item.itemName = $("#proName").val();
+			item.quantity = $('#returnQuantity').val();
+		    item.itemUnitPrice = $('#priceRate').val();
+			item.discount = $('#discount').val();
+			item.dealerCode = $('#discountCode').val();
+			item.gstRate = $('#gstRate').val();
+			item.lineTotal = $('#totalAmount').val();
+			item.categoryName = $("#proName").val();
+			item.categoryId = $('#itemName').val();
+			item.productDimension = $('#productSize').val();
+			item.toggleRegularCustom = $('#productMode').val();
+			item.extraDiscount = $('#extraDiscount').val();
+			item.itemCgst = perItemCGST;
+			item.itemSgst = perItemSGST;
+
+			
+			if(editProduct>0){
+				item.slNo = editProduct;
+			}else{
+				item.slNo = data;
+			}
+			//console.log(item)
+			var quot = [];
+			
+			if (editProduct) {
+				var rowNode = productOptions.api.getRowNode(editProduct);
+				rowNode.setData(item);
+				
+				productOptions.api.forEachNode(function(rowNode, index) {
+					quot.push(rowNode.data);
+				});
+			
+			    var len = quot.length;
+			    
+				for (var i = 0; i < len; i++) {
+				sum = sum + (parseFloat(quot[i].lineTotal));
+				var taxType = $("#taxType").val();
+				
+				if (taxType == "true") {
+
+					quot[i].itemIgst = quot[i].lineTotal * quot[i].gstRate/ 100;
+					qIGST = qIGST + quot[i].itemIgst;
+					grandTotal = sum;
+				} else {
+				
+				var totalGstAmnt = (parseFloat(quot[i].lineTotal) - (parseFloat(quot[i].lineTotal) / ((parseFloat(quot[i].gstRate)+100)/100)));
+					quot[i].itemCgst = totalGstAmnt/2;
+					quot[i].itemSgst =  totalGstAmnt/2;
+					qCGST = qCGST + quot[i].itemCgst;
+					qSGST = qSGST + quot[i].itemSgst;
+					grandTotal = sum;
+					subtotal =(sum-(qCGST + qSGST));
+				}
+			}
+							
+			}  else {
+				productOptions.api.forEachNode(function(rowNode, index) {
+					quot.push(rowNode.data);
+				});
+				quot.push(item)
+				productOptions.api.setRowData(quot);
+
+		
+			
+			var len = quot.length;
+				for (var i = 0; i < len; i++) {
+				sum = sum + (parseFloat(quot[i].lineTotal));
+				var taxType = $("#taxType").val();
+
+				if (taxType == "true") {
+
+					quot[i].itemIgst = quot[i].lineTotal * quot[i].gstRate/ 100;
+					qIGST = qIGST + quot[i].itemIgst;
+					grandTotal = sum;
+				} else {
+				
+				var totalGstAmnt = (parseFloat(quot[i].lineTotal) - (parseFloat(quot[i].lineTotal) / ((parseFloat(quot[i].gstRate)+100)/100)));
+						
+						quot[i].itemCgst = totalGstAmnt/2;
+					    quot[i].itemSgst =  totalGstAmnt/2;
+
+					qCGST = qCGST + quot[i].itemCgst;
+					qSGST = qSGST + quot[i].itemSgst;
+					grandTotal = sum;
+					subtotal =(sum-(qCGST + qSGST));
+					
+				}
+			}
+				$("#subTotal").val(subtotal.toFixed(2));
+				$("#qIGST").val(qIGST.toFixed(2));
+				$("#qCGST").val(qCGST.toFixed(2));
+				$("#qSGST").val(qSGST.toFixed(2));
+				$("#grandTotal").val(grandTotal.toFixed(2))
+			
+		}
+			closeNav();
+		
+	} 
+	
+	}
+
+	//add product
+	function saveData() {
+		var datas = [];
+		
+		$("#loader").show();
+		$(".overlay:not(#loader)").show()
+		$('body,html').css('pointer-events','none');
+		
+		setTimeout(function() {
+			var obj = {};
+			
+			var item_data = [];
+			var qnty=0;
+			
+			productOptions.api.forEachNode(function(rowNode, indrx) {
+				var item_obj = {};
+				item_obj.productId = rowNode.data.productId;
+				item_obj.productName = rowNode.data.productName;
+				item_obj.categoryId = rowNode.data.categoryId;
+				item_obj.categoryName = rowNode.data.categoryName;
+				item_obj.quantity = rowNode.data.quantity;
+				item_obj.productDimension = rowNode.data.productDimension;
+				item_obj.itemUnitPrice = rowNode.data.itemUnitPrice;
+				item_obj.discount = rowNode.data.discount;
+				item_obj.gstRate = rowNode.data.gstRate;
+				item_obj.lineTotal = rowNode.data.lineTotal;
+				item_obj.itemCgst = rowNode.data.itemCgst;
+				item_obj.itemSgst = rowNode.data.itemSgst;
+				item_obj.dealerCode = rowNode.data.dealerCode;
+				item_obj.extraDiscount = rowNode.data.extraDiscount;
+				item_obj.toggleRegularCustom = rowNode.data.toggleRegularCustom;
+				qnty=qnty+parseInt(rowNode.data.quantity);
+				item_data.push(item_obj);
+			});
+			
+			
+			obj.creditNoteId = $('#creditHeadId').val();
+			obj.partyLedgerId = $('#partyLedgerId').val();
+			obj.partyLedger = $('#partyLedger').val();
+			obj.salesLedgerId = $('#salesLedgerId').val();
+			obj.salesLedger = $('#salesLedger').val();
+			obj.prtyLedgerCurBal = $('#prtyLedgerCurBal').val();
+			obj.salesLedgerCurBal = $('#salesLedgerCurBal').val();
+			obj.creditNoteDate= $('#creditNoteDate').val();
+			obj.orderNumber= $('#orderNumber').val();
+			obj.qSGST= $('#qSGST').val();
+			obj.qCGST= $('#qCGST').val();
+			obj.qIGST= $('#qIGST').val();
+			obj.grandTotal= $('#grandTotal').val();
+			obj.subTotal= $('#subTotal').val();
+			obj.totalItem=qnty;
+			obj.costCenter=$('#costCenter').val();
+			obj.description=$('#description').val();
+			obj.itemattribute = item_data;
+			if(obj.subTotal == "" || obj.subTotal == null){
+				$("#loader").hide();
+				$(".overlay:not(#loader)").hide()
+				$('body,html').css('pointer-events','auto');
+				swal("Please Select Atleast One Product")
+				return false;
+			}
+			datas.push(obj);
+			console.log("Object mapping for Product--------", JSON.stringify(datas));
+			saveProduct(datas);
+		}, 1000)
+
+	}
+	
+	
+	function saveProduct(datas) {
+		$.ajax({
+					type : "POST",
+					url : "credit-note-add",
+					contentType : "application/json",
+					data : JSON.stringify(datas),
+					success : function(response) {
+						if (response.code == "Success") {
+							$("#loader").hide();
+							$(".overlay:not(#loader)").hide()
+							$('body,html').css('pointer-events','auto');
+							swal({
+								title: "Voucher Status", 
+								text: "Credit voucher created Successfully!", 
+								type: "success"
+								}).then(function(){
+							   location.reload();
+							   }
+							);
+							
+							
+						} else {
+
+							$("body").removeClass("overlay");
+						}
+					},
+					error : function(data) {
+						$('.loader').hide();
+						$("body").removeClass("overlay");
+					}
+				}) //ajax ends
+
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	
+
+	function selectAutocompleteValue1(key, name, sku, brandName, brand) {
+
+		if (key) {
+			$("#itemName").html(name);
+			$("#itemId").val(key);
+			$("#brandName").html(brandName);
+			$("#brandId").val(brand);
+			$("#sku").html(sku);
+			$("#search").val(name)
+			$("#search").attr('data-procat', key);
+			$("#suggesstion-box1_").hide();
+			//checkForDuplicate(key,counter);
+
+		} else {
+
+			$("#itemName").html("");
+			$("#itemId").val("");
+			$("#brandId").html("");
+			$("#brandId").val("");
+			$("#sku").html("");
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box1_").hide();
+
+		}
+	}
+	function selectAutocompleteValue() {
+		$("#itemName").html("");
+		$("#itemId").val("");
+		$("#brandId").val("");
+		$("#brandName").html("");
+		$("#sku").html("");
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-box1_").hide();
+
+	}
+
+	function onQuickFilterChanged() {
+		$(".ti-search srchicon").hide();
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+	
+	function getPartyLedger() {
+		var search = $("#partyLedger").val();
+		if (search) {
+			$
+					.ajax({
+						type : "POST",
+						url : "credit-note-ledgerList",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : search,
+						success : function(response) {
+							if (response.code == "success") {
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1" >';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li style="margin-left:0px; font-weight:100; font-size:14px; color:#ccc;     background-color: #dbdbdb;"  class="autocompletedata cp" onClick="selectAutocompleteValue1(\''
+												+ response.body[i].key
+												+ '\',\''
+												+ response.body[i].name
+												+ '\',\''
+												+response.body[i].code
+												+'\')">'
+												+ response.body[i].name
+												+ '</li>';
+									}
+									content += '<li style="margin-left:-30px;" >'
+											+ '</li>';
+									content += '</ul>';
+									////console.log("content " + content)
+									$("#suggesstion-box11_").show();
+									$("#suggesstion-box11_").html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1">';
+									content += '<li style="margin-left:0px; font-weight:100; font-size:14px; color:#ccc;     background-color: #dbdbdb;" onClick="selectAutocompleteValue()">'
+											+ "No Data Found" + '</li>';
+									content += '<li style="margin-left:-30px;" '
+											+ '</li>';
+									content += '</ul>';
+									$("#suggesstion-box11_").show();
+									$("#suggesstion-box11_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							//console.log(data);
+						}
+					})
+		}
+
+	}
+	
+	
+	function selectAutocompleteValue1(categoryId, categoryName,price) {
+
+		if (categoryId) {
+			$("#partyLedgerId").val(categoryId);
+			$("#partyLedger").val(categoryName);
+			$("#prtyLedgerCurBal").val(price);
+			$("#suggesstion-box11_").hide();
+		
+     
+		} else {
+			$("#partyLedgerId").val("");
+			$("#partyLedger").val("");
+			$("#prtyLedgerCurBal").val("");
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box11_").hide();
+
+		}
+		
+		getOrderNUmber(categoryId);
+	}
+
+	
+	var txtLen = 0;
+	function textCount(event) {
+		var id = event.target.id;
+		var pId = $('#' + id).next().attr("id");
+		$('#' + pId + ' span').empty();
+		txtLen = $('#' + id).val().length;
+		$('#' + pId + ' span').append(txtLen);
+	}
+
+</script>
+</head>
+<body>
+
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+					
+			
+						
+					<div class="row d-flex justify-content-between">
+						<div class="col-md-3  btn-hs">
+							<div class="font-design" id="totalReq">
+								ALL CREDIT NOTE VOUCHERS (<span></span>)
+							</div>
+
+						</div>
+						
+					<div class="col-md-4">
+						<div class="form-group d-flex">
+								<div class="col-md-3"><label>Fiscal Year</label> </div>
+								<div class="col-md-9">
+								<div class="select">
+									<select id="orderStatusFilter" class="form-control" >
+										<option value="">--Select--</option>
+										<option th:each="c,iter:${fiscalList}" th:value="${c.key}"
+											th:text="${c.name}"></option>
+									</select>
+								</div>
+								</div>
+							</div>
+						
+				  </div>
+						
+						
+						
+						
+						<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="fromDate" placeholder="From Date" class="form-control"> 
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-2 form-group">
+							<div class="form-group calendar_box">
+							<input type="text" id="toDate" placeholder="To Date" class="form-control">
+							<i class="ti-calendar picker_calendar" id="toDateCalendar" style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						
+						<div class="col-md-1">
+						<input type="button" id="filter" value="Filter" class="fltbtn" onclick="viewDayBook()" readonly>
+					   </div>
+						
+			
+					</div>
+					<!-- End -->
+					
+					
+					
+					<!-- Start -->
+						<div class="row mt-2" id="searchFilterDiv" style="margin-bottom:10px;">
+						<div class="col-md-4"></div>
+
+					<div class="col-md-3  btn-hs" id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+
+						</div>
+						
+						<div class="col-md-4 buttonsec btn-hs">
+
+								<button class="btn4" id="dwnldBtn">DOWNLOAD</button>
+								<button class="btn1" id="newBtn">NEW</button>
+								<button class="btn3" id="reqDltBtn" onclick="deleteFun()">DELETE</button>
+
+							</div>
+						
+
+					</div>
+					
+					<!-- End -->	
+						
+						
+						
+						<div id="myGrid" style="width: 100%; height: 424px;"
+							class="ag-theme-alpine"></div>
+
+						<div class="collapse" id="demo">
+							<div class="innerstickybg">
+								<div class="row">
+
+									<div class="col-md-6">CREDIT NOTE</div>
+									<div class="col-md-6" align="right">
+										<button class="cancel-btn" onclick="cancel()">Cancel</button>
+										<button class="btn1" id="save1" onclick="saveData()">Save</button>
+									</div>
+								</div>
+
+							</div>
+							<div class="row">
+								<div class="row col-md-12">
+									<div class="col-lg-6">
+										Credit Note No:&nbsp;&nbsp;<span id="voucherNumber"></span>
+										<input type="hidden" id="creditHeadId">
+									</div>
+									<div class="col-lg-6">
+										Credit Date:&nbsp;&nbsp;<span id="creditDate"></span>,<span
+											id="creditDay"></span>
+									</div>
+								</div>
+								<div class="col-md-12 row">
+									<div class="form-group col-md-6">
+										<label>Party name</label> 
+										<input class="form-control" id="partyLedger" onkeyup="getPartyLedger();">
+										 <input type="hidden" id="partyLedgerId"/>
+										 <div id="suggesstion-box11_" class="sugg-cls"></div>
+									</div>
+									
+									<div class="form-group col-md-6">
+										<label>Current balance</label> <input type="text"
+											id="prtyLedgerCurBal" class="form-control" readonly value="0">
+									</div>
+									<div class="form-group col-md-6">
+										<label>Ledger account</label> <input class="form-control"
+											id="salesLedger" value="Sales Account"> <input
+											type="hidden" id="salesLedgerId" value="TLM0004" />
+									</div>
+									<div class="form-group col-md-6">
+										<label>Current balance</label> <input type="text"
+											id="salesLedgerCurBal" class="form-control" readonly
+											value="0">
+									</div>
+									<div class="form-group col-md-6">
+										<label>Voucher date</label> 
+										<input type="text" id="creditNoteDate" class="form-control" value="">
+									</div>
+									<div class="form-group col-md-6">
+										<label>Order Number</label>
+										<div class="select">
+											<select id="orderNumber" onchange="getProductList()">
+												<option value="">Select Order Number</option>
+											</select>
+										</div>
+									</div>
+									
+									
+									<div class="form-group col-md-6">
+										<label>Cost Center</label>
+										<div class="select">
+											<select id="costCenter">
+														<option value="">Select</option>
+														<option th:each="c,iter:${ccList}" th:value="${c.key}"
+															th:text="${c.name}"></option>
+													</select>
+										</div>
+									</div>
+									
+									<div class="col-md-8">
+										<div class="modal-inrheading">Narration</div>
+										<div class="position-text">
+											<textarea rows="2" cols="100" id="description" onkeyup="textCount(event)"></textarea>
+											<div id="charNumSN" class="txtcounter" align="right">
+												<span>0</span> characters
+											</div>
+										</div>
+									</div>
+
+								</div>
+
+							</div>
+							<div id="main_content">
+								<div class="accordion-item mt-4" id="accordionExample">
+									<h2 class="accordion-header" id="headingOne">
+										<button class="accordion-button" type="button"
+											data-bs-toggle="collapse" data-bs-target="#collapseOne"
+											aria-expanded="false" aria-controls="collapseOne">
+											Item Details</button>
+									</h2>
+
+									<div id="collapseOne" class="accordion-collapse collapse show"
+										aria-labelledby="headingOne"
+										data-bs-parent="#accordionExample">
+										<div class="accordion-body">
+
+											<div class="row">
+												<div class="row">
+
+													<div class="col-md-4 btn-hs1">
+														<div class="font-design"></div>
+													</div>
+													<div class="col-md-8 butttonsec">
+														<button class="btn1" id="addProduct" onclick="openNav()">NEW</button>
+														<button class="btn3" id="dltProduct"
+															onclick="deleteProduct()">DELETE</button>
+														<!-- <button class="btn1" id="rfq" onclick="rfq()">RFQ</button> -->
+													</div>
+												</div>
+												<div id="product" style="width: 100%; height: 200px;"
+													class="ag-theme-alpine"></div>
+
+
+
+
+												<div id=gstCalS class="col-lg-3"
+													style="margin-left: 875px; margin-top: -100px;">
+													<div>
+														<table style="width: 100%; margin-top: 150px;">
+															<tr>
+																<th>
+																	<div class="row">
+																		<div class="col-lg-6 text">Sub Total:</div>
+																		<div class="col-lg-6">
+																			<div class="form-group">
+																				<input type="text" style="text-align: right;"
+																					id="subTotal" class="form-control text-style"
+																					readonly>
+																			</div>
+																		</div>
+																	</div>
+																</th>
+
+															</tr>
+															<tr class="tbl-box" id="sgstTR">
+																<th>
+																	<div class="row">
+																		<div class="col-lg-6 text">SGST:</div>
+																		<div class="col-lg-6">
+																			<div class="form-group">
+																				<input type="text" style="text-align: right;"
+																					id="qSGST" class="form-control text-style" readonly>
+																				<input type=hidden id="itemSgst">
+																			</div>
+																		</div>
+																	</div>
+																</th>
+
+															</tr>
+
+															<tr id="cgstTR">
+																<th>
+
+																	<div class="row">
+																		<div class="col-lg-6 text">CGST:</div>
+																		<div class="col-lg-6">
+																			<div class="form-group">
+																				<input type="text" style="text-align: right;"
+																					id="qCGST" class="form-control text-style" readonly>
+																				<input type=hidden id="itemIgst">
+																			</div>
+																		</div>
+																	</div>
+																</th>
+
+															</tr>
+
+															<tr class="tbl-box" id="igstTR">
+																<th>
+																	<div class="row">
+																		<div class="col-lg-6 text">IGST:</div>
+																		<div class="col-lg-6">
+																			<div class="form-group">
+																				<input type="text" style="text-align: right;"
+																					id="qIGST" class="form-control text-style" readonly>
+																				<input type=hidden id="itemIgst">
+																			</div>
+																		</div>
+																	</div>
+																</th>
+															</tr>
+
+															<tr>
+																<th>
+																	<div class="row">
+																		<div class="col-lg-6 text">Grand Total:</div>
+																		<div class="col-lg-6">
+																			<div class="form-group">
+																				<input type="text" style="text-align: right;"
+																					id="grandTotal" class="form-control text-style"
+																					readonly>
+																			</div>
+																		</div>
+																	</div>
+																</th>
+
+															</tr>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div id="mySidenav" class="sidenav">
+										<div class="slidebox">
+											<div class="row">
+												<div class="chartbtnsec">
+													<div align="right">
+														<button class="cancel-btn" onclick="closeNav()">CANCEL</button>
+														<button class="approve-btn" id="saveTableData"
+															onclick="saveTableData()">SAVE</button>
+														<input type="hidden" id="productEdit">
+													</div>
+												</div>
+
+												<!-- <div class="col-lg-12 mrt_6">
+													<div class="form-group">
+														<button id="browseBtn" class="browse-btn">Browse</button>
+													</div>
+												</div> -->
+
+												<div class="col-lg-12">
+													<div class="form-group">
+														<div class="autocomplete">
+															<input type="hidden" id="editProduct"> <input
+																type="hidden" id="itemId"> <label>Item
+																Name</label>
+															<div class="select">
+																<select id="itemName" onchange="getProductDetails()">
+																	<option value="">Select Order Number</option>
+																</select> <input type="hidden" id="proName">
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<!-- <div class="col-lg-6">
+													<div class="form-group">
+														<label>Product Mode</label> <input type="text"
+															class="form-control transparenttxtbox" id="productMode"
+															readonly>
+													</div>
+												</div> -->
+
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>Size</label> <input type="text"
+															class="form-control transparenttxtbox" id="productSize"
+															readonly>
+													</div>
+												</div>
+
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>Ordered Quantity</label> <input type="text"
+															class="form-control transparenttxtbox" id="quantity"
+															readonly>
+													</div>
+												</div>
+
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>Return Quantity</label> <input type="text"
+															class="form-control transparenttxtbox"
+															id="returnQuantity"
+															onkeyup='alphabetCheck();calculateLineTotal();'>
+													</div>
+												</div>
+
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>Unit Price</label> <input type="text"
+															class="form-control transparenttxtbox" id="priceRate"
+															readonly>
+													</div>
+												</div>
+
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>Discount</label> <input type="text"
+															class="form-control transparenttxtbox" id="discount" readonly>
+													</div>
+												</div>
+
+												<!-- <div class="col-lg-6">
+													<div class="form-group">
+														<label>Discount Code</label> <input type="text"
+															class="form-control transparenttxtbox" id="discountCode"
+															readonly> <input type="hidden" id="discount"
+															readonly>
+													</div>
+												</div> -->
+												
+												
+
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>GST Rate</label> <input type="text"
+															class="form-control transparenttxtbox" id="gstRate"
+															readonly>
+													</div>
+												</div>
+
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>Total amount</label> <input type="text"
+															class="form-control transparenttxtbox" id="totalAmount"
+															readonly> <input type="hidden" id="itemSgst"
+															readonly> <input type="hidden" id="itemCgst"
+															readonly>
+													</div>
+												</div>
+												
+												<div class="col-lg-6">
+													<div class="form-group">
+														<label>Extra discount</label> <input type="text"
+															class="form-control transparenttxtbox" id="extraDiscount"
+															readonly>
+													</div>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+
+								</div>
+							</div>
+
+						</div>
+						<div class="modal fade" id="lineGraph">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content large-model">
+
+									<div align="right">
+										<button type="button" class="close" data-dismiss="modal">
+											<i class="ti-close" style="font-size: 14px;"></i>
+										</button>
+									</div>
+									<!-- Modal body -->
+									<div class="modal-body">
+										<div class="row" id="lineGraphDiv">
+											<div class="col-md-12">
+												<div id="chart" class="collapse show">
+													<div style="width: 90%; height: 280px; margin: 0 auto;">
+														<div id="container1" style="width: 100%; height: 280px;"></div>
+													</div>
+													<div style="width: 90%; height: auto; margin: 0 auto;">
+														<div class="row">
+															<div class="col-md-12">
+
+																<div align="right" class="pdficonsec">
+																	<i class="fa fa-file-pdf-o fa-2x pdf"
+																		onclick="downloadChartPdf()"></i> <i
+																		class="fa fa-file-excel-o fa-2x excel"
+																		onclick="getExcelReport()"></i>
+																</div>
+																<table id="graphTable" class="newtbl">
+																</table>
+															</div>
+
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+									</div>
+									<!-- Modal footer -->
+
+
+
+								</div>
+							</div>
+						</div>
+						<!-- delete modal start -->
+						<div id="delete" class="modal fade show" aria-modal="true">
+							<div class="modal-dialog modal-confirm">
+								<div class="modal-content">
+									<div class="modal-header flex-column">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-hidden="true" onclick="cancelModalBtn()">
+											<i class="ti-close modal-close"></i>
+										</button>
+									</div>
+									<div class="modal-body">
+										<p>Do you really want to delete these records? This
+											process cannot be undone.</p>
+									</div>
+									<div class="modal-footer justify-content-center"
+										style="margin-top: -30px;">
+
+										<button type="button" class="btn1" data-dismiss="modal"
+											onclick="cancelModalBtn();">Cancel</button>
+										<button type="button" class="btn3" onclick="deleteOnclick()">Delete</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- delete product modal start -->
+						<div id="deleteProduct" class="modal fade show" aria-modal="true">
+							<div class="modal-dialog modal-confirm">
+								<div class="modal-content">
+									<div class="modal-header flex-column">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-hidden="true" onclick="cancelModalProductBtn()">
+											<i class="ti-close modal-close"></i>
+										</button>
+									</div>
+									<div class="modal-body">
+										<p>Do you really want to delete these records? This
+											process cannot be undone.</p>
+									</div>
+									<div class="modal-footer justify-content-center"
+										style="margin-top: -30px;">
+
+										<button type="button" class="btn1" data-dismiss="modal"
+											onclick="cancelModalBtn();">Cancel</button>
+										<button type="button" class="btn3"
+											onclick="deleteProductOnclick()">Delete</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<!-- delete product modal start -->
+						<div id="deleteProductInd" class="modal fade show"
+							aria-modal="true">
+							<div class="modal-dialog modal-confirm">
+								<div class="modal-content">
+									<div class="modal-header flex-column">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-hidden="true" onclick="cancelModalProductBtn()">
+											<i class="ti-close modal-close"></i>
+										</button>
+									</div>
+									<div class="modal-body">
+										<p>Do you really want to delete these records? This
+											process cannot be undone.</p>
+									</div>
+									<div class="modal-footer justify-content-center"
+										style="margin-top: -30px;">
+
+										<button type="button" class="btn1" data-dismiss="modal"
+											onclick="cancelModalBtn();">Cancel</button>
+										<button type="button" class="btn3"
+											onclick="deleteProductInd()">Delete</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal fade" id="myModal">
+							<div class="modal-dialog modal-lg" style="margin-top: 130px;">
+								<div class="modal-content">
+
+									<!-- Modal Header -->
+									<div class="modal-header">
+										<h4 class="modal-title md-color">Select Product</h4>
+										<button type="button" class="close cp" onclick="cancelModal()">&times;</button>
+									</div>
+
+									<!-- Modal body -->
+									<div class="modal-body modal-cat">
+										<div class="row">
+
+											<div class="col-md-6" df="0">
+												<div style="height: 300px; overflow-y: scroll;"
+													id="productCategoryCBDiv"></div>
+											</div>
+											<div class="col-md-6" id="productCategorySelectDiv" df="0"
+												style="border-left: 1px solid #ccc;">
+												<div style="height: 300px; overflow-y: scroll;">
+													<div class="productlist">Select Product</div>
+													<div id="select_product"></div>
+													<input type="hidden" id="itemNameTemp" /> <input
+														type="hidden" id="itemIdTemp" /> <input type="hidden"
+														id="brandNameTemp" /> <input type="hidden"
+														id="brandIdTemp" /> <input type="hidden" id="unitTemp" /><input
+														type="hidden" id="skuTemp" /><input type="hidden"
+														id="hsnCodeTemp" /> <input type="hidden"
+														id="prodCatIdTemp" /> <input type="hidden"
+														id="prodCatNameTemp" />
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<!-- Modal footer -->
+									<div class="modal-footer">
+										<div class="chartbtnsec">
+											<button class="btn1" onclick="selectProductVal()">SELECT</button>
+											<button class="cancel-btn" onclick="cancelModal()">CANCEL</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+
+						<!-- alert modal start -->
+						<div id="alert" class="modal fade show" aria-modal="true">
+							<div class="modal-dialog modal-confirm">
+								<div class="modal-content">
+									<div class="modal-header flex-column">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-hidden="true" onclick="cancelModalBtn()">
+											<i class="ti-close modal-close"></i>
+										</button>
+									</div>
+									<div class="modal-body">
+										<p id="textId"></p>
+									</div>
+									<div class="modal-footer justify-content-center"
+										style="margin-top: -30px;">
+
+										<button type="button" class="btn1" data-dismiss="modal">SELECT</button>
+										<!-- <button type="button" class="btn3" onclick="deleteOnclick()">Delete</button> -->
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

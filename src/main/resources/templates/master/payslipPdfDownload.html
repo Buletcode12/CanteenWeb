@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8"></meta>
+<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+<meta name="description" content=""></meta>
+<meta name="author" content=""></meta>
+<meta name="generator" content="Hugo 0.80.0"></meta>
+<style>
+ body{
+ /*font-family: "helveticaneue";*/
+ font-family: Arial, Helvetica, sans-serif;
+ font-weight: 100;
+ }
+.top-mnhead {
+	background-color: #ccc;
+	font-size: 16px; color : #333; padding : 4px;
+	margin-bottom: 10px;
+	padding: 4px;
+	text-align:center;
+	text-transform:uppercase;
+}
+.font-design{
+margin-bottom:10px;
+text-align:center;
+}
+.top-head {
+	background-color: #ccc;
+	font-size: 16px; color : #333; padding : 4px;
+	margin-bottom: 10px;
+	padding: 4px;
+}
+
+.btm-head {
+	background-color: #ccc;
+	font-size: 16px; 
+	color : #333; 
+	padding : 4px;
+	padding: 4px;
+}
+
+
+
+
+.pg-head {
+	font-size: 16px;
+	color: #A9A9A9;
+	margin-bottom: 20px;
+}
+
+.emp-head {
+	font-size: 16px;
+	color: #696969;
+	/* font-family: "helveticaneue"; */
+	font-weight: 100;
+}
+
+.amt-head {
+	font-size: 16px;
+	color: #696969;
+	/* font-family: "helveticaneue"; */
+	font-weight: bold;
+}
+
+.emp-data {
+	font-size: 16px;
+	color: #696969;
+	/* fontrgb(128, 128, 128): "helveticaneue";
+	font-weight: 100; */
+}
+
+.mb-10 {
+	margin-bottom: 10px;
+}
+
+.mb-30 {
+	margin-bottom: 30px;
+}
+.mb-5 td{
+padding-bottom:5px;}
+.wrapper {
+	background: #fff;
+	margin: 0 auto;
+	padding: 0px 70px;
+	width: 952px;
+}
+.mr-btm{
+margin-bottom:15px;
+}
+ 
+.bdr{
+border:solid 1px #ccc;
+}
+</style>
+
+
+<script>
+	
+</script>
+</head>
+<body>
+	<table class="wrapper" width="760" cellpadding="0" cellspacing="0">
+		<tr>
+			<td align="center"><img th:src="@{${logo}}" height="70" width="265" class="mr-btm"></img></td>
+		</tr>
+	</table>
+	<div class="bdr">
+	<div class="top-mnhead mt-4" th:text="${payslip.organization}"></div>
+		<div class="font-design" id="totalEmp">
+			PAYSLIP FOR <span id="smonth" th:text="${payslip.month}"> </span>
+		</div>
+		</div>
+		<div id="main_content" class="bdr">
+
+			<div class="top-head">PERSONAL DETAILS </div>
+			<table width="100%" class="main-tbl">
+				<tr class="mb-5">
+					<td class="emp-head" width="25%">Employee No:</td>
+					<td class="emp-data" width="25%" id="empNo" th:text="${payslip.employeeNo}"></td>
+					<td class="emp-head" width="25%">Location:</td>
+					<td class="emp-data" width="25%" id="location" th:text="${payslip.location}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Employee Name:</td>
+					<td class="emp-data" id="Empname" th:text="${payslip.name}"></td>
+					<td class="emp-head">Department:</td>
+					<td class="emp-data" id="department"
+						th:text="${payslip.department}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Bank Name:</td>
+					<td class="emp-data" id="bankName" th:text="${payslip.bankName}"></td>
+					<td class="emp-head">Designation:</td>
+					<td class="emp-data" id="designation"
+						th:text="${payslip.designation}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Bank Account No:</td>
+					<td class="emp-data" id="bankAccountno"
+						th:text="${payslip.bankAccountno}"></td>
+					<td class="emp-head">Days in Month:</td>
+					<td class="emp-data" id="daysinMonth"
+						th:text="${payslip.daysinMonth}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Esic No:</td>
+					<td class="emp-data" id="esicNo" th:text="${payslip.esicNo}"></td>
+					<td class="emp-head">Lop:</td>
+					<td class="emp-data" id="lop" th:text="${payslip.lop}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Pf Uan:</td>
+					<td class="emp-data" id="pfuan" th:text="${payslip.pfuan}"></td>
+					<td class="emp-head">Effective Work Days:</td>
+					<td class="emp-data" id="effectiveWorkdays"
+						th:text="${payslip.effectiveWorkdays}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Pan No:</td>
+					<td class="emp-data" id="panNo" th:text="${payslip.panNo}"></td>
+					<td class="emp-head">Dob:</td>
+					<td class="emp-data" id="dob" th:text="${payslip.dob}"></td>
+				</tr>
+
+			</table>
+
+			<!-- <table width="100%">
+				<tr>
+					<td class="top-head">EARNINGS</td>
+					<td class="top-head">DEDUCTIONS</td>
+				</tr>
+			</table> -->
+			<table width="100%">
+                <tr class="mb-5">
+					<td colspan="2" class="top-head" width="350">EARNINGS</td>
+					<td colspan="2" class="top-head" width="350">DEDUCTIONS</td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head" width="25%">Basic:</td>
+					<td class="emp-data" width="25%" id="basic" th:text="${payslip.basic}"></td>
+					<td class="emp-head" width="25%">Pf:</td>
+					<td class="emp-data" width="25%" id="pf" th:text="${payslip.pf}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Hra:</td>
+					<td class="emp-data" id="hra" th:text="${payslip.hra}"></td>
+					<td class="emp-head">Prof Tax:</td>
+					<td class="emp-data" id="proftax" th:text="${payslip.proftax}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Additional Allowance:</td>
+					<td class="emp-data" id="additionalallowance"
+						th:text="${payslip.additionalallowance}"></td>
+					<td class="emp-head">Income Tax:</td>
+					<td class="emp-data" id="incometax" th:text="${payslip.incometax}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Convey:</td>
+					<td class="emp-data" id="conve" th:text="${payslip.conve}"></td>
+					<td class="emp-head">Esic:</td>
+					<td class="emp-data" id="esic" th:text="${payslip.esic}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Other:</td>
+					<td class="emp-data" id="others" th:text="${payslip.others}"></td>
+					<td class="emp-head">Adavnce:</td>
+					<td class="emp-data" id="advance" th:text="${payslip.advance}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="emp-head">Variable Pay:</td>
+					<td class="emp-data" id="variablepay"
+						th:text="${payslip.variablepay}"></td>
+				</tr>
+				<tr class="mb-5">
+					<td class="amt-head">Total Earnings:</td>
+					<td class="amt-head" id="totalearning"
+						th:text="${payslip.totalearning}"></td>
+					<td class="amt-head">Total Deduction:</td>
+					<td class="amt-head" id="totalDeductions"
+						th:text="${payslip.totalDeductions}"></td>
+				</tr>
+			</table>
+
+			<div class="row">
+				<div class="col-md-3" >
+					<div class="btm-head amt-head">
+						NET PAYABLE : <span th:text="${payslip.totalpay}"></span> 
+					</div>
+				</div>
+			</div>
+
+		</div>
+			<table class="wrapper" width="100%" cellpadding="0" cellspacing="0">
+			<tr>
+			<td>
+				<div align="left" style="float:left;">
+					<img th:src="${sign}"></img>
+				</div> 
+			</td>
+			<td>
+				<div align="right" style="float:right;">
+					<img th:src="${stamp}"></img>
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

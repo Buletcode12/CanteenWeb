@@ -1,0 +1,1772 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style>
+body {
+    background: #fff;
+    margin: 0;
+    overflow-x: hidden;
+}
+.modal-content-md {
+	padding: 15px 14px;
+	position: relative;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	background-color: #fff;
+	background-clip: padding-box;
+	border: 1px solid rgba(0, 0, 0, .2);
+	border-radius: .3rem;
+	outline: 0;
+}
+
+.tbl-scrl {
+	width: 1320px;
+	overflow-y: scroll;
+	overflow-x: scroll;
+	height: 400px;
+}
+
+.tbl-scrl .table thead th {
+	white-space: nowrap !important;
+}
+
+.tbl-scrl .table td {
+	white-space: nowrap !important;
+}
+
+.blueClsWT {
+	background: #0076ba !important;
+	color: #fff !important;
+}
+
+.blueCls {
+	background: #0076ba;
+	color: #fff;
+}
+
+.blueClsWT::before {
+	font-size: 8px;
+	color: #FFF;
+	content: '\e64c';
+	font-family: 'themify';
+	padding-right: 7px;
+}
+
+.tptCls {
+	background: transparnt;
+}
+
+.trwidth {
+	width: 145px;
+}
+
+.edit-input {
+	width: 35px;
+	text-align: center;
+}
+
+.l {
+	color: blue;
+	width: 35px;
+	text-align: center;
+}
+
+.h {
+	color: #17f5f8;
+	width: 35px;
+	text-align: center;
+}
+
+.wo {
+	color: #f70505;
+	width: 35px;
+	text-align: center;
+}
+
+.na {
+	color: #f8d802;
+	width: 35px;
+	text-align: center;
+}
+
+.calendar_box>.form-control[readonly] {
+	background-color: #FFF;
+	opacity: 1;
+	text-align: left !important;
+}
+
+.dtxt {
+	text-align: center !important;
+	font-size: 15px !important;
+}
+
+.tbl-scrl .table thead th {
+	white-space: nowrap !important;
+	position: sticky;
+	top: 0px; 
+	/* background:#eee; 
+	border:1px solid #000;*/
+}
+
+.tbl-scrl .table td {
+	white-space: nowrap !important;
+}	
+.tbl-scrl {
+    width: 100%;
+    height: 350px;
+    overflow: scroll;
+}
+
+
+table 
+{
+    border-collapse: collapse; /* make the table borders collapse to each other */
+    width: 100%;
+    border:3px solid #333;
+  }
+  th,
+  td {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+  }
+  th {
+    background: #eee;
+  }
+  .table>thead {
+	vertical-align: bottom;
+	background: #eee;
+	position: sticky;
+    top: -4px;
+}
+</style>
+
+<script>
+	var edata = "";
+	$(document).ready(function() {
+		getDeptmentName();
+	})
+	$(document)
+			.ready(
+					function() {
+						var curdate = new Date();
+						var date = curdate.getDate();
+						var mnth = curdate.getMonth();
+						$("#attndyear").val(curdate.getFullYear())
+						var sday = $("#startDayForAtten").val();
+						if (parseInt(sday) > 1) {
+							if (parseInt(date) > parseInt(sday)) {
+								var month = (curdate.getMonth() + 1);
+								var year = curdate.getFullYear();
+							} else {
+								var month = curdate.getMonth();
+								if (month == 0) {
+									var year = curdate.getFullYear() - 1;
+									month = 12;
+								} else {
+									var month = curdate.getMonth();
+									var year = curdate.getFullYear();
+								}
+							}
+						} else {
+							var month = (curdate.getMonth() + 1);
+							var year = curdate.getFullYear();
+						}
+						var nextmonth = month + 1;
+						if (parseInt(sday) > 1) {
+							$("#attndmonth").val(month + 1);
+						} else {
+							$("#attndmonth").val(month);
+						}
+						var fromdate = sday + "-"
+								+ String(month).padStart(2, '0') + "-" + year;
+						const lastDayOfMonth = new Date(year, month, 0)
+								.getDate();
+						if (sday > 1) {
+							if (month == "12") {
+								var todate = (parseInt(sday) - 1) + "-"
+										+ String(1).padStart(2, '0') + "-"
+										+ (year + 1);
+							} else {
+								var todate = (parseInt(sday) - 1) + "-"
+										+ String(nextmonth).padStart(2, '0')
+										+ "-" + year;
+							}
+						} else {
+							var todate = lastDayOfMonth + "-"
+									+ String(month).padStart(2, '0') + "-"
+									+ year;
+						}
+
+						$("#fromDate").val(fromdate);
+						$("#fromDateCalendar").val(fromdate);
+						$("#endDate").val(todate);
+						$("#endDateCalendar").val(todate);
+
+						var dept = $("#dept").val();
+						var subDept = $("#subDept").val();
+						month = $("#attndmonth").val();
+						var fromDate = $("#fromDate").val();
+						var toDate = $("#endDate").val();
+						var userId = $("#sessionId").val();
+						var obj = {};
+						obj.key = month;
+						obj.name = year;
+						$('.loader').show();
+						$
+								.ajax({
+									type : "POST",
+									url : "employee-shift-scheduling-shift-date",
+									dataType : "json",
+									contentType : "application/json",
+									data : JSON.stringify(obj),
+									success : function(response) {
+										if (response.message == "success") {
+											$('.loader').show();
+											$("#theadBody").empty();
+											var div2 = "";
+											var div3 = "";
+											var div4 = "";
+											var data = '<tr id="theadBody">'
+													+ '<th id="eid" >Employee Id</th>'
+													+ '<th id="ename">Name</th>'
+													+ '<th id="estatus">Assign Status</th>'
+													+ '</tr>';
+											$("#thids").append(data)
+											var monthlen = response.body.length;
+											for (var i = 0; i < response.body.length; i++) {
+												div3 = div3 + '<th>'
+														+ response.body[i].name
+														+ '</th>';
+											}
+											$("#theadBody").append(div3);
+											$
+													.ajax({
+														type : "GET",
+														url : "employee-shift-scheduling-view-shift-details?fromDate="
+																+ fromDate
+																+ "&toDate="
+																+ toDate
+																+ "&userId="
+																+ userId
+																+ "&dept="
+																+ dept
+																+ "&subDept="
+																+ subDept,
+														success : function(
+																response) {
+															if (response.message == "Success") {
+																console
+																		.log(response.body)
+																for (var i = 0; i < response.body.length; i++) {
+																	var div5 = '<tr class="statuscheck"><td id="empId_'+i+'" value="'+response.body[i].empId+'">'
+																			+ response.body[i].empId
+																			+ '</td>'
+																			+ '<td>'
+																			+ response.body[i].name
+																			+ '</td>'
+																			+ '<td>'
+																			+ response.body[i].status
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id1_'
+																			+ i
+																			+ '" value="'
+																			+ response.body[i].id1
+																			+ '"  onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box1_'+i+'" class="sugg-cls"></div>'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id2_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id2
+																			+ '  onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box2_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id3_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id3
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box3_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id4_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id4
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input" ><div id="suggesstion-box4_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id5_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id5
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box5_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id6_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id6
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input" ><div id="suggesstion-box6_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id7_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id7
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box7_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id8_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id8
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box8_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id9_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id9
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box9_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id10_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id10
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box10_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id11_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id11
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box11_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id12_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id12
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box12_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id13_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id13
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box13_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id14_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id14
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box14_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id15_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id15
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box15_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id16_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id16
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box16_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id17_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id17
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box17_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id18_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id18
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box18_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id19_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id19
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box19_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id20_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id20
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box20_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id21_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id21
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box21_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id22_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id22
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box22_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id23_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id23
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box23_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id24_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id24
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box24_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id25_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id25
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box25_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id26_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id26
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box26_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id27_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id27
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box27_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																			+ '<td>'
+																			+ '<input type="text" id="id28_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id28
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box28_'+i+'" class="sugg-cls">'
+																			+ '</td>';
+																	div6 = '<td>'
+																			+ '<input type="text" id="id29_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id29
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box29_'+i+'" class="sugg-cls">'
+																			+ '</td>'
+																	div7 = '<td>'
+																			+ '<input type="text" id="id30_'
+																			+ i
+																			+ '" value='
+																			+ response.body[i].id30
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box30_'+i+'" class="sugg-cls">'
+																			+ '</td>';
+																	div8 = '<td>'
+																			+ '<input type="text" id="id31_'
+																			+ i
+																			+ '"  value='
+																			+ response.body[i].id31
+																			+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box31_'+i+'" class="sugg-cls">'
+																			+ '</td></tr>';
+
+																	var div9 = div5
+																			+ div6;
+																	var div10 = div5
+																			+ div6
+																			+ div7;
+																	var div11 = div5
+																			+ div6
+																			+ div7
+																			+ div8;
+																	if (monthlen == 29) {
+																		$(
+																				"#tbodyId")
+																				.append(
+																						div9);
+																	} else if (monthlen == 30) {
+																		$(
+																				"#tbodyId")
+																				.append(
+																						div10);
+																	} else if (monthlen == 31) {
+																		$(
+																				"#tbodyId")
+																				.append(
+																						div11);
+																	} else {
+																		$(
+																				"#tbodyId")
+																				.append(
+																						div5);
+																	}
+
+																	$("[class=edit-input]").filter("[value='L']").prop("class",'l');
+																	$("[class=edit-input]").filter("[value='H']").prop("class",'h');
+																	$("[class=edit-input]").filter("[value='WO']").prop("class",'wo');
+																	$("[class=edit-input]").filter("[value='NA']").prop("class",'na');
+																}
+															}
+															var len = response.body.length;
+															if (len > 0) {
+																$("#assignBtn")
+																		.append(
+																				'<button class="approve-btn" id="save" onclick="approve('
+																						+ len
+																						+ ');" style="display:block">Assign</button>');
+															} else {
+																$("#assignBtn")
+																		.append(
+																				'<button class="approve-btn" id="save" disabled>Assign</button>');
+															}
+															$('.loader').hide();
+															if ($("#empRole")
+																	.val() != "") {
+																$("#assignBtn")
+																		.hide();
+																$("#dept")
+																		.prop(
+																				'disabled',
+																				true);
+																$("#subDept")
+																		.prop(
+																				'disabled',
+																				true);
+																$("#sdept")
+																		.removeClass(
+																				"select");
+																$("#ssubdept")
+																		.removeClass(
+																				"select");
+																$(
+																		"tr.statuscheck input")
+																		.prop(
+																				'disabled',
+																				true);
+															}
+															if ($("#mrRole")
+																	.val() != "") {
+																$("#assignBtn")
+																		.show();
+																$("#dept")
+																		.prop(
+																				'disabled',
+																				true);
+																$("#subDept")
+																		.prop(
+																				'disabled',
+																				false);
+																$("#sdept")
+																		.removeClass(
+																				"select");
+																$("#ssubdept")
+																		.addClass(
+																				"select");
+																$(
+																		"tr.statuscheck input")
+																		.prop(
+																				'disabled',
+																				false);
+															}
+															if ($("#adRole")
+																	.val() != "") {
+																$("#assignBtn")
+																		.show();
+																$("#dept")
+																		.prop(
+																				'disabled',
+																				false);
+																$("#subDept")
+																		.prop(
+																				'disabled',
+																				false);
+																$("#sdept")
+																		.addClass(
+																				"select");
+																$("#ssubdept")
+																		.addClass(
+																				"select");
+																$(
+																		"tr.statuscheck input")
+																		.prop(
+																				'disabled',
+																				false);
+															}
+														},
+
+													});
+										}
+									},
+									error : function(response) {
+										//console.log(response);
+									}
+								});
+
+					})
+</script>
+
+
+<script>
+	function totalUserCSV() {
+		var dept = $("#dept").val();
+		var subDept = $("#subDept").val();
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#endDate").val();
+		var userId = $("#sessionId").val();
+
+		var y = toDate.split("-");
+		var m = $("#attndmonth").val();
+		const monthnamelist = [ "January", "February", "March", "April", "May",
+				"June", "July", "August", "September", "October", "November",
+				"December" ];
+		let monthname = monthnamelist[m - 1];
+		var monthYear = monthname + " " + y[2];
+
+		var fromdate1 = fromDate.split("-").reverse().join("-");
+		var todate1 = toDate.split("-").reverse().join("-");
+		var date1 = new Date(fromdate1);
+		var date2 = new Date(todate1);
+		var diffDays = ((date2.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+		window
+				.open("/master/employee-shift-scheduling-download-excel-shift-details?fromDate="
+						+ btoa(fromDate)
+						+ "&toDate="
+						+ btoa(toDate)
+						+ "&userId="
+						+ btoa(userId)
+						+ "&dept="
+						+ dept
+						+ "&subDept="
+						+ subDept
+						+ "&monthYear="
+						+ monthYear
+						+ "&days=" + parseInt(diffDays));
+	}
+
+	function getDeptmentName() {
+		var empid = $("#sessionId").val();
+		agGrid
+				.simpleHttpRequest({
+					url : 'employee-shift-scheduling-dept-ajax?id=' + empid,
+				})
+				.then(
+						function(response) {
+							var subdept;
+							for (var i = 0; i < response.body.length; i++) {
+								$("#dept").val(response.body[i].name);
+								subdept = response.body[i].code;
+
+							}
+							var shiftDeptId = $("#dept").val();
+
+							if (shiftDeptId) {
+								$
+										.ajax({
+											type : "GET",
+											url : "employee-shift-scheduling-getShiftSubDepartment?shiftDeptId="
+													+ shiftDeptId,
+											dataType : 'json',
+											contentType : 'application/json',
+											data : shiftDeptId,
+											success : function(response) {
+												if (response.message == "success") {
+													console.log(response);
+													$("#subDept").empty();
+													$("#subDept")
+															.append(
+																	"<option value=''>Select</option>");
+
+													for (var i = 0; i < response.body.length; i++) {
+														var option = $("<option></option>");
+														$(option)
+																.val(
+																		response.body[i].key);
+														$(option)
+																.html(
+																		response.body[i].name);
+														$("#subDept").append(
+																option);
+													}
+													$('#subDept').val(subdept);
+												}
+												getShiftTypeList();
+											},
+											error : function(data) {
+												console.log(data);
+												$("#subDept").empty();
+												$("#subDept")
+														.append(
+																"<option value=''>Select</option>");
+
+											}
+										})
+							} else {
+								$("#subDept").empty();
+								$("#subDept").append(
+										"<option value=''>Select</option>");
+							}
+						})
+	}
+
+	/* Function autosearch for getShiftList1 */
+	function getShiftList1(id1, id2) {
+		var arr = id2.split("d");
+		var xsid = arr[1];
+		var sid = "suggesstion-box" + xsid;
+		var searchValue = id1;
+		if (searchValue == "") {
+			$("#" + sid).hide();
+		}
+		var dept = $("#dept").val();
+		var subDept = $("#subDept").val();
+		if (searchValue) {
+			$
+					.ajax({
+						type : "GET",
+						url : "employee-shift-scheduling-autosearch-shiftDetails?searchValue="
+								+ searchValue
+								+ "&dept="
+								+ dept
+								+ "&subDept="
+								+ subDept,
+						success : function(response) {
+
+							if (response.message == "success") {
+								console.log(response.body)
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1" style="margin-left:-30px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var x = 0; x < response.body.length; x++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutocompleteValue1(\''
+
+												+ response.body[x].name
+												+ '\',\''
+												+ xsid
+												+ '\',\''
+												+ response.body[x].key
+												+ '\')">'
+												+ response.body[x].name
+												+ '</li>';
+									}
+									content += '</ul>';
+									$("#" + sid).show();
+									$("#" + sid).html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<div id="autocomplete-list1">';
+									content += '<div onClick="selectAutocompleteValue()">'
+											+ "No Data Found" + '</div>';
+									content += '</div>';
+									$("#" + sid).show();
+									$("#" + sid).html(content);
+								}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		}
+
+	}
+	function selectAutocompleteValue1(shiftname, xsid) {
+		var sid = "suggesstion-box" + xsid;
+		if (shiftname) {
+			$("#id" + xsid).val(shiftname);
+			$("#search").val(shiftname);
+			$("#search").attr('data-procat', shiftname);
+			$("#" + sid).hide();
+			if (shiftname == 'L') {
+				$("#id" + xsid).removeClass('h');
+				$("#id" + xsid).removeClass('wo');
+				$("#id" + xsid).removeClass('na');
+				$("#id" + xsid).addClass('l');
+			} else if (shiftname == 'H') {
+				$("#id" + xsid).removeClass('l');
+				$("#id" + xsid).removeClass('wo');
+				$("#id" + xsid).removeClass('na');
+				$("#id" + xsid).addClass('h');
+			} else if (shiftname == 'WO') {
+				$("#id" + xsid).removeClass('l');
+				$("#id" + xsid).removeClass('h');
+				$("#id" + xsid).removeClass('na');
+				$("#id" + xsid).addClass('wo');
+			} else if (shiftname == 'NA') {
+				$("#id" + xsid).removeClass('l');
+				$("#id" + xsid).removeClass('h');
+				$("#id" + xsid).removeClass('wo');
+				$("#id" + xsid).addClass('na');
+			} else {
+				$("#id" + xsid).removeClass('l');
+				$("#id" + xsid).removeClass('h');
+				$("#id" + xsid).removeClass('wo');
+				$("#id" + xsid).removeClass('na');
+				$("#id" + xsid).addClass('edit-input');
+			}
+		} else {
+			$("#shiftname").val("");
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#" + sid).hide();
+		}
+	}
+	function selectAutocompleteValue() {
+		$("[class=edit-input]").filter("[value='L']").prop("class", 'l');
+		$("[class=edit-input]").filter("[value='H']").prop("class", 'h');
+		$("[class=edit-input]").filter("[value='WO']").prop("class", 'wo');
+		$("[class=edit-input]").filter("[value='NA']").prop("class", 'na');
+		$("#shiftname").val("");
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-box1_").hide();
+
+	}
+
+	function getShiftTypeList() {
+		var dept = $("#dept").val();
+		var subDept = $("#subDept").val();
+		$
+				.ajax({
+					type : "GET",
+					url : "employee-shift-scheduling-shiftdetails?deptId="
+							+ dept + "&subDept=" + subDept,
+					success : function(response) {
+						if (response.message == "Success") {
+
+							if (response.body.length > 0) {
+								$(".slidearrow").show();
+							} else {
+								$(".slidearrow").hide();
+							}
+
+							$(".roomListDiv").empty();
+							var act_cls = 0;
+							$(".roombtn").removeClass("topbtnactive");
+
+							var Count = 0;
+							shiftid = $("shiftid").val();
+							for (var i = 0; i < response.body.length; i++) {
+
+								Count = Count + response.body[i].key;
+								var Count1 = 0;
+
+								if (response.body[i].Count1 != null) {
+									Count1 = response.body[i].key;
+								}
+								var div = "";
+								div = div
+										+ '<div id="'+response.body[i].key+'" class="roombtn topbtnactive cp " ><span>'
+										+ response.body[i].name
+										+ '</span>  <br> '
+										+ response.body[i].code + ' </div>';
+
+								var tbl = div;
+								$(".roomListDiv").append(tbl);
+							}
+
+							$("body").removeClass("overlay");
+
+						}
+					},
+					error : function(data) {
+
+						$(".roomListDiv").empty();
+						//$("#locCount").text(' (0)');
+						$(".section_counter").text(' (0)');
+
+						$("body").removeClass("overlay");
+					}
+				});
+	}
+	function getSubDept() {
+		var shiftDeptId = $("#dept").val();
+		if (shiftDeptId) {
+			$
+					.ajax({
+						type : "GET",
+						url : "employee-shift-scheduling-getShiftSubDepartment?shiftDeptId="
+								+ shiftDeptId,
+						dataType : 'json',
+						contentType : 'application/json',
+						data : shiftDeptId,
+						success : function(response) {
+							if (response.message == "success") {
+								console.log(response);
+								$("#subDept").empty();
+								$("#subDept").append(
+										"<option value=''>Select</option>");
+
+								for (var i = 0; i < response.body.length; i++) {
+									var option = $("<option></option>");
+									$(option).val(response.body[i].key);
+									$(option).html(response.body[i].name);
+									$("#subDept").append(option);
+								}
+							}
+							getShiftTypeList();
+						},
+						error : function(data) {
+							console.log(data);
+							$("#subDept").empty();
+							$("#subDept").append(
+									"<option value=''>Select</option>");
+
+						}
+					})
+		} else {
+			$("#subDept").empty();
+			$("#subDept").append("<option value=''>Select</option>");
+		}
+
+	}
+	function viewShiftDetails() {
+		$("#quickFilter").val("");
+		$('.loader').show();
+		var curdate = new Date();
+		var month = $("#attndmonth").val();
+		var sday = $("#startDayForAtten").val();
+		var attnyear = $("#attndyear").val();
+		if (parseInt(sday) > 1) {
+			if (month == 1) {
+				var year = attnyear - 1;
+				month = 12;
+			} else {
+				var year = attnyear;
+				month = month - 1;
+			}
+		} else {
+			var year = attnyear;
+		}
+
+		var nextmonth = parseInt(month) + 1;
+
+		var fromdate = sday + "-" + String(month).padStart(2, '0') + "-" + year;
+		const lastDayOfMonth = new Date(year, month, 0).getDate();
+		if (sday > 1) {
+			if (month == "12") {
+				var todate = (parseInt(sday) - 1) + "-"
+						+ String(1).padStart(2, '0') + "-" + (year + 1);
+			} else {
+				var todate = (parseInt(sday) - 1) + "-"
+						+ String(nextmonth).padStart(2, '0') + "-" + year;
+			}
+		} else {
+			var todate = lastDayOfMonth + "-" + String(month).padStart(2, '0')
+					+ "-" + year;
+		}
+
+		$("#fromDate").val(fromdate);
+		$("#fromDateCalendar").val(fromdate);
+		$("#endDate").val(todate);
+		$("#endDateCalendar").val(todate);
+
+		var dept = $("#dept").val();
+		var subDept = $("#subDept").val();
+
+		month = $("#attndmonth").val();
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#endDate").val();
+		var userId = $("#sessionId").val();
+
+		getShiftTypeList();
+		var obj = {};
+
+		obj.key = month;
+		obj.name = year;
+		$
+				.ajax({
+					type : "POST",
+					url : "employee-shift-scheduling-shift-date",
+					dataType : "json",
+					contentType : "application/json",
+					data : JSON.stringify(obj),
+					success : function(response) {
+						if (response.message == "success") {
+							$("#eid").empty();
+							$("#ename").empty();
+							$("#estatus").empty();
+							$("#thids").empty();
+							$("#tbodyId").empty();
+							$("#assignBtn").empty();
+							var div2 = "";
+							var div3 = "";
+							var div4 = "";
+							var div6 = "";
+							var div7 = "";
+							var div8 = "";
+							var data = '<tr id="theadBody">'
+									+ '<th id="eid" width="200">Employee Id</th>'
+									+ '<th id="ename" width="200">Name</th>'
+									+ '<th id="estatus" width="200">Assign Status</th>'
+									+ '</tr>';
+							$("#thids").append(data);
+							var monthlen = response.body.length;
+							for (var i = 0; i < response.body.length; i++) {
+
+								div3 = div3 + '<th>' + response.body[i].name
+										+ '</th>';
+
+							}
+							$("#theadBody").append(div3);
+							$('.loader').show();
+							$
+									.ajax({
+										type : "GET",
+										url : "employee-shift-scheduling-view-shift-details?fromDate="
+												+ fromDate
+												+ "&toDate="
+												+ toDate
+												+ "&userId="
+												+ userId
+												+ "&dept="
+												+ dept
+												+ "&subDept="
+												+ subDept,
+										success : function(response) {
+											if (response.message == "Success") {
+												for (var i = 0; i < response.body.length; i++) {
+
+													var div5 = '<tr class="statuscheck"><td id="empId_'+i+'" value="'+response.body[i].empId+'">'
+															+ response.body[i].empId
+															+ '</td>'
+															+ '<td>'
+															+ response.body[i].name
+															+ '</td>'
+															+ '<td>'
+															+ response.body[i].status
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id1_'
+															+ i
+															+ '" value="'
+															+ response.body[i].id1
+															+ '"  onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box1_'+i+'" class="sugg-cls"></div>'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id2_'
+															+ i
+															+ '" value='
+															+ response.body[i].id2
+															+ '  onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box2_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id3_'
+															+ i
+															+ '" value='
+															+ response.body[i].id3
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box3_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id4_'
+															+ i
+															+ '" value='
+															+ response.body[i].id4
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box4_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id5_'
+															+ i
+															+ '" value='
+															+ response.body[i].id5
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box5_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id6_'
+															+ i
+															+ '" value='
+															+ response.body[i].id6
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box6_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id7_'
+															+ i
+															+ '" value='
+															+ response.body[i].id7
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box7_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id8_'
+															+ i
+															+ '" value='
+															+ response.body[i].id8
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box8_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id9_'
+															+ i
+															+ '" value='
+															+ response.body[i].id9
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box9_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id10_'
+															+ i
+															+ '" value='
+															+ response.body[i].id10
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box10_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id11_'
+															+ i
+															+ '" value='
+															+ response.body[i].id11
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box11_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id12_'
+															+ i
+															+ '" value='
+															+ response.body[i].id12
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box12_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id13_'
+															+ i
+															+ '" value='
+															+ response.body[i].id13
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box13_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id14_'
+															+ i
+															+ '" value='
+															+ response.body[i].id14
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box14_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id15_'
+															+ i
+															+ '" value='
+															+ response.body[i].id15
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box15_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id16_'
+															+ i
+															+ '" value='
+															+ response.body[i].id16
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box16_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id17_'
+															+ i
+															+ '" value='
+															+ response.body[i].id17
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box17_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id18_'
+															+ i
+															+ '" value='
+															+ response.body[i].id18
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box18_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id19_'
+															+ i
+															+ '" value='
+															+ response.body[i].id19
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box19_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id20_'
+															+ i
+															+ '" value='
+															+ response.body[i].id20
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box20_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id21_'
+															+ i
+															+ '" value='
+															+ response.body[i].id21
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box21_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id22_'
+															+ i
+															+ '" value='
+															+ response.body[i].id22
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box22_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id23_'
+															+ i
+															+ '" value='
+															+ response.body[i].id23
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box23_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id24_'
+															+ i
+															+ '" value='
+															+ response.body[i].id24
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box24_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id25_'
+															+ i
+															+ '" value='
+															+ response.body[i].id25
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box25_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id26_'
+															+ i
+															+ '" value='
+															+ response.body[i].id26
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box26_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id27_'
+															+ i
+															+ '" value='
+															+ response.body[i].id27
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box27_'+i+'" class="sugg-cls">'
+															+ '</td>'
+															+ '<td>'
+															+ '<input type="text" id="id28_'
+															+ i
+															+ '" value='
+															+ response.body[i].id28
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box28_'+i+'" class="sugg-cls">'
+															+ '</td>';
+													div6 = '<td>'
+															+ '<input type="text" id="id29_'
+															+ i
+															+ '" value='
+															+ response.body[i].id29
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box29_'+i+'" class="sugg-cls">'
+															+ '</td>'
+													div7 = '<td>'
+															+ '<input type="text" id="id30_'
+															+ i
+															+ '" value='
+															+ response.body[i].id30
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box30_'+i+'" class="sugg-cls">'
+															+ '</td>';
+													div8 = '<td>'
+															+ '<input type="text" id="id31_'
+															+ i
+															+ '"  value='
+															+ response.body[i].id31
+															+ ' onkeyup="getShiftList1(value,id)" class="edit-input"><div id="suggesstion-box31_'+i+'" class="sugg-cls">'
+															+ '</td></tr>';
+
+													var div9 = div5 + div6;
+													var div10 = div5 + div6
+															+ div7;
+													var div11 = div5 + div6
+															+ div7 + div8;
+													if (monthlen == 29) {
+														$("#tbodyId").append(
+																div9);
+													} else if (monthlen == 30) {
+														$("#tbodyId").append(
+																div10);
+													} else if (monthlen == 31) {
+														$("#tbodyId").append(
+																div11);
+													} else {
+														$("#tbodyId").append(
+																div5);
+													}
+													$("[class=edit-input]")
+															.filter(
+																	"[value='L']")
+															.prop("class", 'l');
+													$("[class=edit-input]")
+															.filter(
+																	"[value='H']")
+															.prop("class", 'h');
+													$("[class=edit-input]")
+															.filter(
+																	"[value='WO']")
+															.prop("class", 'wo');
+													$("[class=edit-input]")
+															.filter(
+																	"[value='NA']")
+															.prop("class", 'na');
+												}
+
+												$('.loader').hide();
+											}
+											var len = response.body.length;
+											if (len > 0) {
+												$("#assignBtn")
+														.append(
+																'<button class="approve-btn" id="save" onclick="approve('
+																		+ len
+																		+ ');" style="display:block">Assign</button>');
+											} else if (len < 0){
+												$("#assignBtn")
+														.append(
+																'<button class="approve-btn" id="save" disabled>Assign</button>');
+											}else{
+												var divND ='<tr><td colspan="40" class="dtxt">No Data Found!</td></tr>';
+						  		    			 $("#tbodyId").append(divND);
+						  		            	 $("#assignBtn").empty();
+												 $("#saveBtn").empty();
+											}
+											
+											
+											if ($("#empRole").val() != "") {
+												$("#assignBtn").hide();
+												$("#dept").prop('disabled',
+														true);
+												$("tr.statuscheck input").prop(
+														'disabled', true);
+											}
+											if ($("#mrRole").val() != "") {
+												$("#assignBtn").show();
+												$("#dept").prop('disabled',
+														true);
+												$("tr.statuscheck input").prop(
+														'disabled', false);
+											}
+											if ($("#adRole").val() != "") {
+												$("#assignBtn").show();
+												$("#dept").prop('disabled',
+														false);
+												$("tr.statuscheck input").prop(
+														'disabled', false);
+											}
+
+										},
+
+									});
+
+						}
+					},
+					error : function(response) {
+						//console.log(response);
+					}
+				});
+		//$('.loader').show();	
+	}
+
+	function changeDept() {
+		$("#subDept").val("");
+		var deptname = $("#dept").val();
+		var subDeptname = $("#subDept").val();
+		var validation = true;
+
+		if (deptname == null || deptname == "") {
+			validation = validationUpdated("Please select Department Name",
+					"dept");
+		}
+		if (subDeptname == null || subDeptname == "") {
+			validation = validationUpdated("Please select Sub-Department Name",
+					"subDept");
+		}
+
+		if (validation) {
+			$(".formValidation").remove();
+			viewShiftDetails();
+		} else {
+			$("#eid").empty();
+			$("#ename").empty();
+			$("#estatus").empty();
+			$("#thids").empty();
+			$("#tbodyId").empty();
+			$("#assignBtn").empty();
+		}
+	}
+	function changeSubDept() {
+		var deptname = $("#dept").val();
+		var subDeptname = $("#subDept").val();
+		var validation = true;
+
+		if (deptname == null || deptname == "") {
+			validation = validationUpdated("Please select Department Name",
+					"dept");
+		}
+		if (subDeptname == null || subDeptname == "") {
+			validation = validationUpdated("Please select Sub-Department Name",
+					"subDept");
+		}
+
+		if (validation) {
+			$(".formValidation").remove();
+			viewShiftDetails();
+		} else {
+			$("#eid").empty();
+			$("#ename").empty();
+			$("#estatus").empty();
+			$("#thids").empty();
+			$("#tbodyId").empty();
+			$("#assignBtn").empty();
+		}
+	}
+	function changeYearMonth() {
+		var deptname = $("#dept").val();
+		var subDeptname = $("#subDept").val();
+		var validation = true;
+
+		if (deptname == null || deptname == "") {
+			validation = validationUpdated("Please select Department Name",
+					"dept");
+		}
+		if (subDeptname == null || subDeptname == "") {
+			validation = validationUpdated("Please select Sub-Department Name",
+					"subDept");
+		}
+
+		if (validation) {
+			$(".formValidation").remove();
+			viewShiftDetails();
+		} else {
+			$("#eid").empty();
+			$("#ename").empty();
+			$("#estatus").empty();
+			$("#thids").empty();
+			$("#tbodyId").empty();
+			$("#assignBtn").empty();
+		}
+	}
+	//save function for All Shift Deatils
+
+	function approve(len) {
+		var dataset = [];
+
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#endDate").val();
+		var userrole = $("#sessionRole").val();
+		var roleid = "";
+		for (var x = 6; x <= userrole.length; x = x + 6) {
+			roleid = roleid + '"' + userrole.slice(x - 6, x) + '",';
+		}
+		roleid = roleid.substring(0, roleid.length - 1);
+		for (i = 0; i < len; i++) {
+
+			item = {};
+			item.empId = $("#empId_" + i).text();
+			item.dept = $("#dept").val();
+			item.subDept = $("#subDept").val();
+			item.id1 = $("#id1_" + i).val();
+			item.id2 = $("#id2_" + i).val();
+			item.id3 = $("#id3_" + i).val();
+			item.id4 = $("#id4_" + i).val();
+			item.id5 = $("#id5_" + i).val();
+			item.id6 = $("#id6_" + i).val();
+			item.id7 = $("#id7_" + i).val();
+			item.id8 = $("#id8_" + i).val();
+			item.id9 = $("#id9_" + i).val();
+			item.id10 = $("#id10_" + i).val();
+			item.id11 = $("#id11_" + i).val();
+			item.id12 = $("#id12_" + i).val();
+			item.id13 = $("#id13_" + i).val();
+			item.id14 = $("#id14_" + i).val();
+			item.id15 = $("#id15_" + i).val();
+			item.id16 = $("#id16_" + i).val();
+			item.id17 = $("#id17_" + i).val();
+			item.id18 = $("#id18_" + i).val();
+			item.id19 = $("#id19_" + i).val();
+			item.id20 = $("#id20_" + i).val();
+			item.id21 = $("#id21_" + i).val();
+			item.id22 = $("#id22_" + i).val();
+			item.id23 = $("#id23_" + i).val();
+			item.id24 = $("#id24_" + i).val();
+			item.id25 = $("#id25_" + i).val();
+			item.id26 = $("#id26_" + i).val();
+			item.id27 = $("#id27_" + i).val();
+			item.id28 = $("#id28_" + i).val();
+			item.id29 = $("#id29_" + i).val();
+			item.id30 = $("#id30_" + i).val();
+			item.id31 = $("#id31_" + i).val();
+			item.fromDate = fromDate;
+			item.toDate = toDate;
+			item.roleId = roleid;
+			dataset.push(item);
+			console.log(item)
+		}
+		if (dataset.length > 0) {
+			$
+					.ajax({
+						type : "POST",
+						url : "employee-shift-scheduling-assign-details",
+						dataType : "json",
+						contentType : "application/json",
+						data : JSON.stringify(dataset),
+						success : function(response) {
+							if (response.message == "Success") {
+								$("#messageParagraph").text(
+										"Shift Assigned Successfully");
+								$("#msgOkModal").removeClass("btn3");
+								$("#msgOkModal").addClass("btn1");
+								$("#msgModal").modal('show');
+								var band = $("#attndband").val();
+								var fromDate = $("#fromDate").val();
+								var toDate = $("#endDate").val();
+								var userid = $("#sessionId").val();
+								var userrole = $("#sessionRole").val();
+								var roleid = "";
+								for (var i = 6; i <= userrole.length; i = i + 6) {
+									roleid = roleid + '"'
+											+ userrole.slice(i - 6, i) + '",';
+								}
+								roleid = roleid.substring(0, roleid.length - 1);
+
+								agGrid
+										.simpleHttpRequest(
+												{
+													url : 'employee-shift-scheduling-listing-data?fromDate='
+															+ fromDate
+															+ '&toDate='
+															+ toDate
+															+ "&userId="
+															+ userid
+															+ "&roleId="
+															+ roleid,
+												}).then(function(data) {
+											//	console.log(data)
+
+											gridOptions.api.setRowData(data);
+										});
+							} else {
+								$("#messageParagraph").text(
+										"Duplicate Employee Entry");
+								$("#msgOkModal").removeClass("btn3");
+								$("#msgOkModal").addClass("btn1");
+								$("#msgModal").modal('show');
+								var band = $("#attndband").val();
+								var userid = $("#sessionId").val();
+								var userrole = $("#sessionRole").val();
+								var roleid = "";
+								for (var i = 6; i <= userrole.length; i = i + 6) {
+									roleid = roleid + '"'
+											+ userrole.slice(i - 6, i) + '",';
+								}
+								roleid = roleid.substring(0, roleid.length - 1);
+
+								agGrid
+										.simpleHttpRequest(
+												{
+													url : 'employee-shift-scheduling-listing-data?month='
+															+ month
+															+ '&year='
+															+ year
+															+ "&userId="
+															+ userid
+															+ "&roleId="
+															+ roleid,
+												}).then(function(data) {
+											//console.log(data)
+
+											gridOptions.api.setRowData(data);
+										});
+							}
+						},
+						error : function(response) {
+							//console.log(response)
+						}
+					});
+		}
+
+	}
+	function filterData1() {
+		 $("#quickFilter").val('');
+		filterData()
+	}
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+	function filterData() {
+		var id = $("#quickFilter").val();
+		var value = id.toLowerCase();
+		$("#table_shift tr").filter(function() {
+			$('#theadBody').show();
+			$('#table_shift tbody tr[data-no-results-found]').remove();
+			$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+		});
+		if ($('#table_shift tbody tr:visible').length === 0) {
+			$('#theadBody').show();
+			$('#table_shift tbody').append('<tr data-no-results-found><td colspan="50" class="dtxt">No Data Found!</td></tr>');
+		}
+	}
+</script>
+
+
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+
+					<div class="row" id="main">
+						<div class="col-md-12 mt-for">
+							<div class="font-design">Shift Timing</div>
+							<div class="topdetails roomListDiv"></div>
+							<div class="slidearrow"></div>
+						</div>
+						<input type="hidden" id="sessionId" th:value="${userId}" /> <input
+							type="hidden" id="sessionRole" th:value="${userRole}" /> <input
+							type="hidden" id="isApprove" /> <input type="hidden"
+							id="startDayForAtten" th:value="${startDayForAtten}" /> <input
+							type="hidden" id="empRole" th:value="${empRole}" /> <input
+							type="hidden" id="mrRole" th:value="${mrRole}" /> <input
+							type="hidden" id="adRole" th:value="${adRole}" />
+						<div class="row mt-4">
+
+							<div class="col-md-3">
+								<div class="form-group">
+									<label>Department Name</label>
+									<div class="select" id="sdept">
+										<select id="dept" class="form-control"
+											onchange="getSubDept();changeDept();">
+											<option value="">--Select--</option>
+											<option th:each="c,iter:${departmentList}"
+												th:value="${c.key}" th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label>Sub Department Name</label>
+									<div class="select" id="ssubdept">
+										<select id="subDept" class="form-control"
+											onchange="changeSubDept()">
+											<option value="">--Select--</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>Year</label>
+									<div class="select">
+										<select id="attndyear" class="form-control"
+											onchange="changeYearMonth()">
+											<option th:each="c,iter:${yearList}" th:value="${c.name}"
+												th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>Month Name</label>
+									<div class="select">
+										<select id="attndmonth" class="form-control"
+											onchange="changeYearMonth()">
+											<option value="1">JANUARY</option>
+											<option value="2">FEBRUARY</option>
+											<option value="3">MARCH</option>
+											<option value="4">APRIL</option>
+											<option value="5">MAY</option>
+											<option value="6">JUNE</option>
+											<option value="7">JULY</option>
+											<option value="8">AUGUST</option>
+											<option value="9">SEPTEMBER</option>
+											<option value="10">OCTOBER</option>
+											<option value="11">NOVEMBER</option>
+											<option value="12">DECEMBER</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-1">
+								<div class="form-group calendar_box">
+									<label>From Date</label> <input type="text" id="fromDate"
+										value="" class="form-control"
+										th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|"
+										readonly>
+									<!--  <i class="ti-calendar picker_calendar"
+										id="fromDateCalendar"></i> -->
+								</div>
+							</div>
+							
+							<div class="col-md-1">
+								<div class="form-group calendar_box">
+									<label>To Date</label> <input type="text" id="endDate" value=""
+										class="form-control"
+										th:attr="onkeyup=|formatDate('endDate','${session.DATEFORMAT_JS}')|"
+										readonly>
+									<!-- <i class="ti-calendar picker_calendar"
+										id="endDateCalendar"></i> -->
+								</div>
+							</div>
+						</div>
+
+						<div class="d-flex mt-20">
+							<div class="col-md-4  btn-hs">
+								<div class="font-design" id="totalEmp">Employee Shift
+									Assign Details</div>
+							</div>
+
+
+							<div class="col-md-4" id="searchRowDiv">
+								<div class="input-style">
+									<input type="text" placeholder="Search.." name="search"
+										class="searchboxinput" onkeyup="filterData(),cancelBar()"
+										id="quickFilter" autocomplete="off">
+									<div class="searchicon">
+										<a href="javascript:void(0)"><span
+											style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+											id="closeKey"
+											onclick="filterData1();$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+											class="close_i"><i class="ti-close srchicon"></i></span></a><a
+											href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="col-md-4 btn-hs" align="right">
+								<button class="download-btn" onclick="totalUserCSV()">Download</button>
+								<div id="assignBtn"></div>
+
+							</div>
+
+						</div>
+						<!-- 	<div id="tbodyId"> -->
+						<div class="tbl-scrl">
+							<table class="table md-tbl  table-bordered" id="table_shift">
+								<thead id="thids">
+								</thead>
+								<tbody class="tbodyCls" id="tbodyId">
+								</tbody>
+							</table>
+						</div>
+						<!-- </div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

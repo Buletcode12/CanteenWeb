@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style>
+
+.taskInfo{
+	padding-left: 10px;
+    color: #0c63e4;
+}
+
+.rating {
+	float: left;
+}
+
+.rating:not(:checked)>input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0, 0, 0, 0);
+}
+
+.rating:not(:checked)>label {
+	float: right;
+	width: 1em;
+	padding: 0 .1em;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	font-size: 200%;
+	line-height: 1.2;
+	color: rgba(0, 0, 0, 0.6);
+	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:before {
+	content: '★ ';
+}
+
+.rating>input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating:not(:checked)>label:hover, .rating:not(:checked)>label:hover ~
+	label {
+	color: black;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
+	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
+	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
+	color: #ea0;
+	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
+}
+
+.rating>label:active {
+	position: relative;
+	top: 2px;
+	left: 2px;
+}
+
+.btn-outline-primary {
+	color: #007bff;
+	background-color: rgb(240 243 241/ 90%);
+	background-image: none;
+	border-color: #007bff;
+	cursor: pointer;
+}
+
+.picker_calendar1 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 358px;
+    left: 349px;
+}
+
+.picker_calendar2 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 241px;
+    left: 644px;
+}
+
+
+.picker_calendar3 {
+    cursor: pointer;
+    position: absolute;
+    bottom: 241px;
+    left: 937px;
+}
+</style>
+<script>
+	
+	$(function() {
+		
+		 $("input[name=ReminderYesOrNo]:radio").click(function () {
+		        if ($('input[name=ReminderYesOrNo]:checked').val() == "Yes") {
+		            $('.reminderBtn').show();
+
+		        } else if ($('input[name=ReminderYesOrNo]:checked').val() == "No") {
+		            $('.reminderBtn').hide();
+		            $('#reminderDateid').val("");
+		            $('#reminderTime').val("");
+		            $('#taskAlertBy').val("");
+
+		        }
+		    });
+		
+		
+		var dateFormat = localStorage.getItem("dateFormat");	
+		
+		$("#DateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#dueDate').val($(this).val());
+		})
+
+		$('#dueDate').blur(function() {
+			$("#DateCalendar").val($(this).val());
+		})
+		
+		 //Personal Details DOB Date
+	$("#reminderCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#reminderDateid').val($(this).val());
+	})
+	
+	$('#reminderDateid').blur(function(){
+		$("#reminderCalendar").val($(this).val());
+	}) 
+	
+	
+	
+	
+	
+	 $("#toDateCalendarTime").datetimepicker({
+		format : 'H:i',
+		closeOnDateSelect : false,
+		timepicker : true,
+		datepicker : false,
+		step : 15
+	}).on("change", function() {
+		$('#reminderTime').val($(this).val());
+	})
+
+	$('#reminderTime').blur(function() {
+		$("#toDateCalendarTime").val($(this).val());
+	}) 
+	});
+	
+	$(function() {
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		agGrid.simpleHttpRequest({
+			url : "view-crm-tasks-throughAjax"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+
+			gridOptions.api.setRowData(data);
+
+		});
+		$("#myGrid").show();
+		$("#delete").attr("disabled", true);
+	});
+
+	$(function() {
+		$('.collapse').on('show.bs.collapse', function() {
+			$(this).siblings('.panel-heading').addClass('active');
+		});
+
+	})
+	//search bar
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('input,textarea').focus(
+			function() {
+				$(this).data('placeholder', $(this).attr('placeholder')).attr(
+						'placeholder', '');
+			}).blur(function() {
+		$(this).attr('placeholder', $(this).data('placeholder'));
+	});
+
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	var txtLen = 0;
+	function textCount(event) {
+
+		var id = event.target.id;
+		var pId = $('#' + id).next().attr("id");
+		$('#' + pId + ' span').empty();
+		txtLen = $('#' + id).val().length;
+		$('#' + pId + ' span').append(txtLen);
+	}
+	// column Defs
+	const columnDefs = [
+			{
+				headerCheckboxSelection : true,
+				checkboxSelection : true,
+				width : 8,
+				sortable : false,
+				filter : false,
+				resizable : true
+
+			},{
+				headerName : 'Task Id',
+				field : "taskId",
+				cellRenderer : function(params) {
+					return '<a onclick=editPage("' + params.data.taskId
+							+ ',' + '0' + '") href="javascript:void(0)">'+
+							"task"+ params.data.taskId + '</a>';
+				}
+			},
+			 {
+				headerName : "Subject",
+				field : "taskSubject",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},{
+				headerName : "Due Date",
+				field : "dueDate",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},{
+				headerName : "Status",
+				field : "taskStatus",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},
+			  {
+				headerName : "Priority",
+				field : "taskPriority",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},  {
+				headerName : "Related To Lead",
+				field : "taskLead",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			}, {
+				headerName : "Contact Name",
+				field : "contactId",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			},{
+				headerName : "Task Executive",
+				field : "taskOwner",
+				cellStyle : {
+					textAlign : 'left'
+				}
+			} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 160,
+			height :10
+		},
+		rowSelection : 'multiple',
+		suppressRowClickSelection : true,
+		onSelectionChanged : rowSelect,
+		getRowNodeId : function(data) {
+			return data.taskId;
+		}
+	};
+	
+	var deleteId = "";
+	function rowSelect() {
+		//alert('hello select');
+		var selectedRows = gridOptions.api.getSelectedRows();
+		deleteId = "";
+
+		for (var i = 0; i < selectedRows.length; i++) {
+			//deleteId = deleteId + '"' + selectedRows[i].taskId + '",';
+			  deleteId = deleteId  + selectedRows[i].taskId + ',';
+		}
+
+		//var programming = $("input[name='ag-checkbox-input']:checked").map(function() {
+        //    return this.value;
+       // }).get().join(', ');
+		
+		//alert(programming);
+		deleteId = deleteId.substring(0, deleteId.length - 1);
+		console.log(deleteId)
+		var rowCount = 0;
+
+		selectedRows.forEach(function(selectedRow, index) {
+			rowCount = rowCount + 1;
+		});
+
+		if (rowCount > 0) {
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true);
+		}
+	}
+	// for new button
+	function newBtn() { 
+	//	alert('hello');
+		$("#add").hide();
+		$("#copy").hide();
+		$("#delete").hide();
+		$("#myGrid").hide();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#statusDiv").hide();
+		$("#idDiv").hide();
+		$("#collapseFour").hide();
+		$("#headingFour").hide();
+		$("#myGridActivity").hide();
+
+		$("#demo").show();
+
+	}
+	// for cancel button
+	function cancelBtn() {
+		$("#add").show();
+		$("#copy").show();
+		$("#delete").show();
+		$("#totalReq").show();
+		$("#myGrid").show();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+
+		$('#taskId').val("");
+		$('#oppertunity').val("");
+		$('#expectedRevenue').val("");
+		$('#probability').val("");
+		$('#customer').val("");
+		$('#email').val("");
+		$('#phone').val("");
+		$('#saleperson').val("");
+		$('#salesTeam').val("");
+		$('#date').val("");
+		$("#star1").attr("checked", false);
+		$("#star2").prop("checked", false);
+		$("#star3").prop("checked", false);
+		$('#tags').val("");
+		$('#campanyName').val("");
+		$('#description').val("");
+		$('#campanyName').val("");
+		$('#addressStreet').val("");
+		$('#addressStreet2').val("");
+		$('#city').val("");
+		$('#states').val("");
+		$('#zip').val("");
+		$('#country').val("");
+		$('#website').val("");
+		$('#language').val("");
+		$('#contactName').val("");
+		$('#tittle').val("");
+		$('#jobPosition').val("");
+		$('#mobile').val("");
+		$('#referdBy').val("");
+		$('#campaign').val("");
+		$('#medium').val("");
+		$('#source').val("");
+
+		agGrid.simpleHttpRequest({
+			url : "view-crm-tasks-throughAjax"
+		}).then(function(data) {
+			gridOptions.api.setRowData(data);
+		});
+	}
+
+	$(document).ready(function() {
+		$("#date").datetimepicker({
+			format : "d-m-Y",
+			closeOnDateSelect : true,
+			minDate : new Date(),
+			timepicker : false,
+		});
+		$("#taskId").val("");
+
+		var dateFormat = localStorage.getItem("dateFormat");
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+
+		$('#fromDate').blur(function() {
+			$("#fromDateCalendar").val($(this).val());
+		})
+
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDate').val($(this).val());
+		})
+
+		$('#toDate').blur(function() {
+			$("#toDateCalendar").val($(this).val());
+		})
+
+		$("#fromTime").datetimepicker({
+			format : 'H:i',
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step : 15
+		})
+
+		$("#toTime").datetimepicker({
+			format : "H:i",
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step : 15
+		})
+
+	});
+	
+	
+	// Edit & stage change 
+	function editPage(id) {
+		//alert(id);
+		var editId = id.split(",");
+		
+		var taskId = editId[0];
+		
+		var modal = editId[1];
+		//alert('taskId------'+taskId);
+		$("#demo").show();
+
+		$.ajax({
+			type : "GET",
+			url : "view-crm-tasks-edit?id=" + taskId,
+			async : false,
+			success : function(response) {
+				console.log(response);
+				if (response.message == "Success") {
+					
+					$("#add").hide();
+					$("#copy").hide();
+					$("#delete").hide();
+					$("#myGrid").hide();
+					$("#searchRowDiv").hide();
+					$("#totalReq").hide();
+					$("#statusDiv").hide();
+					$("#idDiv").hide();
+					$("#collapseFour").hide();
+					$("#headingFour").hide();
+					$("#myGridActivity").hide();
+
+					$("#demo").show();
+					
+					$(".container").hide();
+
+					var dueDate = response.body[0].dueDate;
+					dueDate = dueDate.split(' ')[0];
+					
+					var reminderDateid = response.body[0].reminderDateid;
+					reminderDateid = reminderDateid.split(' ')[0];
+					
+					var taskId=$("#taskId").text(response.body[0].taskId);
+					//console.log("taskId-------------------"+JSON.stringify(response.body[0].taskOwner));
+					console.log("taskId-------------------"+response.body[0].taskOwner);
+					$("#taskOwner").val(response.body[0].taskOwner);
+					$("#taskLead").val(response.body[0].taskLead);
+					$("#taskSubject").val(response.body[0].taskSubject);
+					$('#dueDate').val(dueDate);
+					$('#taskContactName').val(response.body[0].taskContactName);
+					$('#taskAccountName').val(response.body[0].taskAccountName);
+					$('#taskStatus').val(response.body[0].taskStatus);
+					$('#taskPriority').val(response.body[0].taskPriority);
+					$('#contactId').val(response.body[0].contactId);
+					$('#accountId').val(response.body[0].accountId);
+					
+					var repeateYesOrNo = response.body[0].repeateYesOrNo;
+					console.log("Before condition--------------------------"+repeateYesOrNo);
+					if(repeateYesOrNo =='Yes'){
+						$('input:radio[name=RepeateYesOrNo]')[0].checked = true;
+						console.log("yes--------------------------"+repeateYesOrNo);
+					}else{
+						$('input:radio[name=RepeateYesOrNo]')[1].checked = true;
+						console.log("no--------------------------"+repeateYesOrNo);
+					}
+					
+					
+					var reminderYesOrNo = response.body[0].reminderYesOrNo;
+					if(reminderYesOrNo =='Yes'){
+						$('input:radio[name=ReminderYesOrNo]')[0].checked = true;
+						$('.reminderBtn').show();
+						$('#reminderDateid').val(reminderDateid);
+					    $('#reminderTime').val(response.body[0].reminderTime);
+						$('#taskAlertBy').val(response.body[0].taskAlertBy);
+						
+					}else{
+						$('.reminderBtn').hide();
+						$('input:radio[name=ReminderYesOrNo]')[1].checked = true;
+						$('#reminderDateid').val("");
+			            $('#reminderTime').val("");
+			            $('#taskAlertBy').val("");
+					}
+					$('#description').val(response.body[0].description);
+					//for stage active status
+					
+				}
+			}
+		})
+	}
+</script>
+<script>
+		
+	////ends
+	function addTaskInfo() {
+		//alert('hello');return false;
+		var obj = {};
+		obj.taskId = $('#taskId').text();
+		obj.taskOwner = $('#taskOwner').val();
+		obj.taskLead = $('#taskLead').val();
+		obj.pageType = "Task";
+		obj.taskSubject = $('#taskSubject').val();
+		obj.dueDate = $('#dueDate').val();
+		obj.taskContactName = $('#taskContactName').val();
+		obj.contactId = $('#contactId').val();
+		obj.taskAccountName = $('#taskAccountName').val();
+		obj.accountId = $('#accountId').val();
+		obj.taskStatus = $('#taskStatus').val();
+		obj.taskPriority = $('#taskPriority').val();
+		
+	    var ReminderYesOrNo = $("input[name='ReminderYesOrNo']:checked").val();
+		obj.reminderYesOrNo = ReminderYesOrNo;	
+		
+		var RepeateYesOrNo = $("input[name='RepeateYesOrNo']:checked").val();
+		//alert(RepeateYesOrNo);
+		obj.repeateYesOrNo =   RepeateYesOrNo;
+		
+		if(ReminderYesOrNo == 'Yes'){
+			obj.reminderDateid = $('#reminderDateid').val();
+			obj.reminderTime = $('#reminderTime').val();
+			obj.taskAlertBy = $('#taskAlertBy').val();
+		}else{
+			obj.reminderDateid = "";
+			obj.reminderTime = "";
+			obj.taskAlertBy = "";
+		}
+		
+		obj.description = $('#description').val(); 
+		
+		console.log(obj);
+
+		/* FORM VALIDATION STARTS*/
+
+		var validation = true;
+		//return false;
+
+		if (obj.taskOwner == null || obj.taskOwner == "") {
+			validation = validationUpdated("Task Executive Required",
+					"taskOwner");
+		}
+		if (obj.taskLead == null || obj.taskLead == "") {
+			validation = validationUpdated("Task Lead Required",
+					"taskLead");
+		}
+		if (obj.taskSubject == null || obj.taskSubject == "") {
+			validation = validationUpdated("Task Subject Required",
+					"taskSubject");
+		}
+		if (obj.dueDate == null || obj.dueDate == "") {
+			validation = validationUpdated("Due Date Required",
+					"dueDate");
+		}
+		if (obj.taskContactName == null || obj.taskContactName == "") {
+			validation = validationUpdated("Task Contact Required",
+					"taskContactName");
+		}
+		if (obj.taskContactName == null || obj.taskContactName == "") {
+			validation = validationUpdated("Task Contact Required",
+					"taskContactName");
+		}
+		if (obj.taskAccountName == null || obj.taskAccountName == "") {
+			validation = validationUpdated("Task Account Name Required",
+					"taskAccountName");
+		}
+		if (obj.taskContactName == null || obj.taskContactName == "") {
+			validation = validationUpdated("Task Contact Required",
+					"taskContactName");
+		}
+		if (obj.taskStatus == null || obj.taskStatus == "") {
+			validation = validationUpdated("Task Status Required",
+					"taskStatus");
+		}
+		if (obj.taskPriority == null || obj.taskPriority == "") {
+			validation = validationUpdated("Task Status Required",
+					"taskPriority");
+		}
+		if (obj.description == null || obj.description == "") {
+			validation = validationUpdated("Task Status Required",
+					"description");
+		}
+		if(ReminderYesOrNo=='Yes'){
+		if (obj.reminderDateid == null || obj.reminderDateid == "") {
+			validation = validationUpdated("Date Required",
+					"reminderDateid");
+		}
+		if (obj.reminderTime == null || obj.reminderTime == "") {
+			validation = validationUpdated("Reminder Time Required",
+					"reminderTime");
+		}
+		if (obj.taskAlertBy == null || obj.taskAlertBy == "") {
+			validation = validationUpdated("AlertBy Required",
+					"taskAlertBy");
+		}
+		}
+
+		/* FORM VALIDATION ENDS*/
+
+		if (validation) {
+			//alert('save');
+			$.ajax({
+				type : "POST",
+				url : "view-crm-tasks-add-dtls",
+				contentType : "application/json",
+				data : JSON.stringify(obj),
+				success : function(response) {
+					console.log(response);
+					if (response.message == "Success") {
+
+						$("#add").show();
+						$("#copy").show();
+						$("#delete").show();
+						$("#totalReq").show();
+						$("#myGrid").show();
+						$("#searchRowDiv").show();
+
+						$("#demo").hide();
+
+						agGrid.simpleHttpRequest({
+							url : "view-crm-tasks-throughAjax"
+						}).then(function(data) {
+							gridOptions.api.setRowData(data);
+						});
+					}
+				},
+				error : function(data) {
+
+					console.log(data);
+				}
+			})
+		}
+
+	}
+	
+	function getAccountList() {
+		var search = $("#taskAccountName").val();
+
+		if (search) {
+
+			$.ajax({
+						type : "POST",
+						url : "view-crm-tasks-get-account-list",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : search,
+						success : function(response) {
+							if (response.message == "success") {
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutocompleteValue1(\''
+												+ response.body[i].custId
+												+ '\',\''
+												+ response.body[i].custName
+												+ '\',\''
+												+ response.body[i].custGSTNo
+												+ '\',\''
+												+ response.body[i].taxType
+												+ '\')">'
+												+ response.body[i].custName
+												+ '</li>';
+									}
+									content += '</ul>';
+									console.log("content " + content)
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1">';
+									content += '<li onClick="selectAutocompleteValue()">'
+											+ "No Data Found" + '</li>';
+									content += '</ul>';
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		}
+
+	}
+
+	function selectAutocompleteValue1(accountId, accountName, custGSTNo, taxType) {
+
+		if (accountId) {
+			
+
+			$("#accountId").val(accountId);
+
+			$("#taskAccountName").val(accountName);
+			
+			$("#search").val(accountName);
+			$("#search").attr('data-procat', accountId);
+			$("#suggesstion-box1_").hide();
+		//	hideShowS();
+			//checkForDuplicate(key,counter);
+
+		} else {
+
+			$("#accountId").val("");
+
+			$("#taskAccountName").val("");
+			
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box1_").hide();
+
+		}
+	}
+	
+	function getNameListContact() {
+		var searchVal = $("#taskContactName").val();
+		if(searchVal == ""){
+		$("#suggesstion-boxcontact_").hide();
+		}
+		if (searchVal) {
+					$.ajax({
+						type : "POST",
+						url : "view-crm-tasks-autosearchDetailsContact",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : searchVal,
+						success : function(response) {
+							if (response.message == "success") {
+								
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autocomplete-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutocompleteValueContact(\''
+												+ response.body[i].name
+												+ '\',\''
+												+ response.body[i].key
+												+ '\')">'
+												+ response.body[i].name
+												+ '</li>';
+									}
+									content += '</ul>';
+									$("#suggesstion-boxcontact_").show();
+									$("#suggesstion-boxcontact_").html(content);
+
+								}
+								else {
+									$("#search").css("background", "#FFF");
+									var content = '<div id="autocomplete-list1">';
+									content += '<div onClick="selectAutocompleteContactValue()">'
+											+ "No Data Found" + '</div>';
+									content += '</div>';
+									$("#suggesstion-boxcontact_").show();
+									$("#suggesstion-boxcontact_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		} 
+}
+
+			function selectAutocompleteValueContact(name,ContactId) {
+
+				if (name) {
+				
+				//$("#personName").val("");
+				$("#contactId").val(ContactId);
+				
+				$("#taskContactName").val(name);
+				$("#search").val(ContactId);
+				$("#search").attr('data-procat', name);
+				$("#suggesstion-boxcontact_").hide();
+
+				} else {
+				$("#contactId").val("");
+
+				$("#taskContactName").val("");
+
+				$("#search").val("");
+				$("#search").attr('data-procat', "");
+				$("#suggesstion-boxcontact_").hide();
+
+				}
+				}
+				function selectAutocompleteContactValue() {
+
+				$("#contactId").val("");
+
+				$("#taskContactName").val("");
+
+				$("#search").val("");
+				$("#search").attr('data-procat', "");
+				$("#suggesstion-boxcontact_").hide();
+
+				}
+
+	
+	
+	
+	function deleteTask(){
+		//console.log("delete ids--------------"+deleteId);
+		$.ajax({
+			type : "GET",
+			url : "view-crm-tasks-delete-id?id=" + deleteId,
+			success : function(response) {
+				if (response.message == "Success") {
+					cancelBtn();
+					agGrid.simpleHttpRequest({
+						url : "view-crm-tasks-throughAjax"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+					});
+
+				}
+			}
+
+		});
+		
+		$('#delete').attr("disabled", true);
+	}
+
+</script>
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="d-flex">
+				<div class="maincontentsec">
+
+						<div class="d-flex justify-content-between">
+							<div class="col-md-4  btn-hs">
+								<div class="font-design" id="totalReq">
+									ALL TASKS (<span></span>)
+								</div>
+							</div>
+							<div class="col-md-4  btn-hs" id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+
+						</div>
+					<div class="buttonsec btn-hs">
+								<input type="button" class="btn3" onclick="deleteTask()" id="delete" value="DELETE"
+									data-toggle="modal" data-target="#delete" readonly> 
+									<input type="button" class="btn2" id="action" value="Action"
+									 readonly>
+									
+									<input type="button" class="btn1" id="add" value="Create Task"
+									onclick="newBtn()" readonly>
+							</div>
+						</div>
+						
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+						<div class="collapse" id="demo">
+							<div class="innercontent">
+								<div class="innerstickybg">
+									<div class="d-flex justify-content-between" id="main">
+										<div class="col-md-3" id="idDiv">
+											Task ID: <span id="taskId"></span>
+										</div>
+										<div><span class="taskInfo">Task Information(Create Task)</span></div>
+
+
+										<div class="col-md-3 padding-0" align="right">
+											<button class="btn4" id="cancel" onclick="cancelBtn()">CANCEL</button>
+											<button class="btn1" id="save" onclick="addTaskInfo()">SAVE</button>
+										</div>
+									</div>
+								</div>
+								<div class="innercontent">
+
+									<!-- <div class="row"> -->
+									<div class="row">
+										<div class="col-md-4">
+					                      <div class="form-group">
+					                        <label>Task Executive</label>
+					                        <div class="select">
+												<select id="taskOwner" onblur="removeValid(event)">
+														<option value="">Select Task Executive</option>
+															<option th:each="c,iter:${ownerList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+																		
+												</select>
+											</div>
+					                      </div>
+					                    </div>
+					                    
+					                  <div class="col-md-4">  
+					                     <div class="form-group">
+					                        <label>Task Lead</label>
+					                        <div class="select">
+												<select id="taskLead" onblur="removeValid(event)">
+														<option value="">Select Task Lead</option>
+															<option th:each="c,iter:${leadList}"
+																th:value="${c.key}" th:text="${c.name}"></option>
+																		
+												</select>
+											</div>
+					                      </div>
+					                    </div>
+					                    
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Subject</label>
+												<input type="text" class="form-control"
+													id="taskSubject" placeholder="Subject"onblur="removeValid(event)">
+											</div>
+										</div>
+										
+										
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Due Date</label>
+												<!-- <input type="text" id="dueDate" class="form-control"
+												th:attr="onkeyup=|formatDate('dueDate','${session.DATEFORMAT_JS}')|"readonly> 
+												<i class="ti-calendar picker_calendar1" id="DateCalendar"></i> -->
+												
+												<input type="date" id="dueDate" class="form-control">
+											</div>
+										</div>
+										
+											<div class="col-md-4">
+											<div class="form-group">
+													<label> Contact Name</label> <input type="text" id="taskContactName"
+														placeholder="Contact Name" class="form-control"
+														onkeyup='getNameListContact()'>
+														<input type="hidden" id="contactId"> 
+												 <div id="suggesstion-boxcontact_" class="sugg-cls"></div> 
+											</div>
+										</div>
+										
+										
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Account</label>
+												<input type="text" class="form-control"
+													id="taskAccountName" placeholder="Account Name" onkeyup='getAccountList()'onblur="removeValid(event)">
+													<input type="hidden" id="accountId"> 
+											</div>
+											<div id="suggesstion-box1_" class="sugg-cls"></div> 
+										</div>
+										
+										
+										
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Status</label>
+												<div class="select">
+												<select id="taskStatus" onblur="removeValid(event)">
+														<option value="">Select Status</option>
+														<option value="Not Started">Not Started</option>
+													    <option value="Deferred">Deferred</option>
+													    <option value="In Progress">In Progress</option>
+													    <option value="Completed">Completed</option>
+													    <option value="Waiting For Input">Waiting For Input</option>
+																		
+												</select>
+											</div>
+											</div>
+										</div>
+										
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>Priority</label>
+												<div class="select">
+												<select id="taskPriority" onblur="removeValid(event)">
+														<option value="">Select Priority</option>
+														<option value="Highest">Highest</option>
+													    <option value="Low">Low</option>
+														<option value="Lowest">Lowest</option>
+														<option value="Normal">Normal</option>
+																		
+												</select>
+											</div>
+											</div>
+										</div>
+										
+										<div class="col-md-4">
+					                      <div class="form-group">
+					                        <label>Repeat</label><br>
+					                          <input type="radio" id="Yes" name="RepeateYesOrNo" value="Yes">
+											  <label for="html">Yes</label>
+											  <input type="radio" id="No" name="RepeateYesOrNo" value="No">
+											  <label for="css">No</label>
+					                      </div>
+					                    </div>	
+										
+										
+										<div class="col-md-4">
+					                      <div class="form-group">
+					                        <label>Reminder</label><br>
+					                          <input type="radio" id="Yes" name="ReminderYesOrNo" value="Yes">
+											  <label for="html">Yes</label>
+											  <input type="radio" id="No" name="ReminderYesOrNo" value="No">
+											  <label for="css">No</label>
+					                      </div>
+					                    </div>
+					                    
+					                    
+					                 <div class="col-md-3 reminderBtn" style="display:none;">
+										<label>Reminder On</label>
+										<!-- <input type="text" id="reminderDateid" class="form-control"
+											th:attr="onkeyup=|formatDate('reminderDateid','${session.DATEFORMAT_JS}')|">
+										<i class="ti-calendar picker_calendar2" id="reminderCalendar"></i> -->
+										
+										<input type="date" id="reminderDateid" class="form-control">
+									</div> 
+									
+									 <div class="col-md-3 reminderBtn" style="display:none;">
+										<label>Reminder At</label> 
+										<!-- <input type="text"
+											id="reminderTime" class="form-control"
+											th:attr="onkeyup=|formatDate('reminderTime','${session.DATEFORMAT_JS}')|">
+										<i class="ti-calendar picker_calendar3" id="toDateCalendarTime"></i> -->
+										
+										<input type="time" id="reminderTime" class="form-control">
+							
+									</div>
+
+									<div class="col-md-2 reminderBtn" style="display:none;">
+										<div class="form-group">
+											<label>Alert By</label><br> <select id="taskAlertBy">
+												<option value="">Select Alert By</option>
+												<option value="email">Email</option>
+												<option value="popUp">Pop up</option>
+												<option value="both">Both</option>
+											</select>
+										</div>
+									</div> 
+					                    
+					                    							
+									</div>
+									
+								<!-- 	main div start here -->
+									<div id="main">
+
+										<!-- 	collapse for Contact InformationStart here -->
+											<div class="accordion-item">
+												<h2 class="accordion-header" id="headingOne">
+													<button class="accordion-button" type="button"
+														data-bs-toggle="collapse" data-bs-target="#collapseOne"
+														aria-expanded="false" aria-controls="collapseOne">
+														Description Information</button>
+												</h2>
+												<div id="collapseOne"
+													class="accordion-collapse collapse show"
+													aria-labelledby="headingOne"
+													data-bs-parent="#accordionExample">
+													<div class="accordion-body">
+													<div class="row">
+														
+													<div class="row">
+														<div class="col-md-8">
+														<div class="modal-inrheading">Description</div>
+														<div class="position-text">
+															<textarea rows="4" cols="100" id="description"
+																onkeyup="textCount(event)" onblur="removeValid(event)"></textarea>
+															<div id="charNumSN" class="txtcounter" align="right">
+																<span>0</span> characters
+															</div>
+														</div>
+													</div>
+													
+
+													</div>
+													
+													</div>
+			
+													</div>
+												</div>
+											</div>
+								
+								
+									<!-- 	sidenave for Marketing End here -->
+
+									<!-- 	sidenave for Misc Start here -->
+
+
+								</div>
+						</div>
+					</div>
+
+
+
+
+					<!-- The Modal For Delete-->
+					<div class="modal fade" id="delete">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Do you really want to delete these records? This process
+										cannot be undone.</p>
+								</div>
+								<div class="modal-footer justify-content-center">
+									<button type="button" class="btn1" data-dismiss="modal"
+										aria-hidden="true">Cancel</button>
+									<button type="button" class="btn3" id="deleteModalBtn"
+										onclick="deleteReq()">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- The Modal For Validation-->
+					<div class="modal fade" id="reqValid">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p id="modalMsg"></p>
+								</div>
+								<div class="modal-footer justify-content-center">
+									<button type="button" class="btn1" data-dismiss="modal"
+										aria-hidden="true">Ok</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+						<!-- ------------------Mark Lost modal------------------------- -->
+
+					<div id="markLostModal" class="modal fade">
+						<div class="modal-dialog">
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-header">
+									<h4 class="modal-title">Lost Reason</h4>
+									<button type="button" class="close" data-dismiss="modal"
+										aria-label="Close">
+										<i class="ti-close"></i>
+									</button>
+
+								</div>
+								<div class="modal-body">
+									<!-- text input -->
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Comment</label> <input class="form-control"
+													type="text" id="comment">
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<div class="modal-footer justify-content-left">
+									<button type="button" class="btn1" data-dismiss="modal"
+										aria-hidden="true" id="SubmitBtn"
+										onclick="rejectLeave()">Submit</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
+<meta http-equiv='pragma' content='no-cache'>
+<head>
+<style type="text/css">
+.highcharts-exporting-group {
+	display: none;
+}
+
+.slidebox {
+	padding: 14px;
+	margin-top: 0px;
+	margin: 0px 10px;
+}
+</style>
+<!-- ck editor slim selector CDN -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.js"></script>
+<!-- <script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.css"></script> -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.js"></script>
+<!-- <script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.css"></script> -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.27.0/slimselect.min.mjs"></script>
+
+<script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		closeNav();	
+		$("#save").hide();
+		$("#cancel").hide();
+		$("#Cancel").hide();
+
+		//date format Start date
+
+		var dateFormat = localStorage.getItem("dateFormat");
+		$("#effectiveDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#effectiveDate').val($(this).val());
+		})
+
+		$('#effectiveDate').blur(function() {
+			$("#effectiveDateCalendar").val($(this).val());
+		})
+
+		$('#delete').attr('disabled', true);		
+	});
+
+	/* -------------------search bar for mygrid1------------------------ */
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('.collapse').on('show.bs.collapse', function() {
+		$(this).siblings('.panel-heading').addClass('active');
+	});
+
+	$('.collapse').on('hide.bs.collapse', function() {
+		$(this).siblings('.panel-heading').removeClass('active');
+	});
+
+	const columnDefs = [	{
+		headerCheckboxSelection : false,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true,
+		pinned : 'left',
+	},
+			{
+				headerName : 'Employee Id',
+				field : "empId",
+				pinned : 'left',
+				width : 120,
+				cellRenderer : function(params) {
+					return '<a id="" onclick=editSalaryRevision("'
+							+ params.data.editId
+							+ '") href="javascript:void(0)">'
+							+ params.data.empId + '</a>';
+				},
+				
+			}, {
+				headerName : 'Name',
+				field : "name",
+				pinned : 'left'
+			}, {
+				headerName : 'Father Name',
+				field : "fatherName",
+			}, {
+				headerName : 'Department',
+				field : "dept"
+			}, {
+				headerName : 'Sub Department',
+				field : "subdept"
+			}, {
+				headerName : 'Present Designation',
+				field : "pdesg",
+					width : 185,
+			}, {
+				headerName : 'New Designation',
+				field : "ndesg"
+			}, {
+				headerName : 'Effective Date',
+				field : "effectiveDate",
+				width : 150
+			}, {
+				headerName : 'Band/Grade',
+				field : "band",
+				width : 130
+			}, {
+				headerName : 'Gross Salary',
+				field : "ctc",
+				type : "rightAligned",
+				width : 130
+			}, {
+				headerName : 'Basic',
+				field : "basic",
+				type : "rightAligned",
+				width : 100
+			}, {
+				headerName : 'House Rent Allowance(HRA)',
+				field : "hra",
+				type : "rightAligned",
+				width : 240
+			}, {
+				headerName : 'Additional Allowance',
+				field : "addAllow",
+				type : "rightAligned",
+				width : 240
+			}, {
+				headerName : 'Leave Travel Allowance(LTA)',
+				field : "hra",
+				type : "rightAligned",
+				width : 240
+			}, {
+				headerName : 'Conveyance Allowance',
+				field : "conve",
+				type : "rightAligned",
+				width : 220
+			}, {
+				headerName : 'Medical Allowance',
+				field : "medical",
+				type : "rightAligned",
+				width : 200
+			}, {
+				headerName : 'Washing Allowance',
+				field : "washAllow",
+				type : "rightAligned",
+				width : 200
+			}, {
+				headerName : 'Skill Development',
+				field : "skillDev",
+				type : "rightAligned",
+				width : 200
+			}, {
+				headerName : 'Other',
+				field : "other",
+				type : "rightAligned",
+				width : 200
+			} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 180,
+			height : 10
+		},
+		rowSelection : 'single',
+		onSelectionChanged : rowSelectData,
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.editId;
+		}
+	}
+	function rowSelectData() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+
+		var rowCount = 0;
+		selectedRows.forEach(function(i) {
+			rowCount = rowCount + 1;
+		});
+		 
+		if (rowCount > 0) {
+			$('#add').attr("disabled", true);
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true); 
+			$('#add').attr("disabled", false);
+		}
+
+	}
+	function add() {
+		$("#empId").val("");
+		$("#name").val("");
+		$("#pdesg").val("");
+		$("#ndesg").val("");
+		$("#effectiveDate").val("");
+		$("#band").val("");
+		$("#basic").val("");
+		$("#hra").val("");
+		$("#addAllow").val("");
+		$("#conve").val("");
+		$("#other").val("");
+		$("#editId").val("");
+		$("#dept").val("");
+		$("#subDept").val("");
+		$("#ctc").val("");
+
+		$("#delete").hide();
+		$("#addData").show();
+		$("#add").hide();
+
+		//$("#save").hide();
+		$("#myGrid").hide();
+		$("#tab1").show();
+		$("#save").show();
+		$("#submitBtnBtn").show();
+		$("#Cancel").show();
+		$("#hideTbl").hide();
+
+	}
+
+	function saveData() {
+		var validation = true;
+		var data1 = {};
+
+		data1.editId = $("#editId").val();
+		data1.empId = $("#empId").val();
+		data1.name = $("#name").val();
+		data1.pdesg = $("#pdesg").val();
+		data1.ndesg = $("#ndesg").val();
+		data1.effectiveDate = $("#effectiveDate").val();
+		data1.band = $("#band").val();
+		data1.basic = $("#basic").val();
+		data1.hra = $("#hra").val();
+		data1.addAllow = $("#addAllow").val();
+		data1.conve = $("#conve").val();
+		data1.medical = $("#medical").val();
+		data1.lta = $("#lta").val();
+		data1.washAllow = $("#washAllow").val();
+		data1.other = $("#other").val();
+		data1.skillDev = $("#skillDev").val();
+		data1.ctc = $("#ctc").val();
+		data1.dept = $("#dept").val();
+		data1.subdept = $("#subDept").val();
+
+		 if (data1.dept == null || data1.dept == "") {
+				validation = validationUpdated("Department Required", "dept");
+			}
+		 if (data1.subdept == null || data1.subdept == "") {
+				validation = validationUpdated("Sub Department Required", "subDept");
+			}
+		 if (data1.empId == null || data1.empId == "") {
+				validation = validationUpdated("Employee Id Required", "empId");
+			}
+		 if (data1.ndesg == null || data1.ndesg == "") {
+				validation = validationUpdated("New Designation Required", "ndesg");
+			}
+		 if (data1.effectiveDate == null || data1.effectiveDate == "") {
+				validation = validationUpdated("Effective Date Required", "effectiveDate");
+			}
+		 if (data1.band == null || data1.band == "") {
+				validation = validationUpdated("Band Required", "band");
+			}
+		 if (data1.basic == null || data1.basic == "") {
+				validation = validationUpdated("Basic Required", "basic");
+			}
+		 if (data1.hra == null || data1.hra == "") {
+				validation = validationUpdated("House Rent Allowance(HRA) Required", "hra");
+			}
+/* 		 if (data1.lta == null || data1.lta == "") {
+				validation = validationUpdated("Leave Travel Allowance(LTA) Required", "lta");
+			}
+		 if (data1.addAllow == null || data1.addAllow == "") {
+				validation = validationUpdated("Additional Allowance Required", "addAllow");
+			}
+		 if (data1.conve == null || data1.conve == "") {
+				validation = validationUpdated("Conveyance Allowance Required", "conve");
+			}
+		 if (data1.medical == null || data1.medical == "") {
+				validation = validationUpdated("Medical Allowance Required", "medical");
+			}
+		 if (data1.washAllow == null || data1.washAllow == "") {
+				validation = validationUpdated("Washing Allowance Required", "washAllow");
+			}
+		 if (data1.other == null || data1.other == "") {
+				validation = validationUpdated("Other Required", "other");
+			}
+		 if (data1.skillDev == null || data1.skillDev == "") {
+				validation = validationUpdated("Skill Development Required", "skillDev");
+			} */
+		 if (data1.ctc == null || data1.ctc == "") {
+				validation = validationUpdated("Gross Salary Required", "ctc");
+			}
+		 if (validation) {
+				$.ajax({
+					type : "POST",
+					url : "view-salary-revision-save",
+					dataType : "json",
+					contentType : "application/json",
+					data : JSON.stringify(data1),
+					success : function(response) {
+						if (response.message == "success") {
+							closeNav(); 
+							$("#messageParagraph").text(
+							"Data Saved successfully");
+							$("#msgOkModal").removeClass("btn3");
+							$("#msgOkModal").addClass("btn1");
+							$("#msgModal").modal('show');
+						}
+					},
+					error : function(response) {
+						console.log(response);
+					}
+				}) 
+		 }
+
+
+	}
+	function editSalaryRevision(id) {
+
+		$.ajax({
+			type : "GET",
+			url : "view-salary-revision-edit?Id=" + id,
+			success : function(response) {
+				if (response.message == "Success") {
+					$("#dept").attr('disabled',true);
+					$("#subDept").attr('disabled',true);
+					$("#empId").attr('disabled',true);
+					$("#pdesg").attr('disabled',true);
+					$("#sdept").removeClass("select");
+					$("#ssdept").removeClass("select");
+					$("#semp").removeClass("select");
+					getEmpList(response.body.empId)
+					//$("#empId").val(response.body.empId);
+					$("#name").val(response.body.name);
+					$("#pdesg").val(response.body.pdesg);
+					$("#ndesg").val(response.body.ndesg);
+					$("#effectiveDate").val(response.body.effectiveDate);
+					$("#band").val(response.body.band);
+					$("#basic").val(response.body.basic);
+					$("#hra").val(response.body.hra);
+					$("#addAllow").val(response.body.addAllow);
+					$("#lta").val(response.body.lta);
+					$("#medical").val(response.body.medical);
+					$("#conve").val(response.body.conve);
+					$("#washAllow").val(response.body.washAllow);
+					$("#skillDev").val(response.body.skillDev);
+					$("#other").val(response.body.other);
+					$("#editId").val(response.body.editId);
+					$("#ctc").val(response.body.ctc);
+					$("#dept").val(response.body.dept);
+					getSubDeptEdit(response.body.subdept)
+					openNav();
+
+					$("#add").hide();
+					$("#myGrid").show();
+					$("#save").show();
+					$("#Cancel").show();
+					$("#delete").show();
+					$("#tab1").show();
+					$("#demo").show();
+				}
+
+			},
+			error : function(data) {
+				console.log(data)
+				$("#empId").val("");
+				$("#name").val("");
+				$("#pdesg").val("");
+				$("#ndesg").val("");
+				$("#effectiveDate").val("");
+				$("#band").val("");
+				$("#basic").val("");
+				$("#hra").val("");
+				$("#addAllow").val("");
+				$("#lta").val("");
+				$("#medical").val("");
+				$("#other").val("");
+				$("#editId").val("");
+			}
+		});
+	}
+/* function for delete */
+	function deleteDetails() {
+	
+		 var selectedNodes = gridOptions.api.getSelectedNodes();
+		 var selectedData = selectedNodes.map(node => node.data);
+		 var id= selectedData.map(node => node.editId);
+			if(id){
+				$.ajax({
+					type : "POST",
+					url : "view-salary-revision-delete?id=" + id,
+					success : function(response) {
+						if (response.message == "Success") { 
+							closeNav();
+							$("#messageParagraph").text(
+							"Data Deleted successfully"); 
+							$("#msgOkModal").removeClass("btn3");
+							$("#msgOkModal").addClass("btn1");
+							$("#msgModal").modal('show');
+						}
+					},
+					error : function(data) {
+						console.log(data);
+					}
+				})
+}
+
+	}
+	function getPeriod() {
+		var empName = $("#fID").val();
+		if (empName) {
+
+			$.ajax({
+				type : 'GET',
+				url : 'view-salary-revision-date-ajax?name=' + empName,
+				contentType : false,
+				success : function(response) {
+					if (response.message == "success") {
+						for (var i = 0; i < response.body.length; i++) {
+							$("#period1").val(response.body[i].key);
+							$("#period2").val(response.body[i].name);
+
+						}
+					}
+				},
+				error : function(e) {
+
+				}
+			});
+		} else {
+			$("#period1").val("");
+			$("#period2").val("");
+
+		}
+	}
+
+	function getName() {
+
+		var NameList = $("#empId").val();
+		if (NameList) {
+			$.ajax({
+				type : 'GET',
+				url : 'view-salary-revision-nameDesignation-ajax?name='
+						+ NameList,
+				contentType : false,
+				success : function(response) {
+					if (response.message == "success") {
+						console.log(response);
+						for (var i = 0; i < response.body.length; i++) {
+							$("#name").val(response.body[i].key);
+							$("#pdesg").val(response.body[i].name);
+							$("#band").val(response.body[i].code);
+
+						}
+					}
+				},
+				error : function(e) {
+
+				}
+			});
+		} else {
+			$("#name").val("");
+			$("#pdesg").empty();
+
+			var option3 = $("<option></option>");
+			$(option3).val(null);
+			$(option3).html("Select");
+			$("#pdesg").append(option3);
+
+		}
+
+	}
+
+	function closeNav() {
+		var userid = $("#sessionId").val();
+
+		agGrid.simpleHttpRequest({
+			url : "view-salary-revision-view?userid=" + userid,
+		}).then(function(data) {
+			gridOptions.api.setRowData(data);
+		});
+		
+		$("#dept").attr('disabled',false);
+		$("#subDept").attr('disabled',false);
+		$("#empId").attr('disabled',false);
+		$("#pdesg").attr('disabled',true);
+		$("#sdept").addClass("select");
+		$("#ssdept").addClass("select");
+		$("#semp").addClass("select");
+		$('#delete').attr('disabled', true);
+		$("#empId").val("");
+		$("#name").val("");
+		$("#pdesg").val("");
+		$("#ndesg").val("");
+		$("#effectiveDate").val("");
+		$("#band").val("");
+		$("#basic").val("");
+		$("#hra").val("");
+		$("#addAllow").val("");
+		$("#lta").val("");
+		$("#medical").val("");
+		$("#other").val("");
+		$("#editId").val("");
+		$("#dept").val("");
+		$("#subDept").val("");
+		$("#ctc").val("");
+
+		$('#delete').show();
+		$('#add').show();
+		$('#searchRowDiv').show();
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main_content").style.width = "100%";
+		//location.reload();
+	}
+	//Open Nav for Exit Management
+	function openNav() {
+		$(".formValidation").remove();
+		document.getElementById("mySidenav").style.cssText = "width: 35%; position: absolute; right:-10px; overflow: hidden; height:auto;";
+		document.getElementById("main_content").style.width = "65%";
+		$("#Cancel").show();
+		$("#save").show();
+		$('#delete').hide();
+		$('#add').hide();
+		$('#searchRowDiv').hide();
+		$("#pdesg").attr('disabled',true);
+	}
+	function getSubDept() {
+		var DeptId = $("#dept").val();
+		//$('.loader').show();
+		if (DeptId) {
+			$.ajax({
+				type : "GET",
+				url : "view-salary-revision-getSubDepartmentByDept?DeptId="
+						+ DeptId,
+				contentType : false,
+				success : function(response) {
+					console.log(response);
+					if (response.message == "success") {
+						//$('.loader').hide();
+
+						$("#subDept").empty();
+						$("#subDept")
+								.append("<option value=''>Select</option>");
+						$("#empId").empty();
+						$("#empId")
+								.append("<option value=''>Select</option>");
+
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#subDept").append(option);
+						}
+					}
+				},
+				error : function(data) {
+					console.log(data);
+					$("#subDept").empty();
+					$("#subDept").append("<option value=''>Select</option>");
+
+				}
+			})
+		} else {
+			$("#subDept").empty();
+			$("#subDept").append("<option value=''>Select</option>");
+		}
+
+	}
+	function getSubDeptEdit(subDeptId) {
+		var  DeptId = $("#dept").val();
+		if (DeptId) {
+			$.ajax({
+				type : "GET",
+				url : "view-salary-revision-getSubDepartmentByDept?DeptId="
+						+ DeptId,
+				contentType : false,
+				success : function(response) {
+					console.log(response);
+					if (response.message == "success") {
+
+						$("#subDept").empty();
+						$("#subDept")
+								.append("<option value=''>Select</option>");
+						$("#empId").empty();
+						$("#empId")
+								.append("<option value=''>Select</option>");
+
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#subDept").append(option);
+						}
+						$("#subDept").val(subDeptId);
+					}
+				},
+				error : function(data) {
+					console.log(data);
+					$("#subDept").empty();
+					$("#subDept").append("<option value=''>Select</option>");
+
+				}
+			})
+		} else {
+			$("#subDept").empty();
+			$("#subDept").append("<option value=''>Select</option>");
+		}
+
+	}
+	function getEmpListBySubDept() {
+		var subDeptId = $("#subDept").val();
+		$('.loader').show();
+		if (subDeptId) {
+			$("#empId").val("");
+			$.ajax({
+				type : "GET",
+				url : "view-salary-revision-getEmpListBySubDept?subDeptId="
+						+ subDeptId,
+				contentType : false,
+				success : function(response) {
+					console.log(response);
+					if (response.message == "success") {
+						$('.loader').hide();
+
+						$("#empId").empty();
+						$("#empId")
+								.append("<option value=''>Select</option>");
+
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].name);
+							$(option).html(response.body[i].name);
+							$("#empId").append(option);
+						}
+					}
+				},
+				error : function(data) {
+					console.log(data);
+					$("#empId").empty();
+					$("#empId").append("<option value=''>Select</option>");
+
+				}
+			})
+		} else {
+			$("#empId").empty();
+			$("#empId").append("<option value=''>Select</option>");
+		}
+
+	}
+	
+	 function check(fieldId) {   
+			var myField = document.getElementById("ctc")
+			 var reg = /^\d{0,8}(\.\d{0,2})?$/;   
+			 if (reg.test(myField.value))
+			 {       
+				 $("#" + fieldId).val();
+				 reg = '';  
+			 }else{        
+				 $("#" + fieldId).val(null);    
+				 }
+			 } 
+	 function check1(fieldId) {   
+			var myField = document.getElementById("basic")
+			 var reg = /^\d{0,8}(\.\d{0,2})?$/;   
+			 if (reg.test(myField.value))
+			 {       
+				 $("#" + fieldId).val();
+				 reg = '';  
+			 }else{        
+				 $("#" + fieldId).val(null);    
+				 }
+			 }
+	 
+	 function check2(fieldId) {   
+			var myField = document.getElementById("hra")
+			 var reg = /^\d{0,8}(\.\d{0,2})?$/;   
+			 if (reg.test(myField.value))
+			 {       
+				 $("#" + fieldId).val();
+				 reg = '';  
+			 }else{        
+				 $("#" + fieldId).val(null);    
+				 }
+			 }
+	 
+	 function check3(fieldId) {   
+			var myField = document.getElementById("addAllow")
+			 var reg = /^\d{0,8}(\.\d{0,2})?$/;   
+			 if (reg.test(myField.value))
+			 {       
+				 $("#" + fieldId).val();
+				 reg = '';  
+			 }else{        
+				 $("#" + fieldId).val(null);    
+				 }
+			 }
+	 function check4(fieldId) {   
+			var myField = document.getElementById("conve")
+			 var reg = /^\d{0,8}(\.\d{0,2})?$/;   
+			 if (reg.test(myField.value))
+			 {       
+				 $("#" + fieldId).val();
+				 reg = '';  
+			 }else{        
+				 $("#" + fieldId).val(null);    
+				 }
+			 }
+	 function check5(fieldId) {   
+			var myField = document.getElementById("other")
+			 var reg = /^\d{0,8}(\.\d{0,2})?$/;   
+			 if (reg.test(myField.value))
+			 {       
+				 $("#" + fieldId).val();
+				 reg = '';  
+			 }else{        
+				 $("#" + fieldId).val(null);    
+				 }
+			 }
+	
+	function getEmpList(empid) {
+			$.ajax({
+				type : "GET",
+				url : "view-salary-revision-getEmployeeList",
+				contentType : false,
+				success : function(response) {
+					console.log(response);
+					if (response.message == "success") {
+
+						$("#empId").empty();
+						$("#empId")
+								.append("<option value=''>Select</option>");
+
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].key);
+							$("#empId").append(option);
+						}
+						$("#empId").val(empid);
+					}
+				},
+				error : function(data) {
+					console.log(data);
+					$("#empId").empty();
+					$("#empId").append("<option value=''>Select</option>");
+
+				}
+			})
+
+	}
+</script>
+
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div id="main_content">
+							<!-- 	<div class="row">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label> Financial Year</label>
+										<div class="select">
+											<select id="fID" class="form-control" onchange="getPeriod()">
+												<option value="">--Select--</option>
+												<option th:each="c,iter:${financialYr}" th:value="${c.key}"
+													th:text="${c.name}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<div class="form-group">
+										<label></label> <input id="period1" class="form-control"
+											readonly>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<div class="form-group">
+										<label></label> <input id="period2" class="form-control"
+											readonly>
+									</div>
+								</div>
+								</div> -->
+							<div class="d-flex justify-content-between">
+								<div class="btn-hs">
+									<div class="font-design" id="totalReq">Employee Salary
+										Details</div>
+								</div>
+								<div id="searchRowDiv">
+									<div class="input-style">
+										<input type="text" placeholder="Search.." name="search"
+											class="searchboxinput" onkeyup="cancelBar()"
+											oninput="onQuickFilterChanged()" id="quickFilter"
+											autocomplete="off">
+										<div class="searchicon">
+											<a href="javascript:void(0)"><span
+												style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+												id="closeKey"
+												onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+												class="close_i"><i class="ti-close srchicon"></i></span></a><a
+												href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+										</div>
+									</div>
+								</div>
+								<div class="buttonsec btn-hs" id="btndiv">
+									<button class="delete-btn" id="delete"
+										onclick="deleteDetails()">Delete</button>
+									<button class="new-btn" id="add" onclick="openNav()">New</button>
+								</div>
+							</div>
+
+
+
+
+							<div id="mySidenav" class="sidenav">
+								<div class="slidebox">
+									<div class="row">
+										<div class="col-md-10 edit">UPDATE SALARY AND
+											DESIGNATION</div>
+										<input type="hidden" id="sessionId" th:value="${userId}" />
+										<div class="col-md-2">
+											<div class="arrow">
+												<a href="javascript:void(0)" class="closebtn"
+													onclick="closeNav()"><i class="ti-arrow-right"></i></a>
+											</div>
+										</div>
+										<div class="col-md-12 buttonsec btn-hs">
+											<button class=cancel-btn id="Cancel" onclick="closeNav()">Cancel</button>
+											<button class="save-btn" type="submit" id="save" value="add"
+												onclick="saveData()">Save</button>
+										</div>
+									</div>
+									<!-- -------------------------------Travels--------------------------------------------------------- -->
+									<input type="hidden" id="editId">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Department</label>
+												<div class="select" id="sdept">
+													<select id="dept" onblur="removeValid(event)"
+														class="form-control fromtxt" onchange="getSubDept();">
+														<option value="">--Select--</option>
+														<option th:each="c,iter:${department}" th:value="${c.key}"
+															th:text="${c.name}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Sub Department</label>
+												<div class="select" id="ssdept">
+													<select id="subDept" onblur="removeValid(event)"
+														class="form-control fromtxt"
+														onchange="getEmpListBySubDept();">
+														<option value="">--Select--</option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Employee ID</label>
+												<div class="select" id="semp">
+													<select id="empId" onblur="removeValid(event)"
+														class="form-control" onchange="getName()">
+														<option value="">--Select--</option>
+														<option th:each="c,iter:${EmployeeList}"
+															th:value="${c.key}" th:text="${c.key}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Employee Name</label> <input id="name"
+													class="form-control" readonly>
+											</div>
+										</div>
+
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" disabled="disabled">
+												<label>Present Designation</label> <select id="pdesg"
+													class="form-control fromtxt">
+													<option th:each="c,iter:${Designation}" th:value="${c.key}"
+														th:text="${c.name}"></option>
+												</select>
+											</div>
+										</div>
+
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>New Designation</label>
+												<div class="select">
+													<select id="ndesg" onblur="removeValid(event)"
+														class="form-control fromtxt">
+														<option value="">--Select--</option>
+														<option th:each="c,iter:${Designation}"
+															th:value="${c.key}" th:text="${c.name}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Band/Grade</label>
+												<div class="select">
+													<select id="band" onblur="removeValid(event)">
+														<option value="">--Select--</option>
+														<option th:each="c,iter:${bandType}" th:value="${c.key}"
+															th:text="${c.name}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group calendar_box">
+												<label>Effective Date</label> <input type="text"
+													id="effectiveDate" autocomplete="off" class="form-control"
+													onblur="removeValid(event)"
+													th:attr="onkeyup=|formatDate('effectiveDate','${session.DATEFORMAT_JS}')|"
+													readonly> <i class="ti-calendar picker_calendar"
+													id="effectiveDateCalendar"></i>
+											</div>
+										</div>
+
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Gross Salary</label> <input type="text" id="ctc"
+														autocomplete="off" class="form-control"
+														onkeyup="check('ctc')" onblur="removeValid(event)"
+														maxLength="10">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Basic</label> <input type="text" id="basic"
+														autocomplete="off" class="form-control"
+														onkeyup="check1('basic')" onblur="removeValid(event)"
+														maxLength="10">
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>House Rent Allowance(HRA)</label> <input type="text"
+														id="hra" autocomplete="off" class="form-control"
+														onkeyup="check2('hra')" onblur="removeValid(event)"
+														maxLength="10">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Additional Allowance</label> <input type="text"
+														id="addAllow" autocomplete="off" class="form-control" onkeyup="check3('addAllow')" onblur="removeValid(event)" maxLength="10">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Conveyance Allowance</label> <input type="text"
+														id="conve" autocomplete="off" class="form-control"
+														onkeyup="check4('conve')" onblur="removeValid(event)"
+														maxLength="10">
+												</div>
+											</div>
+										</div>
+ 
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Medical Allowance</label> <input type="text"
+														id="medical" autocomplete="off" class="form-control"
+														onkeyup="check3('medical')" onblur="removeValid(event)"
+														maxLength="10">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Washing Allowance</label> <input type="text"
+														id="washAllow" autocomplete="off" class="form-control"
+														onkeyup="check5('washAllow')" onblur="removeValid(event)"
+														maxLength="10">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Leave Travel Allowance(LTA)</label> <input type="text"
+														id="lta" autocomplete="off" class="form-control"
+														onkeyup="check5('lta')" onblur="removeValid(event)"
+														maxLength="10">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Skill Development</label>
+													 <input type="text" id="skillDev"
+														autocomplete="off" class="form-control" onkeyup="check5('skillDev')" onblur="removeValid(event)" maxLength="10">
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="form-group">
+													<label>Other</label>
+													 <input type="text" id="other"
+														autocomplete="off" class="form-control" onkeyup="check5('other')" onblur="removeValid(event)" maxLength="10">
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+							<div id="myGrid" style="width: 100%; height: 500px;"
+								class="ag-theme-alpine"></div>
+						</div>
+
+					</div>
+					<!-- ------------------------------------------------Modal-------------------------------------------------------------------------- -->
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
