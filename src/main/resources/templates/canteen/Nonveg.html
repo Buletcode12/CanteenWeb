@@ -190,7 +190,7 @@
 		var gridDiv = document.querySelector('#myGrid');
 		new agGrid.Grid(gridDiv, gridOptions);
 		agGrid.simpleHttpRequest({
-			url : "menu-throughAjax"
+			url : "nonveg-throughAjax"
 		}).then(function(data) {
 			var len = data.length;
 			$('#totalReq').find('span').html(len);
@@ -244,7 +244,7 @@
 
 			},
 			{
-				headerName : 'Item Id',
+				headerName : 'NonVeg Id',
 				field : "itemId",
 				width : 100,
 				cellRenderer : function(params) {
@@ -255,7 +255,7 @@
 			},
 
 			{
-				headerName : "Item Name",
+				headerName : "Cumbo Name",
 				field : "itemName",
 				width : 150,
 				cellStyle : {
@@ -267,7 +267,7 @@
 						+ '</div>';
 		      	}
 			}, {
-				headerName : "Price",
+				headerName : "NonVeg Thali",
 				field : "price",
 				cellStyle : {
 					textAlign : 'right'
@@ -412,7 +412,7 @@
 		$('#status').val("");
 
 		agGrid.simpleHttpRequest({
-			url : "menu-throughAjax"
+			url : "nonveg-throughAjax"
 		}).then(function(data) {
 			gridOptions.api.setRowData(data);
 		});
@@ -450,7 +450,7 @@
 
 		$.ajax({
 			type : "GET",
-			url : "menu-edit?id=" + itemId,
+			url : "nonveg-edit?id=" + itemId,
 			async : false,
 			success : function(response) {
 				console.log("response------" + JSON.stringify(response));
@@ -589,15 +589,15 @@
 		if (validation) {
 			$.ajax({
 				type : "POST",
-				url : "menu-add-dtls",
+				url : "nonveg-add-dtls",
 				contentType : "application/json",
 				data : JSON.stringify(obj),
 				success : function(response) {
 					if (response.message == "Success") {
-						swal("Menu added successfully!", " ", "success");
+						swal("nonveg added successfully!", " ", "success");
 						cancelBtn();
 						agGrid.simpleHttpRequest({
-							url : "menu-throughAjax"
+							url : "nonveg-throughAjax"
 						}).then(function(data) {
 							gridOptions.api.setRowData(data);
 						});
@@ -619,12 +619,12 @@
 
 		$.ajax({
 			type : "GET",
-			url : "menu-delete-id?id=" + deleteId,
+			url : "nonveg-delete-id?id=" + deleteId,
 			success : function(response) {
 				if (response.message == "Success") {
-					swal("Menu deleted successfully!", " ", "success");
+					swal("nonveg deleted successfully!", " ", "success");
 					agGrid.simpleHttpRequest({
-						url : "menu-throughAjax"
+						url : "nonveg-throughAjax"
 					}).then(function(data) {
 						gridOptions.api.setRowData(data);
 					});
@@ -641,7 +641,7 @@
 		var clubMemberId = $('#clubmember').val();
 		$.ajax({
 			type : "GET",
-			url : "menu-getMemberDetails?id=" + subcategry,
+			url : "nonveg-getMemberDetails?id=" + subcategry,
 			async : false,
 			success : function(response) {
 				//console.log("response------" + JSON.stringify(response));
@@ -658,7 +658,7 @@
 		var categry = $('#categry').val();
 		$.ajax({
 			type : "GET",
-			url : "menu-getIncentiveDetails?id=" + categry,
+			url : "nonveg-getIncentiveDetails?id=" + categry,
 			async : false,
 			success : function(response) {
 				//console.log("response------" + JSON.stringify(response));
@@ -775,7 +775,7 @@
 					<div class="d-flex justify-content-between">
 						<div class="col-md-2  btn-hs">
 							<div class="font-design" id="totalReq">
-								ALL Menu(<span></span>)
+								ALL nonveg(<span></span>)
 							</div>
 						</div>
 						<div class="col-md-4  btn-hs" id="searchRowDiv">
@@ -801,7 +801,7 @@
 							<!-- <input type="button" class="btn2" id="action" value="Action"
 									 readonly> -->
 
-							<input type="button" class="btn1_new" id="add" value="Add Menu" onclick="newBtn()" readonly>
+							<input type="button" class="btn1_new" id="add" value="Add nonveg" onclick="newBtn()" readonly>
 						</div>
 					</div>
 
@@ -813,10 +813,10 @@
 							<div class="innerstickybg">
 								<div class="d-flex justify-content-between" id="main">
 									<div class="col-md-3" id="idDiv">
-										Menu ID: <span id="itemId"></span>
+										Nonveg ID: <span id="itemId"></span>
 									</div>
 									<div>
-										<span class="taskInfo"> Menu Information</span>
+										<span class="taskInfo"> Nonveg Information</span>
 									</div>
 
 
@@ -838,7 +838,7 @@
 									<!-- Search Filter Div Start-->
 									<div class="col-md-6">
 										<div class="form-group">
-											<label>Item Name</label> <input type="text"
+											<label>Cumbo Name</label> <input type="text"
 												class="form-control" id="itemName"
 												placeholder="Item Name"> <span
 												id="errmsg_remark"></span>
@@ -846,7 +846,7 @@
 									</div>
 									<div class="col-md-6">
 										<div class="form-group">
-											<label>Price</label> <input type="text"
+											<label>Non-Veg Thali</label> <input type="text"
 												class="form-control" id="price"
 												placeholder="Price"> <span
 												id="errmsg_remark"></span>
@@ -904,7 +904,7 @@
 										style="margin-bottom: 10px;">
 
 										<div class="form-group">
-											<label>Category</label>
+											<label>Categry</label>
 											<div class="select">
 												<select id="categry" class="form-control" onchange="getIncentiveStatus()">
 													<option value="">--Select--</option>
@@ -918,7 +918,7 @@
 
 									<div class="col-md-6">
 										<div class="form-group">
-											<label>Sub Category</label>
+											<label>Sub Categry</label>
 											<div class="select">
 												<select id="subcategry" class="form-control" onchange="clubMemberGetDetail()">
 													<option value="">--Select--</option>
@@ -947,7 +947,7 @@
 									
 									
 										<div class="col-md-6">
-										<div class="form-group">
+									<!-- 	<div class="form-group">
 											<label>Active</label>
 											<div class="select">
 												<select id="status" class="form-control">
@@ -956,7 +956,7 @@
 													<option value="0">Inactive</option>
 												</select>
 											</div>
-										</div>
+										</div> -->
 									</div>
 
 								</div>
