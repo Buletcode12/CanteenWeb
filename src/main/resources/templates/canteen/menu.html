@@ -507,83 +507,7 @@
 
 		var validation = true;
 
-		/* if (obj.categnnkry == null || obj.categry == "") {
-
-			validation = false;
-			$("#errmsg_name").css('color', 'red');
-			$("#errmsg_name").css('font-size', '10px');
-			$("#errmsg_name").html("Incentive name Required").show().fadeOut(
-					6000);
-			return validation;
-		}
-		if (obj.incentivecode == null || obj.incentivecode == "") {
-
-			validation = false;
-			$("#errmsg_code").css('color', 'red');
-			$("#errmsg_code").css('font-size', '10px');
-			$("#errmsg_code").html("Incentive code Required").show().fadeOut(
-					6000);
-			return validation;
-		}
-		if (obj.rangefrom == null || obj.rangefrom == "") {
-
-			validation = false;
-			$("#errmsg_rangform").css('color', 'red');
-			$("#errmsg_rangform").css('font-size', '10px');
-			$("#errmsg_rangform").html("Effective rangeto required").show()
-					.fadeOut(6000);
-			return validation;
-		}
-		if (obj.rangeto == null || obj.rangeto == "") {
-
-			validation = false;
-			$("#errmsg_rangeto").css('color', 'red');
-			$("#errmsg_rangeto").css('font-size', '10px');
-			$("#errmsg_rangeto").html("Effective rangeform required").show()
-					.fadeOut(6000);
-			return validation;
-		}
-
-		if (obj.uomtype == null || obj.uomtype == "") {
-
-			validation = false;
-			$("#errmsg_uomtype").css('color', 'red');
-			$("#errmsg_uomtype").css('font-size', '10px');
-			$("#errmsg_uomtype").html("Incentive uomtype required").show()
-					.fadeOut(6000);
-			return validation;
-		}
-
-		if (obj.remarkdetail == null || obj.remarkdetail == "") {
-
-			validation = false;
-			$("#errmsg_remark").css('color', 'red');
-			$("#errmsg_remark").css('font-size', '10px');
-			$("#errmsg_remark").html("Incentive remark required").show()
-					.fadeOut(6000);
-			return validation;
-		}
-		if (obj.fromDate == null || obj.fromDate == "") {
-
-			validation = false;
-			$("#errmsg_fdate").css('color', 'red');
-			$("#errmsg_fdate").css('font-size', '10px');
-			$("#errmsg_fdate").html("Effective from date required").show()
-					.fadeOut(6000);
-			return validation;
-		}
-
-		if (obj.toDate == null || obj.toDate == "") {
-
-			validation = false;
-			$("#errmsg_sdate").css('color', 'red');
-			$("#errmsg_sdate").css('font-size', '10px');
-			$("#errmsg_sdate").html("Effective to date required").show()
-					.fadeOut(6000);
-			return validation;
-		} */
 		
-		/* FORM VALIDATION ENDS*/
 
 		/* FORM VALIDATION ENDS*/
 		if (validation) {
@@ -616,6 +540,7 @@
 
 	function deleteIncentive() {
 		//console.log("delete ids--------------"+deleteId);
+		alert("fsdc")
 
 		$.ajax({
 			type : "GET",

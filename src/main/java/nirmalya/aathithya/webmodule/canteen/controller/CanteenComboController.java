@@ -10,10 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -89,40 +91,42 @@ public class CanteenComboController {
 
 }
 	
+	@SuppressWarnings("unchecked")
+	@PostMapping("canteen-combo-add-dtls")
+	public @ResponseBody JsonResponse<Object> addIncentive(@RequestBody WebMenuModel webMenuModel, Model model,
+	        HttpSession session) {
 
-	     //Add
-		@SuppressWarnings("unchecked")
-		@PostMapping("canteen-combo-add-dtls")
-		public @ResponseBody JsonResponse<Object> addIncentive(@RequestBody List<WebMenuModel> webMenuModel, Model model,
-				HttpSession session) {
+	    logger.info("Method : addincentivesDetails starts");
 
-			logger.info("Method : addincentivesDetails starts" + webMenuModel);
+	    // The 'webMenuModel' parameter now contains the data sent in the request payload as a List of WebMenuModel objects.
 
-			System.out.println("resp web controller-----------------------------------" + webMenuModel);
+	    System.out.println("Received WebMenuModel data:" + webMenuModel);
+//	    for (WebMenuModel menuModel : webMenuModel) {
+//	        System.out.println(menuModel.toString());
+//	        // You can perform any necessary operations with each WebMenuModel object here.
+//	    }
 
-			JsonResponse<Object> resp = new JsonResponse<Object>();
+	    JsonResponse<Object> resp = new JsonResponse<Object>();
 
-			try {
+	    try {
+	        // Assuming you are making a REST API call using a RestClient to another service to process the data.
+	        resp = restClient.postForObject(env.getcanteenUrl() + "restcomboadd", webMenuModel, JsonResponse.class);
+	    } catch (RestClientException e) {
+	        e.printStackTrace();
+	    }
 
-				resp = restClient.postForObject(env.getcanteenUrl() + "restcomboadd",  webMenuModel, JsonResponse.class);
+	    if (resp.getMessage() == "") {
+	        resp.setMessage("Success");
+	    }
+	    logger.info("Method : addincentivesDetails ends" + resp);
 
-			} catch (RestClientException e) {
+	    return resp;
+	}
 
-				e.printStackTrace();
-			}
-
-			if (resp.getMessage() == "") {
-				resp.setMessage("Success");
-			}
-			logger.info("Method : addincentivesDetails ends" + resp);
-
-			return resp;
-		}
-		
 
 		  //View
 		@SuppressWarnings("unchecked")
-		@GetMapping("canteen-combo-throughAjax")
+		@GetMapping("canteen-combo/canteen-item-list")
 		public @ResponseBody List<WebMenuModel> viewItemList(HttpSession session , String catId ,String subCatId ,String variant ) {
 
 			logger.info("Method : viewItemList starts"+variant);
@@ -130,7 +134,7 @@ public class CanteenComboController {
 			JsonResponse<List<WebMenuModel>> resp = new JsonResponse<List<WebMenuModel>>();
 
 			try {
-				resp = restClient.getForObject(env.getcanteenUrl() + "restViewCombo?CatId="+catId+"&SubCatId="+subCatId+"&variant="+variant, JsonResponse.class);
+				resp = restClient.getForObject(env.getcanteenUrl() + "rest-canteen-item-list?CatId="+catId+"&SubCatId="+subCatId+"&variant="+variant, JsonResponse.class);
 			} catch (RestClientException e) {
 				e.printStackTrace();
 			}
@@ -152,5 +156,172 @@ public class CanteenComboController {
 			return resp.getBody();
 		}
 		
+		
+		//View
+		@SuppressWarnings("unchecked")
+		@GetMapping("canteen-combo-all-throughAjax")
+		public @ResponseBody List<WebMenuModel> viewIncentive(HttpSession session) {
+
+			logger.info("Method : viewcomboallDetails starts");
+
+			JsonResponse<List<WebMenuModel>> resp = new JsonResponse<List<WebMenuModel>>();
+
+			try {
+				resp = restClient.getForObject(env.getcanteenUrl() + "restViewAllDetails", JsonResponse.class);
+			} catch (RestClientException e) {
+				e.printStackTrace();
+			}
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			List<WebMenuModel> manageincentiveModel = mapper.convertValue(resp.getBody(),
+					new TypeReference<List<WebMenuModel>>() {
+					});
+
+			resp.setBody(manageincentiveModel);
+			System.out.println("resp.getBody()-----------" + resp.getBody());
+
+			logger.info("Method : viewcomboallDetails ends");
+			return resp.getBody();
+		}
+		
+		
+
+		 /* //View
+		@SuppressWarnings("unchecked")
+		@GetMapping("canteen-combo-rowData")
+		public @ResponseBody List<WebMenuModel> viewRowdata(HttpSession session , String itemId ) {
+
+			logger.info("Method : viewRowdata starts"+itemId);
+
+			JsonResponse<List<WebMenuModel>> resp = new JsonResponse<List<WebMenuModel>>();
+
+			try {
+				resp = restClient.getForObject(env.getcanteenUrl() + "viewRowdata?itemId="+itemId, JsonResponse.class);
+			} catch (RestClientException e) {
+				e.printStackTrace();
+			}
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			List<WebMenuModel> manageincentiveModel = mapper.convertValue(resp.getBody(),
+					new TypeReference<List<WebMenuModel>>() {
+					});
+
+			resp.setBody(manageincentiveModel);
+			System.out.println("resp.getBody()-----------" + resp.getBody());
+			
+			if(resp.getMessage() ==null) {
+				resp.setMessage("Success");
+			}
+
+			logger.info("Method : viewRowdata ends"+resp);
+			return resp.getBody();
+		}*/
+		
+		//searchin
+		@SuppressWarnings("unchecked")
+		@PostMapping(value = { "canteen-combo-menu-list" })
+		public @ResponseBody JsonResponse<WebMenuModel> getProductAutoSearchList(Model model,
+				@RequestBody String searchValue, BindingResult result, HttpSession session) {
+			logger.info("Method : getProductAutoSearchList starts");
+			 System.out.println("QuotationNewModel"+searchValue);
+			JsonResponse<WebMenuModel> res = new JsonResponse<WebMenuModel>();
+			String userId = (String) session.getAttribute("USER_ID");
+			String userType = (String) session.getAttribute("USER_ROLETYPE");
+			System.out.println("==userid====" + userId);
+			System.out.println("==user_roles====" + userType);
+			try {
+
+				res = restClient.getForObject(env.getcanteenUrl() + "getProductSList?id=" + searchValue,
+						JsonResponse.class);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			if (res.getCode() != null) {
+				res.setCode("success");
+			} else {
+				res.setCode("Unsuccess");
+			}
+			System.out.println("RESPONSE@@" + res);
+			logger.info("Method : getProductAutoSearchList ends");
+			return res;
+		}
+		
+		
+		// Edit  
+		@SuppressWarnings("unchecked")
+		@GetMapping("canteen-combo-edit")
+		public @ResponseBody JsonResponse<List<WebMenuModel>> editcanteencombo(Model model,
+				@RequestParam String id, HttpSession session) {
+
+			logger.info("Method : editcanteencombo starts" + id);
+
+			JsonResponse<List<WebMenuModel>> jsonResponse = new JsonResponse<List<WebMenuModel>>();
+
+			try {
+				jsonResponse = restClient.getForObject(env.getcanteenUrl() + "editcanteencombo?id=" + id,
+						JsonResponse.class);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			ObjectMapper mapper = new ObjectMapper();
+			
+			List<WebMenuModel> manageincentiveModel = mapper.convertValue(jsonResponse.getBody(),
+					new TypeReference<List<WebMenuModel>>() {
+					});
+
+			
+			System.out.println("###" + manageincentiveModel);
+			jsonResponse.setBody(manageincentiveModel);
+
+			if (jsonResponse.getMessage() != null && jsonResponse.getMessage() != "") {
+
+			} else {
+				jsonResponse.setMessage("Success");
+			}
+
+			System.out.println("REsp" + jsonResponse);
+			logger.info("Method :editcanteencombo ends");
+			return jsonResponse;
+		}
+		
+		
+		
+		
+		   //Delete
+						@SuppressWarnings("unchecked")
+						@GetMapping("canteen-combo-delete-id")
+						public @ResponseBody JsonResponse<Object> deleteComboDetails(@RequestParam String id,
+								 HttpSession session) {
+							logger.info("Method : deleteComboDetails function starts"+id);
+
+							JsonResponse<Object> res = new JsonResponse<Object>();
+
+							
+
+							try {
+								res = restClient.getForObject(env.getcanteenUrl() + "deleteComboDetails?id=" + id  , JsonResponse.class);
+							} catch (RestClientException e) {
+								e.printStackTrace();
+							}
+
+							String message = res.getMessage();
+							if (message != null && message != "") {
+
+							} else {
+								res.setMessage("Success");
+							}
+							logger.info("Method : deleteComboDetails function Ends");
+							
+							System.out.println("Response"+res);
+							return res;
+				
+}
+
 
 }

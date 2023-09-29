@@ -1,10 +1,397 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
+
+<style>
+.innerstickybg {
+	/*  background: #33b5e5 ; */
+	background: none;
+}
+
+#myReq .ag-row-selected {
+	background: #0076ba !important;
+	color: #fff;
+	text-indent: 10px !important;
+}
+
+.blank_row {
+	height: 10px !important; /* overwrites any other rules */
+	background-color: #FFFFFF;
+}
+
+#myReq .ag-row-selected::before {
+	font-size: 8px;
+	color: #FFF;
+	content: '\e64c';
+	font-family: 'themify';
+	margin-right: 7px;
+	position: relative;
+	top: 3px;
+	right: 4px;
+}
+
+#myGrid .ag-row:first-child {
+	border: 1px solid #007bff;
+}
+
+#myGrid .ag-row-selected {
+	border: 1px solid #007bff !important;
+}
+
+#myGrid .ag-row-selected {
+	border: 1px solid #007bff !important;
+}
+
+.innerstickybg {
+	padding: 10px 15px;
+}
+
+#main {
+	transition: margin-left .5s;
+	padding: 0 10px;
+}
+</style>
+<script>
+
+
+$(function() {
+	
+	alert("hello")
+
+	var gridDiv = document.querySelector('#myGrid');
+	new agGrid.Grid(gridDiv, gridOptions);
+	agGrid.simpleHttpRequest({
+		url : "assign-throughAjax"
+	}).then(function(data) {
+		var len = data.length;
+		$('#totalReq').find('span').html(len);
+
+		gridOptions.api.setRowData(data);
+
+	});
+	$("#myGrid").show();
+	$("#delete").attr("disabled", true);
+});
+	//Multiple Document Upload Ends
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	var columnDefs = [ {
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+	}, {
+		headerName : "Item Id",
+		field : "itemId",
+		width : 200
+
+	}, {
+		headerName : "Item Name",
+		field : "itemName",
+		width : 200
+	}, {
+		headerName : "Price",
+		field : "price",
+		width : 200
+	}, {
+		headerName : "Categry",
+		field : "categry",
+		width : 200
+	}, {
+		headerName : "SubCategry",
+		field : "subcategry",
+		width : 200
+	}, {
+		headerName : "Variant",
+		field : "variant",
+		width : 200
+	}, {
+		headerName : "Status",
+		field : "status",
+		width : 200
+	}
+	];
+
+	var gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 200,
+			height : 20
+		},
+		rowSelection : 'multiple',
+		//onSelectionChanged : onSelectionChanged,
+		onRowClicked : onRowClicked
+	};
+	
+	
+	function onRowClicked(event) {
+		  // Access the selected rows
+		  var selectedRows = gridOptions.api.getSelectedRows();
+
+		  // Do something with the selected rows, for example, log their data
+		  console.log('Selected Rows:', selectedRows);
+
+		  // You can also fetch additional data or perform other actions here
+		}
+
+
+	/* APPLY FOR REQUISITION ENDS */
+
+	// setup the grid after the page has finished loading
+	/* $(document).ready(function() {
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+		gridOptions.api.setRowData();
+
+	}); */
+
+	function cancelbtn() {
+		$('#reqDltBtn').attr('disabled', true);
+		$("#myGrid").show();
+		$("#btn1").hide();
+		$("#demo").hide();
+		$("#hideTbl").show();
+		$("#buttonDetails").show();
+	}
+
+	function onSelectionChanged() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var rowCount = 0;
+		selectedRows.forEach(function(selectedRow, index) {
+			rowCount = rowCount + 1;
+		});
+
+		if (rowCount > 0) {
+			$('#delete').attr('disabled', false);
+			$("#reject").attr('disabled', false);
+			$("#approve").attr('disabled', false);
+		} else {
+			$('#delete').attr('disabled', true);
+			$("#reject").attr('disabled', true);
+			$("#approve").attr('disabled', true);
+		}
+
+	}
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function editId(data) {
+		$("#demo").hide();
+		$("#myGrid").show();
+		$("#delete").show();
+		$("#addId").show();
+		$("#rfqid").show();
+		$("#myGrid1").show();
+		$("#demo1").hide();
+		$("#child").show();
+		$("#upperOne1").show();
+		$("#child1").show();
+		$("#demo2").show();
+	}
+
+	function downloadDocDetails() {
+		var dataset = [];
+		gridOptions1.api
+				.forEachNodeAfterFilterAndSort(function(rowNode, index) {
+					dataset.push(rowNode.data);
+
+				});
+		gridOptions1.api.exportDataAsCsv(dataset);
+	}
+	
+	var selectedRowDataArray = []; 
+
+	// Row click event handler
+	function onRowClicked(event) {
+		 
+
+		
+	    var selectedRowData = event.data;
+	    processRowData(selectedRowData);
+	    selectedRowDataArray.push(selectedRowData);
+	}
+
+	// Function to process the rowData
+	function processRowData(rowData) {
+	    console.log("Selected Row Data before calling saveTableData:", rowData);
+	}
+
+	// Function to save table data
+	
+	function saveTableData(selectedRowData) {
+		
+		console.log("Submitting data:", selectedRowDataArray);
+
+	    $.ajax({
+	        type: "POST",
+	        url: "canteen-combo-add-dtls",
+	        contentType: "application/json",
+	        data: JSON.stringify(selectedRowDataArray), // Send selectedRowData
+	        success: function (response) {
+	            if (response.message == "Success") {
+	                $("#messageParagraph").text("Data Saved Successfully");
+	                $("#msgOkModal").removeClass("btn3");
+	                $("#msgOkModal").addClass("btn1");
+	                $("#msgModal").modal('show');
+
+	                closeSideNav();
+	            }
+	        },
+	        error: function (data) {
+	            // Handle error
+	        }
+	    }); 
+	    
+		// Clear the array after sending the data if needed
+	    selectedRowDataArray = []; 
+	}
+
+	function viewImage(id) {
+		window.open(id, '_blank');
+	}
+
+
+	//Category call
+	function getIncentiveStatusall() {
+
+		alert("hello");
+		//alert(variant)
+
+		$.ajax({
+			type : "GET",
+			url : "assign-throughAjax",
+			async : false,
+			success : function(response) {
+				console.log("response------" + JSON.stringify(response));
+				if (response.body != "") {
+					gridOptions.api.setRowData();
+					gridOptions.api.setRowData(response);
+
+				}
+
+			}
+		})
+	}
+</script>
 <body>
-Ashish Kumar Mishra
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+				
+					<div class="content_padding" id="main">
+					<div class="row">
+				<div class="col-md-4 font-design" id="totalReq">
+								ORDER LIST (<span></span>)
+							</div>
+						<div class="col-md-4  btn-hs" id="searchRowDiv">
+							<div class="input-style">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+
+						</div>
+						</div>
+						</div>
+						<div class="row" id="upperOne">
+							<div class="innerstickybg">
+							
+
+								<!-- Search Filter Div Start-->
+					<div class="row mt-4" id="searchFilterDiv" >
+						<div class="col-md-3 mt-2" >
+							<div class="form-group">
+								<label>Order Status</label>
+								<div class="select">
+									<select id="orderStatusFilter" class="form-control" >
+										<option value="">--Select--</option>
+										<option th:each="c,iter:${orderStatusList}" th:value="${c.key}"
+											th:text="${c.name}"></option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-2 form-group mt-2" id="fdDiv" >
+							<label>From Date</label>
+							<div class="form-group calendar_box">
+								<input type="text" id="fromDate" value="" class="form-control"
+									placeholder="from date.."
+									th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|"
+									readonly> <i class="ti-calendar picker_calendar"
+									id="fromDateCalender"
+									style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						<div class="col-md-2 form-group mt-2" id="tdDiv">
+							<label>To Date</label>
+							<div class="form-group calendar_box">
+								<input type="date" id="toDate" value="" class="form-control"
+									placeholder="to date.."
+									th:attr="onkeyup=|formatDate('toDate','${session.DATEFORMAT_JS}')|"
+									readonly> <i class="ti-calendar picker_calendar"
+									id="toDateCalendar" 
+									style="top: 12px; right: 5px;"></i>
+							</div>
+						</div>
+						<div class="col-md-5 d-flex justify-content-start mt-3" id="searchBtn">
+							<input type="button" class="btn1 mr-10" id="filterDealer"
+								value="Search" onclick="changeData()"
+								style="float: none; position: relative; bottom: -17px;">
+							<input type="button" class="btn1 mr-10" id="resetFilterId"
+								value="Reset" onclick="filterReset()"
+								style="float: none; position: relative; bottom: -17px;">
+						</div>
+
+					</div>
+					<!-- Search Filter Div End-->
+					
+
+							</div>
+						</div>
+						<div id="myGrid"
+							style="width: 100%; height: 350px; margin-top: 100px;"
+							class="ag-theme-alpine"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+	</div>
+	</div>
 </body>
+
 </html>

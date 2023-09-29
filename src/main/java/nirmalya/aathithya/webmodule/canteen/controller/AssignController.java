@@ -47,5 +47,34 @@ public class AssignController {
 		return "canteen/assign";
 
 	}
+	
+	
+	 //View
+	@SuppressWarnings("unchecked")
+	@GetMapping("assign-throughAjax")
+	public @ResponseBody List<WebMenuModel> viewIncentive(HttpSession session) {
+
+		logger.info("Method : viewincentivesDetails starts");
+
+		JsonResponse<List<WebMenuModel>> resp = new JsonResponse<List<WebMenuModel>>();
+
+		try {
+			resp = restClient.getForObject(env.getcanteenUrl() + "restViewAssignDetails", JsonResponse.class);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+		}
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		List<WebMenuModel> manageincentiveModel = mapper.convertValue(resp.getBody(),
+				new TypeReference<List<WebMenuModel>>() {
+				});
+
+		resp.setBody(manageincentiveModel);
+		System.out.println("resp.getBody()-----------" + resp.getBody());
+
+		logger.info("Method : viewincentivesDetails ends");
+		return resp.getBody();
+	}
 
 }

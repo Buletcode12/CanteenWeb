@@ -1,6 +1,7 @@
 package nirmalya.aathithya.webmodule.canteen.model;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -8,12 +9,28 @@ public class WebMenuModel {
 	
 	private String itemId;
 	private String itemName;
+	private String comboName;
 	private String price;
 	private String categry;
 	private String subcategry;
 	private String variant;
 	private String status;
+	private String comboId;
 	
+	private List<WebMenuModel> itemList;
+	
+	
+	
+	public WebMenuModel() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public String getComboName() {
+		return comboName;
+	}
+	public void setComboName(String comboName) {
+		this.comboName = comboName;
+	}
 	public String getItemId() {
 		return itemId;
 	}
@@ -56,7 +73,18 @@ public class WebMenuModel {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+	public String getComboId() {
+		return comboId;
+	}
+	public void setComboId(String comboId) {
+		this.comboId = comboId;
+	}
+	public List<WebMenuModel> getItemList() {
+		return itemList;
+	}
+	public void setItemList(List<WebMenuModel> itemList) {
+		this.itemList = itemList;
+	}
 	public String toString() {
 		ObjectMapper mapperObj = new ObjectMapper();
 		String jsonStr;
