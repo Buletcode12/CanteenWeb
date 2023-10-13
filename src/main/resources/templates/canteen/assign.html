@@ -261,6 +261,32 @@ a.addCust {
 }
 </style>
 <script src="../javascript/canteen/assign.js"></script>
+
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+	
+	
+      <script id="rendered-js"> 
+	$(document).ready(function () {
+	  var $tabs = $('#t_draggable2');
+	  $("tbody.t_sortable").sortable({
+		connectWith: ".t_sortable",
+		items: "> tr:not(:first)",
+		appendTo: $tabs,
+		helper: "clone",
+		zIndex: 999990 }).
+	  disableSelection();
+
+	  var $tab_items = $(".nav-tabs > li", $tabs).droppable({
+		accept: ".t_sortable tr",
+		hoverClass: "ui-state-hover",
+		drop: function (event, ui) {return false;} });
+
+	});
+	//# sourceURL=pen.js
+		</script>
+
 <script>
 
 
@@ -546,8 +572,7 @@ a.addCust {
 									</div>
 									
 
-									
-									<div class="col-md-6">
+							<div class="col-md-6">
 										<div class="form-group">
 											<label>Variant</label>
 											<div class="select">
@@ -557,9 +582,22 @@ a.addCust {
 													<option th:each="c,iter:${variantDetails}"
 														th:value="${c.key}" th:text="${c.name}"></option>
 												</select> <span id="errmsg_name"></span>
-									</div>
-							 </div>
-						  </div>		
+									       </div>
+						 	            </div>
+						            </div>			
+									
+						  
+						   <div class="col-lg-6 ">
+								    <div class="form-group">										
+										<label>Combo Name</label>										
+										 <select  multiple data-multi-select-plugin id="comboId"
+												 class="form-control" onchange="getCombo()">							          
+										<option th:each="c,iter:${comboDetails}"
+												 th:value="${c.key}" th:text="${c.name}"></option>
+								        </select>															 
+								    </div>
+							    </div>
+						  	
 					  </div>  
 								
                        
@@ -576,52 +614,10 @@ a.addCust {
 											</div>
 										</div>
 									 <div id="suggesstion-box11_" class="sugg-cls"></div>
-								 </div>
-
-							<!-- 	
-			                   <div class="col-lg-6">
-										<div class="autocomplete"
-											style="width: auto !important; margin-top: 0px;">
-											<div class="form-group">
-												<label>Combo Name</label> <input type="text"
-													id="comboName" placeholder="Search Combo Name"
-													class="form-control" onkeyup='getComboList();'><input
-													type="hidden" id="comboId">
-													<span id="errmsghhg_producn"></span>
-											</div>
-										</div>
-										<div id="suggesstion-box21_" class="sugg-cls"></div>
-									</div>	
-									 -->
-							<!-- 		 
-								<div class="col-md-6">
-										<div class="form-group">
-											<label>Variant</label>
-											<div class="select">
-												<select id="variant" class="form-control"
-													onchange="getIncentiveStatus()">
-													<option value="">--Select--</option>
-													<option th:each="c,iter:${variantDetails}"
-														th:value="${c.key}" th:text="${c.name}"></option>
-												</select> <span id="errmsg_name"></span>
-									       </div>
-							            </div>
-						      </div>	 -->
-									
-									 
-							     <div class="col-lg-4 ">
-								    <div class="form-group">										
-										<label>Combo Name</label>										
-										 <select id="comboId" multiple data-multi-select-plugin 
-												 class="form-control" onkeyup='getIncentiveStatus()();'>								          
-										<option th:each="c,iter:${comboDetails}"
-												 th:value="${c.key}" th:text="${c.name}"></option>
-								        </select>															 
-								    </div>
-							    </div>
+								 </div>																								 							    							    <br>
 						  </div>
 						  						  							
-					     <div class="row mt-4">
+					    <!--  <div class="row mt-4">
 							 <div class="col-md-6" >
 								 <div id="myGrid2"
 							       style="width: 100%; height: 200px; "
@@ -634,8 +630,54 @@ a.addCust {
 							       class="ag-theme-alpine">
 							     </div>
 							 </div> 
-						</div>
-							</div>				
+						</div> -->
+						
+						
+						
+						
+						
+						
+			  <div class="row mt-4">
+				  <div class="col-md-6">
+					  <table class="table tables_ui table-bordered" id="t_draggable1">
+					 
+					<tbody class="t_sortable ui-sortable">
+					    <h5>Order List</h5>
+					   <tr>
+						  <th scope="row"></th>
+					      <th scope="col">Item Id</th>
+					      <th scope="col">Item Name</th>
+					      <th scope="col">Price</th>
+					    </tr>
+					 <tr th:each="b :${book}" class="ui-sortable-handle"> 
+					      <th scope="row"></th>
+					      <td th:text="${b.itemId}"></td>
+					      <td th:text="${b.itemName}"></td>
+					      <td th:text="${b.price}"></td>
+					       
+					      
+					    </tr>
+					 
+					</tbody>
+					
+					</table>
+					</div>
+
+				 <div class="col-md-6">
+						<table class="table tables_ui table-bordered" id="t_draggable2">
+						<tbody class="t_sortable ui-sortable">
+						 <h5>Order Assign</h5>
+						  <tr>
+						  <th scope="row"></th>
+					      <th scope="col"> Id</th>
+					      <th scope="col"> Name</th>
+					      <th scope="col">Price</th>
+					    </tr>				  
+						</tbody>
+						</table>		
+				    </div>
+				</div>
+									</div>				
 				<!-- 	<div id="myGrid"
 							style="width: 100%; height: 350px; margin-top: 100px;"
 							class="ag-theme-alpine"></div>  -->

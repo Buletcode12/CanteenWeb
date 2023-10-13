@@ -129,7 +129,8 @@ var deleteId = "";
 		
 	
 	//************************categry********************* */
-		function getIncentiveStatus(){	
+		function getIncentiveStatus(){
+			
 			 var categry = $('#categry').val();
 			 $.ajax({
 				type : "GET",
@@ -142,51 +143,88 @@ var deleteId = "";
 				}
 			})
 		}
-		
-		
+	
+		function getCombo(){
+			alert("dcsdc")
+		}
 
 	//*******************************Category call**********************
-				var firstFetchedData = []; // Store the first fetched data
+		/*		var firstFetchedData = []; // Store the first fetched data
 									
 					function getIncentiveStatus() {
 					    var catId = $("#categry").val();
 					    var subCatId = $("#subcategry").val();
 					    var variant = $("#variant").val();
-					    
+					      
+					    //d  alert("csdc")
+					   
+					    $.ajax({
+							    type: "GET",
+							    url: "assign/canteen-item-list?catId=" + catId + "&subCatId=" + subCatId + "&variant=" + variant,
+							    async: false,
+							    success: function(response) {
+							        
+							        var items = response;											       
+							        var tbody = $("#t_draggable1 tbody");
+
+							        for (var i = 0; i < items.length; i++) {
+							            var item = items[i];
+							            // Create a new row for each item
+							            var newRow = $("<tr>");
+							            newRow.append("<th scope='row'></th>");
+							            newRow.append("<td>" + item.itemId + "</td>");
+							            newRow.append("<td>" + item.itemName + "</td>");
+							            newRow.append("<td>" + item.price + "</td>");
+							            // You can add more columns or data as needed
+							            tbody.append(newRow);
+							        }
+							    }
+							});
+			    	   }   */
+			    	   
+				 var addedItemIds = [];					
+					function getIncentiveStatus() {
+					    var catId = $("#categry").val();
+					    var subCatId = $("#subcategry").val();
+					    var variant = $("#variant").val();
+					
 					    $.ajax({
 					        type: "GET",
 					        url: "assign/canteen-item-list?catId=" + catId + "&subCatId=" + subCatId + "&variant=" + variant,
 					        async: false,
-					        success: function(response) {
-					            console.log("response-xzfgfdgnf-----" + JSON.stringify(response));
+					        success: function (response) {
+					            var items = response;
+					            var tbody = $("#t_draggable1 tbody");
 					
-					            var assignItemTablelist = gridOptionschaildview.api.getModel().rowsToDisplay.map(rowNode => rowNode.data);
-					            let finalData = [];
+					            for (var i = 0; i < items.length; i++) {
+					                var item = items[i];
+					                if (!addedItemIds.includes(item.itemId)) {
+					                    // Create a new row for each unique item
+					                    var newRow = $("<tr>");
+					                    newRow.append("<th scope='row'></th>");
+					                    newRow.append("<td>" + item.itemId + "</td>");
+					                    newRow.append("<td>" + item.itemName + "</td>");
+					                    newRow.append("<td>" + item.price + "</td>");
+					                    tbody.append(newRow);
 					
-					            if (assignItemTablelist.length > 0) {
-					                // Compare the first fetched data with the second fetched data
-					                
-					                
-					                finalData = response.filter(item => !assignItemTablelist.some(searchItem => {
-					                    return JSON.stringify(item.itemId) === JSON.stringify(searchItem.itemId);
-					                    
-					                }));
-					               
-					            } else {
-					                gridOptionschaildview.api.setRowData(response);
-					                firstFetchedData = response; // Store the first fetched data
-					                
-					            }
-					
-					            if (finalData.length > 0) {
-					                gridOptionschaildview.api.setRowData();
-					                gridOptionschaildview.api.setRowData(assignItemTablelist.concat(finalData));
+					                    // Add the item's ID to the list of added item IDs
+					                    addedItemIds.push(item.itemId);
+					                } else {
+					                    // Handle the case where the item is already in the table (show an error message, for example)
+					                    swal("Already Selected!");
+					                }
 					            }
 					        }
-					  });
-				}
+					    });
+					}
 
-	
+
+    //***********************Combo Function call view  ***********************************/	
+           function getcomboId(){
+			   alert("hello")
+			   
+		   }
+           
 	
 	//******************************View Function***********************	
 	    function getIncentiveStatusall() {
@@ -205,6 +243,8 @@ var deleteId = "";
 				}
 			})
 		} 
+		
+		
 		
 
  //*******************************Auto Search *************************/            
@@ -262,94 +302,46 @@ var deleteId = "";
 			        }
 	       	}
 
-	    function selectAutocompleteValue1(itemid,itemname) {
-		//alert(itemname)
-		   $("#itemName").val(itemname);
-		     totalPrice = 0;
-	         console.log("Serahc", itemDataOnSearch);
-	          //gridOptionschaildview.api.setRowData(itemDataOnSearch);
-					// gridOptionschaildview.api.setRowData(assignItemTablelist.concat(finalData));
-		     itemDataOnSearch = itemDataOnSearch.filter(itm => itm.itemId == itemid);	
-	        //	console.log("Serahc DATA Autocolplete", itemDataOnSearch);
-		          const prices = [];
-		          var allprice = 0 ;
-		       itemDataOnSearch.forEach(item => {
-	             if (item.hasOwnProperty('price')) {
-	              prices.push(item.price);
-	              var intValue = parseInt(prices);
-	              allprice = allprice+intValue;
-	           }
-	          });   
-		 //document.getElementById("allPrice").value = allprice;  
-		 	
-	       if (itemDataOnSearch.length > 0) { 	
-	      	   const assignItemTableData = gridOptionschaildview.api.getModel().rowsToDisplay.map(rowNode => rowNode.data);
-	          if(assignItemTableData.length > 0){
-	        	console.log("dsfsdsdvsdv"+assignItemTableData)
-	        	
-	        	const filteredArray = assignItemTableData.filter(item => itemDataOnSearch.some(searchItem => {
-	        	    	return JSON.stringify(item.itemId) === JSON.stringify(searchItem.itemId);
-	        	  	})
-	        	);
-	        	console.log(filteredArray, "  Duplicate object");
-	        	if(filteredArray.length > 0){
-	        		
-							swal("Already Selected!");
-							
-	          	var totalPrice = 0.0;
-		          filteredArray.forEach(item => {
-	              if (item.hasOwnProperty('price')) {
-	            	totalPrice += parseFloat(item.price)
-	            }
-	          });
-	     	//	document.getElementById("allPrice").value = totalPrice;  				
-	        	} else{
-			        		let gridList = [...assignItemTableData, ...itemDataOnSearch];
-			        		gridOptionschaildview.api.setRowData(gridList);
-			        		//gridOptionschaildassign.api.setRowData(jsondata);
-			     
-				   		     let totalPrice = 0;
-				   		     gridList.forEach(item => {
-				   		       if (item.hasOwnProperty('price')) {
-				   		         const priceValue = parseFloat(item.price); 
-				   		         if (!isNaN(priceValue)) { 
-				   		           totalPrice += priceValue; 
-				   		         }
-				   		       }
-				   		     });
-				   		  //   document.getElementById("allPrice").value = totalPrice.toFixed(2); 
-			        }
-			        }else{
-			        	gridOptionschaildview.api.setRowData(itemDataOnSearch);
-			        }
-		        let gridList = [...assignItemTableData, ...itemDataOnSearch];
-		        $("#suggesstion-box11_").hide(); 
-		    } else {
-		        // Handle the case where itemId is not available
-		        $("#itemId").val("");
-		        $("#itemName").val("");
-		        $("#price").val("");
-		        $("#search").val("");
-		        $("#search").attr('data-procat', "");
-		        $("#suggesstion-box11_").hide();
-		        
-		        itemDataOnSearch.forEach((rowData) => {
-				  rowData.yourCheckboxColumnName = true; // Replace 'yourCheckboxColumnName' with the actual name of your checkbox column
-				});
-		        
-		        gridOptionschaildview.api.setRowData(itemDataOnSearch);
-		    }
-		   
-		}
+
+				 var addedItemIds = []; // To keep track of added item IDs					
+					function selectAutocompleteValue1(itemid, itemname) {
+					    // Check if the item ID is already in the addedItemIds array
+					    if (addedItemIds.includes(itemid)) {
+							$("#suggesstion-box11_").hide();
+					        swal("Item is already selected!");
+					    } else {
+					        // Add the item to the table
+					        $("#itemName").val(itemname);
+					        console.log("Search", itemDataOnSearch);
+					        console.log("Items" + itemDataOnSearch);
+					
+					        var items = itemDataOnSearch;
+					        var tbody = $("#t_draggable2 tbody");
+					
+					        for (var i = 0; i < items.length; i++) {
+					            var item = items[i];
+					            if (item.itemId === itemid) {
+					                // Create a new row for the selected item
+					                var newRow = $("<tr>");
+					                newRow.append("<th scope='row'></th>");
+					                newRow.append("<td>" + item.itemId + "</td>");
+					                newRow.append("<td>" + item.itemName + "</td>");
+					                newRow.append("<td>" + item.price + "</td>");
+					                tbody.append(newRow);
+					
+					                addedItemIds.push(itemid);									           
+					                $("#suggesstion-box11_").hide();
+					            }
+					        }
+					    }
+					}
+
 		  
 		  
 		  
-		  
-		  
-		  
-		  //******************Searching *****************/  
-			 //  let itemDataOnSearch = []; 
-	    //searching
+ //******************Searching *****************/  
+ //  let itemDataOnSearch = []; 
+	/*    //searching
 	     function getComboList() {
 			 // alert("sacsdca")
 			 $("#comboId").val("");
@@ -401,7 +393,8 @@ var deleteId = "";
 							}
 						})
 			        }
-	         	}
+	         	}*/
+ 
  		
 /*// Initialize a variable to accumulate selected combo names
 var accumulatedComboNames = "";
@@ -471,7 +464,7 @@ function selectAutocompleteValue2(comboId, comboName) {
 			
 */
 		
-		var accumulatedComboNames = [];		
+/*		var accumulatedComboNames = [];		
 		function selectAutocompleteValue2(comboId, comboName) {
 		    // Set the value for #comboId
 		    $("#comboId").val(comboId);
@@ -502,7 +495,7 @@ function selectAutocompleteValue2(comboId, comboName) {
 		        accumulatedComboNames.pop(); // Remove the last suggestion
 		        $("#comboName").val(accumulatedComboNames.join(', ')); // Update the field value
 		    }
-		}
+		}*/
 
  
 		    	
