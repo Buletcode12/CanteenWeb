@@ -1,213 +1,106 @@
-
-
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/master}">
 <head>
-<style>
-.hvrbox .hvrbox-layer_top {
-	opacity: 0;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	width: 25%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.3);
-	color: #fff;
-	padding: 15px;
+<style type="text/css">
+.highcharts-exporting-group {
+	display: none;
 }
 
-.btn1 {
-	border: none;
-	border-radius: 7px;
-	font-size: 14px;
-	background-color: #5784c4;
-	color: #fff !important;
-	margin-left: 5px;
-	margin-bottom: 8px;
-	height: 28px;
-	line-height: 12px;
-	float: right;
-	text-transform: uppercase;
-	cursor: pointer;
-	font-weight: bold;
-}
-
-
-
-.btn1_new {
-    width: 130px;
-    border: none;
-    border-radius: 4px;
-    font-size: 13px!important;
-    background: linear-gradient(0deg, rgb(42 22 57) 0%, rgb(88 0 152) 100%) !important;
-    color: #fff!important;
-    margin-left: 5px;
-    margin-bottom: 8px;
-    /* min-width: 70px !important; */
-    height: 33px;
-    line-height: 12px;
-    float: right;
-    box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5), 7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
-    text-transform: uppercase;
-    cursor: pointer;
-    font-weight: 700;
-    padding: 0 5px;
-}
-
-.btn3 {
-	border: none;
-	border-radius: 7px;
-	font-size: 13px;
-	background-color: #ff4b4b;
-	color: #fff !important;
-	margin-left: 5px;
-	margin-bottom: 8px;
-	width: 70px;
-	height: 33px;
-	line-height: 12px;
-	float: right;
-	text-transform: uppercase;
-	cursor: pointer;
-	white-space: normal;
-	font-weight: bold;
-}
-
-.taskInfo {
-	padding-left: 10px;
-	color: #0c63e4;
-}
-
-.rating {
-	float: left;
-}
-
-.rating:not(:checked )>input {
-	position: absolute;
-	top: -9999px;
-	clip: rect(0, 0, 0, 0);
-}
-
-.rating:not(:checked )>label {
-	float: right;
-	width: 1em;
-	padding: 0 .1em;
-	overflow: hidden;
-	white-space: nowrap;
-	cursor: pointer;
-	font-size: 200%;
-	line-height: 1.2;
-	color: rgba(0, 0, 0, 0.6);
-	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating:not(:checked )>label:before {
-	content: '★ ';
-}
-
-.rating>input:checked ~ label {
-	color: #ea0;
-	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating:not(:checked )>label:hover, .rating:not(:checked )>label:hover 
-	 ~ label {
-	color: black;
-	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
-	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
-	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
-	color: #ea0;
-	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating>label:active {
+.autocomplete {
 	position: relative;
-	top: 2px;
-	left: 2px;
+	display: inline-block;
+	width: 100%;
+}
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.fixed-nav-bar {
+  top: 0;
+  z-index: 100;
+  position: fixed;
+  width: 100%;
+}
+/* .fixed-nav-bar {
+ position: fixed;
+ top: 0; left: 0;
+ z-index: 9999;
+ width: 100%;
+ height: 50px;
+ background-color: #00a087;
+} */
+.sugg-cls ul {
+	height: 150px;
+	overflow-x: scroll;
+	position: relative;
 }
 
-.btn-outline-primary {
-	color: #007bff;
-	background-color: rgb(240 243 241/ 90%);
-	background-image: none;
-	border-color: #007bff;
-	cursor: pointer;
-}
-
-.picker_calendar5 {
-	cursor: pointer;
-	position: absolute;
-	bottom: 361px;
-	left: 742px;
-}
-
-.picker_calendar6 {
-	cursor: pointer;
-	position: absolute;
-	bottom: 361px;
-	left: 1132px;
-}
-
-.btnbill {
-	position: absolute;
-	right: 70px;
-	margin-top: -50px;
+ul#autocomplete-list1 {
+	position: relative;
 	z-index: 999;
 }
 
-.btn-primarynew {
-	color: #fff !important;
-	background-color: #0d6efd;
-	border-color: #0d6efd;
+ul#autocomplete-list1 li {
+	position: relative;
+	color: #fff;
+	padding-left: 6px;
+	background-color: #1f57a8;
+	border-bottom: solid 1px #6189c2;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
-.formValidation1 {
-	font-size: 10px;
-	font-weight: 100;
-	color: #ff9e99;
-	background-color: transparent;
+a.addCust {
+	color: #fff;
+}
+
+.slidebox {
+	padding: 14px;
+	margin-top: 0px;
+	margin: 0px 10px;
+}
+
+/* .form-group label {
+	font-size: 12px;
 	position: relative;
-	top: -1px;
-	padding: 3px 0;
+	top: 4px;
+} */
+.holdCls {
+	background-color: rgb(0, 143, 0);
 }
-.ag-header-cell-text {
-    color:white!important;
-}
-.ag-header-viewport{
-    background:linear-gradient(0deg, rgba(87, 132, 196,1) 0%, rgba(12,25,180,1) 100%);
+
+.bg_white {
+	background: #ffffff !important;
 }
 </style>
 <script>
 	$(function() {
 
-		var gridDiv = document.querySelector('#myGrid');
-		new agGrid.Grid(gridDiv, gridOptions);
-		agGrid.simpleHttpRequest({
-			url : "menu-throughAjax"
-		}).then(function(data) {
-			var len = data.length;
-			$('#totalReq').find('span').html(len);
-
-			gridOptions.api.setRowData(data);
-
-		});
-		$("#myGrid").show();
-		$("#delete").attr("disabled", true);
-	});
+			var gridDiv = document.querySelector('#myGrid');
+			new agGrid.Grid(gridDiv, gridOptions);
+			agGrid.simpleHttpRequest({
+				url : "menu-throughAjax"
+			}).then(function(data) {
+				var len = data.length;
+				$('#totalReq').find('span').html(len);
+	
+				gridOptions.api.setRowData(data);
+	
+			});
+			$("#myGrid").show();
+			$("#delete").attr("disabled", true);
+		 });
 
 	$(function() {
-		$('.collapse').on('show.bs.collapse', function() {
-			$(this).siblings('.panel-heading').addClass('active');
-		});
+			$('.collapse').on('show.bs.collapse', function() {
+				$(this).siblings('.panel-heading').addClass('active');
+			});
 
-	})
+	 })
 	//search bar
 
 	function onQuickFilterChanged() {
@@ -246,7 +139,7 @@
 			{
 				headerName : 'Item Id',
 				field : "itemId",
-				width : 100,
+				width : 150,
 				cellRenderer : function(params) {
 					return '<a onclick=editPage("' + params.data.itemId
 							+ ',' + '0' + '") href="javascript:void(0)">'
@@ -257,7 +150,7 @@
 			{
 				headerName : "Item Name",
 				field : "itemName",
-				width : 150,
+				width : 200,
 				cellStyle : {
 					textAlign : 'center'
 				},
@@ -269,6 +162,7 @@
 			}, {
 				headerName : "Price",
 				field : "price",
+				width : 150,
 				cellStyle : {
 					textAlign : 'right'
 				},
@@ -280,7 +174,7 @@
 			}, {
 				headerName : "Categry",
 				field : "categry",
-				width : 100,
+				width : 200,
 				cellStyle : {
 					textAlign : 'center'
 				},
@@ -292,6 +186,7 @@
 			}, {
 				headerName : "Sub Categry",
 				field : "subcategry",
+				width : 200,
 				cellStyle : {
 					textAlign : 'center'
 				},
@@ -303,6 +198,7 @@
 			}, {
 				headerName : "variant",
 				field : "variant",
+				width : 200,
 				cellStyle : {
 					textAlign : 'right'
 				},
@@ -314,6 +210,7 @@
 			}, {
 				headerName : "Active",
 				field : "status",
+				width : 200,
 				cellStyle : {
 					textAlign : 'center'
 				},
@@ -507,8 +404,61 @@
 
 		var validation = true;
 
-		
+		if (obj.itemName == null || obj.itemName == "") {
 
+			validation = false;
+			$("#errmsg_name").css('color', 'red');
+			$("#errmsg_name").css('font-size', '10px');
+			$("#errmsg_name").html("Item name required").show().fadeOut(
+					6000);
+			return validation;
+		}
+		if (obj.price == null || obj.price == "") {
+
+			validation = false;
+			$("#errmsg_price").css('color', 'red');
+			$("#errmsg_price").css('font-size', '10px');
+			$("#errmsg_price").html("Price required").show().fadeOut(
+					6000);
+			return validation;
+		}
+		if (obj.categry == null || obj.categry == "") {
+
+			validation = false;
+			$("#errmsg_categry").css('color', 'red');
+			$("#errmsg_categry").css('font-size', '10px');
+			$("#errmsg_categry").html("Categry name required").show().fadeOut(
+					6000);
+			return validation;
+		}
+		
+		if (obj.subcategry == null || obj.subcategry == "") {
+
+			validation = false;
+			$("#errmsg_subcategry").css('color', 'red');
+			$("#errmsg_subcategry").css('font-size', '10px');
+			$("#errmsg_subcategry").html("Subcategry name required").show().fadeOut(
+					6000);
+			return validation;
+		}
+		if (obj.variant == null || obj.variant == "") {
+
+			validation = false;
+			$("#errmsg_variant").css('color', 'red');
+			$("#errmsg_variant").css('font-size', '10px');
+			$("#errmsg_variant").html("Variant name required").show().fadeOut(
+					6000);
+			return validation;
+		}
+		if (obj.status == null || obj.variant == "") {
+
+			validation = false;
+			$("#errmsg_status").css('color', 'red');
+			$("#errmsg_status").css('font-size', '10px');
+			$("#errmsg_status").html("Status required").show().fadeOut(
+					6000);
+			return validation;
+		}
 		/* FORM VALIDATION ENDS*/
 		if (validation) {
 			$.ajax({
@@ -540,7 +490,7 @@
 
 	function deleteIncentive() {
 		//console.log("delete ids--------------"+deleteId);
-		alert("fsdc")
+		//alert("fsdc")
 
 		$.ajax({
 			type : "GET",
@@ -580,106 +530,106 @@
 	}
 	
 	function getIncentiveStatus(){
-		var categry = $('#categry').val();
-		$.ajax({
-			type : "GET",
-			url : "menu-getIncentiveDetails?id=" + categry,
-			async : false,
-			success : function(response) {
-				//console.log("response------" + JSON.stringify(response));
-				if (response.message == "Success") {
-					$("#incentivecode").val(response.body[0].itemId);
-					//$("#rangeto").val(response.body[0].memberRangeTo);
+			var categry = $('#categry').val();
+			$.ajax({
+				type : "GET",
+				url : "menu-getIncentiveDetails?id=" + categry,
+				async : false,
+				success : function(response) {
+					//console.log("response------" + JSON.stringify(response));
+					if (response.message == "Success") {
+						$("#incentivecode").val(response.body[0].itemId);
+						//$("#rangeto").val(response.body[0].memberRangeTo);
+					}
+	
 				}
-
-			}
-		})
+			})
 	}
 	
 	//country
 	function getStateList() {
-		var cname = $('#categry').val();
-		if (cname) {
-			var option = $("<option></option>");
-			$(option).val(null);
-			$(option).html("Select");
-			//$("#dname").append(option);
-			$.ajax({
-				type : "GET",
-				url : "manage-customer-mstr-stateList?id=" + cname,
-				success : function(response) {
-					if (response.message == "success") {
-						$("#subcategry").empty();
-						var option = $("<option></option>");
-						$(option).val(null);
-						$(option).html("Select");
-						$("#subcategry").append(option);
-						for (var i = 0; i < response.body.length; i++) {
+			var cname = $('#categry').val();
+			if (cname) {
+				var option = $("<option></option>");
+				$(option).val(null);
+				$(option).html("Select");
+				//$("#dname").append(option);
+				$.ajax({
+					type : "GET",
+					url : "manage-customer-mstr-stateList?id=" + cname,
+					success : function(response) {
+						if (response.message == "success") {
+							$("#subcategry").empty();
 							var option = $("<option></option>");
-							$(option).val(response.body[i].key);
-							$(option).html(response.body[i].name);
+							$(option).val(null);
+							$(option).html("Select");
 							$("#subcategry").append(option);
+							for (var i = 0; i < response.body.length; i++) {
+								var option = $("<option></option>");
+								$(option).val(response.body[i].key);
+								$(option).html(response.body[i].name);
+								$("#subcategry").append(option);
+							}
 						}
+					},
+					error : function(e) {
 					}
-				},
-				error : function(e) {
-				}
-			});
+				});
 		} else {
-			$("#subcategry").empty();
-			var option = $("<option></option>");
-			$(option).val(null);
-			$(option).html("Select");
-			$("#subcategry").append(option);
-			$("#subcategry").empty();
-			var option = $("<option></option>");
-			$(option).val(null);
-			$(option).html("Select");
-			//$("#dname").append(option);
-		}
+				$("#subcategry").empty();
+				var option = $("<option></option>");
+				$(option).val(null);
+				$(option).html("Select");
+				$("#subcategry").append(option);
+				$("#subcategry").empty();
+				var option = $("<option></option>");
+				$(option).val(null);
+				$(option).html("Select");
+				//$("#dname").append(option);
+			}
 
 	}
 	
 	//state
 	function getDistDetails(){
-		var cname = $('#subcategry').val();
-		if (cname) { 
-			var option = $("<option></option>");
-			$(option).val(null);
-			$(option).html("Select");
-			//$("#dname").append(option);
-			$.ajax({type : "GET",
-				url : "manage-customer-distList?id="+ cname,
-						success : function(response) {
-							if (response.message == "success") {
-								$("#variant").empty();
-								var option = $("<option></option>");
-								$(option).val(null);
-								$(option).html("Select");
-								$("#variant").append(option);
-								for (var i = 0; i < response.body.length; i++) {
+			var cname = $('#subcategry').val();
+			if (cname) { 
+				var option = $("<option></option>");
+				$(option).val(null);
+				$(option).html("Select");
+				//$("#dname").append(option);
+				$.ajax({type : "GET",
+					url : "manage-customer-distList?id="+ cname,
+							success : function(response) {
+								if (response.message == "success") {
+									$("#variant").empty();
 									var option = $("<option></option>");
-									$(option).val(response.body[i].key);
-									$(option).html(response.body[i].name);
+									$(option).val(null);
+									$(option).html("Select");
 									$("#variant").append(option);
+									for (var i = 0; i < response.body.length; i++) {
+										var option = $("<option></option>");
+										$(option).val(response.body[i].key);
+										$(option).html(response.body[i].name);
+										$("#variant").append(option);
+									}
 								}
+							},
+							error : function(e) { 
 							}
-						},
-						error : function(e) { 
-						}
-					});
-		} else {
-			$("#variant").empty();
-			var option = $("<option></option>");
-			$(option).val(null);
-			$(option).html("Select");
-			$("#variant").append(option);
-			$("#variant").empty();
-			var option = $("<option></option>");
-			$(option).val(null);
-			$(option).html("Select");
-			//$("#dname").append(option);
-		}
+						});
+		 } else {
+				$("#variant").empty();
+				var option = $("<option></option>");
+				$(option).val(null);
+				$(option).html("Select");
+				$("#variant").append(option);
+				$("#variant").empty();
+				var option = $("<option></option>");
+				$(option).val(null);
+				$(option).html("Select");
+				//$("#dname").append(option);
+			}
 	}
 	
 	
@@ -726,7 +676,7 @@
 							<!-- <input type="button" class="btn2" id="action" value="Action"
 									 readonly> -->
 
-							<input type="button" class="btn1_new" id="add" value="Add Menu" onclick="newBtn()" readonly>
+							<input type="button" class="btn1" id="add" value="Add Menu" onclick="newBtn()" readonly>
 						</div>
 					</div>
 
@@ -743,8 +693,7 @@
 									<div>
 										<span class="taskInfo"> Menu Information</span>
 									</div>
-
-
+									
 									<div class="col-md-6 padding-0" align="right">
 										<button class="btn1" id="cancel" onclick="cancelBtn()">BACK</button>
 										<button class="btn4" id="cancel" onclick="cancelBtn()">CANCEL</button>
@@ -766,64 +715,20 @@
 											<label>Item Name</label> <input type="text"
 												class="form-control" id="itemName"
 												placeholder="Item Name"> <span
-												id="errmsg_remark"></span>
+												id="errmsg_name"></span>
 										</div>
 									</div>
 									<div class="col-md-6">
 										<div class="form-group">
 											<label>Price</label> <input type="text"
 												class="form-control" id="price"
-												placeholder="Price"> <span
-												id="errmsg_remark"></span>
+												placeholder="Price">
+												<span id="errmsg_price"></span>
+												
+												
 										</div>
 									</div>
 									
-										<!-- <div class="col-md-6">
-												<div class="form-group">
-													<label>Categry</label>
-													<div class="select">
-														<select id="categry" onchange="getStateList();" class="form-control">
-															<option value="">Select Country</option>
-															<option th:each="c,iter:${countryList}"
-																th:value="${c.key}" th:text="${c.name}"></option>
-
-														</select>
-													</div>
-													<span id="errmsg_country"></span>
-												</div>
-											</div>
-
-											<div class="col-md-6">
-												<div class="form-group">
-													<label>Sub Categry</label>
-
-													<div class="select">
-														<select id="subcategry" onchange="getDistDetails()"  class="form-control">
-															<option value="">Select State</option>
-															<option th:each="c,iter:${stateList}" th:value="${c.key}"
-																th:text="${c.name}"></option>
-
-														</select>
-													</div>
-													<span id="errmsg_state"></span>
-												</div>
-											</div>
-											
-											<div class="col-md-6">
-										   <div class="form-group">
-											<label>Variant</label>
-
-											<div class="select">
-												<select id="variant"  class="form-control">
-													<option value="">Select District</option>
-													
-												</select>
-											</div>
-											<span id="errmsg_district"></span>
-										   </div>
-										    </div>
-									        -->
-								
 									
 									<div class="col-md-6" id="searchFilterDiv"
 										style="margin-bottom: 10px;">
@@ -835,7 +740,7 @@
 													<option value="">--Select--</option>
 													<option th:each="c,iter:${incentivedetails}"
 														th:value="${c.key}" th:text="${c.name}"></option>
-												</select> <span id="errmsg_name"></span>
+												</select> <span id="errmsg_categry"></span>
 											</div>
 
 										</div>
@@ -849,7 +754,7 @@
 													<option value="">--Select--</option>
 													<option th:each="c,iter:${clubMemberDetails}"
 														th:value="${c.key}" th:text="${c.name}" ></option>
-												</select> <span id="errmsg_name"></span>
+												</select> <span id="errmsg_subcategry"></span>
 											</div>
 
 										</div>
@@ -863,7 +768,7 @@
 													<option value="">--Select--</option>
 													<option th:each="c,iter:${variantDetails}"
 														th:value="${c.key}" th:text="${c.name}" ></option>
-												</select> <span id="errmsg_name"></span>
+												</select> <span id="errmsg_variant"></span>
 											</div>
 
 										</div>
@@ -880,6 +785,7 @@
 													<option value="1">Active</option>
 													<option value="0">Inactive</option>
 												</select>
+												<span id="errmsg_status"></span>
 											</div>
 										</div>
 									</div>

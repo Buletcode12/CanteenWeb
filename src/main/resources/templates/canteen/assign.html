@@ -1,66 +1,272 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/master}">
 <head>
-
-<style>
-.innerstickybg {
-	/*  background: #33b5e5 ; */
-	background: none;
+<style type="text/css">
+select[data-multi-select-plugin] {
+    display: none !important;
 }
 
-#myReq .ag-row-selected {
-	background: #0076ba !important;
-	color: #fff;
-	text-indent: 10px !important;
+.multi-select-component {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: auto;
+    width: 100%;
+    padding: 3px 8px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    padding-bottom: 0px;
+    color: #555;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
+    -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
-.blank_row {
-	height: 10px !important; /* overwrites any other rules */
-	background-color: #FFFFFF;
+.autocomplete-list {
+    border-radius: 4px 0px 0px 4px;
 }
 
-#myReq .ag-row-selected::before {
-	font-size: 8px;
-	color: #FFF;
-	content: '\e64c';
-	font-family: 'themify';
-	margin-right: 7px;
+.multi-select-component:focus-within {
+    box-shadow: inset 0px 0px 0px 2px #78ABFE;
+}
+
+.multi-select-component .btn-group {
+    display: none !important;
+}
+
+.multiselect-native-select .multiselect-container {
+    width: 100%;
+}
+
+.selected-wrapper {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    display: inline-block;
+    border: 1px solid #d9d9d9;
+    background-color: #ededed;
+    white-space: nowrap;
+    margin: 1px 5px 5px 0;
+    height: 22px;
+    vertical-align: top;
+    cursor: default;
+}
+
+.selected-wrapper .selected-label {
+    max-width: 514px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 4px;
+    vertical-align: top;
+}
+
+.selected-wrapper .selected-close {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1.49em;
+    margin-left: 5px;
+    padding-bottom: 10px;
+    height: 100%;
+    vertical-align: top;
+    padding-right: 4px;
+    opacity: 0.2;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    font-weight: 700;
+}
+
+.search-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.search-container .selected-input {
+    background: none;
+    border: 0;
+    height: 20px;
+    width: 60px;
+    padding: 0;
+    margin-bottom: 6px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.search-container .selected-input:focus {
+    outline: none;
+}
+
+.dropdown-icon.active {
+    transform: rotateX(180deg)
+}
+
+.search-container .dropdown-icon {
+    display: inline-block;
+    padding: 10px 5px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    border: 0 !important;
+    /* needed */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    /* SVG background image */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Ctitle%3Edown-arrow%3C%2Ftitle%3E%3Cg%20fill%3D%22%23818181%22%3E%3Cpath%20d%3D%22M10.293%2C3.293%2C6%2C7.586%2C1.707%2C3.293A1%2C1%2C0%2C0%2C0%2C.293%2C4.707l5%2C5a1%2C1%2C0%2C0%2C0%2C1.414%2C0l5-5a1%2C1%2C0%2C1%2C0-1.414-1.414Z%22%20fill%3D%22%23818181%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+    background-position: center;
+    background-size: 10px;
+    background-repeat: no-repeat;
+}
+
+.search-container ul {
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    z-index: 3;
+    margin-top: 29px;
+    width: 100%;
+    right: 0px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-bottom: none;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+.search-container ul :focus {
+    outline: none;
+}
+
+.search-container ul li {
+    display: block;
+    text-align: left;
+    padding: 8px 29px 2px 12px;
+    border-bottom: 1px solid #ccc;
+    font-size: 14px;
+    min-height: 31px;
+}
+
+.search-container ul li:first-child {
+    border-top: 1px solid #ccc;
+    border-radius: 4px 0px 0 0;
+}
+
+.search-container ul li:last-child {
+    border-radius: 4px 0px 0 0;
+}
+
+
+.search-container ul li:hover.not-cursor {
+    cursor: default;
+}
+
+.search-container ul li:hover {
+    color: #333;
+    background-color: rgb(251, 242, 152);
+    ;
+    border-color: #adadad;
+    cursor: pointer;
+}
+
+/* Adding scrool to select options */
+.autocomplete-list {
+    max-height: 130px;
+    overflow-y: auto;
+}
+.highcharts-exporting-group {
+	display: none;
+}
+
+.autocomplete {
 	position: relative;
-	top: 3px;
-	right: 4px;
+	display: inline-block;
+	width: 100%;
+}
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.fixed-nav-bar {
+  top: 0;
+  z-index: 100;
+  position: fixed;
+  width: 100%;
+}
+/* .fixed-nav-bar {
+ position: fixed;
+ top: 0; left: 0;
+ z-index: 9999;
+ width: 100%;
+ height: 50px;
+ background-color: #00a087;
+} */
+.sugg-cls ul {
+	height: 150px;
+	overflow-x: scroll;
+	position: relative;
 }
 
-#myGrid .ag-row:first-child {
-	border: 1px solid #007bff;
+ul#autocomplete-list1 {
+	position: relative;
+	z-index: 999;
 }
 
-#myGrid .ag-row-selected {
-	border: 1px solid #007bff !important;
+ul#autocomplete-list1 li {
+	position: relative;
+	color: #fff;
+	padding-left: 6px;
+	background-color: #1f57a8;
+	border-bottom: solid 1px #6189c2;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
-#myGrid .ag-row-selected {
-	border: 1px solid #007bff !important;
+a.addCust {
+	color: #fff;
 }
 
-.innerstickybg {
-	padding: 10px 15px;
+.slidebox {
+	padding: 14px;
+	margin-top: 0px;
+	margin: 0px 10px;
 }
 
-#main {
-	transition: margin-left .5s;
-	padding: 0 10px;
+/* .form-group label {
+	font-size: 12px;
+	position: relative;
+	top: 4px;
+} */
+.holdCls {
+	background-color: rgb(0, 143, 0);
+}
+
+.bg_white {
+	background: #ffffff !important;
 }
 </style>
+<script src="../javascript/canteen/assign.js"></script>
 <script>
 
 
-$(function() {
+/* $(function() {
 	
-	alert("hello")
+	//alert("hello")
 
 	var gridDiv = document.querySelector('#myGrid');
 	new agGrid.Grid(gridDiv, gridOptions);
@@ -75,18 +281,18 @@ $(function() {
 	});
 	$("#myGrid").show();
 	$("#delete").attr("disabled", true);
-});
+}); */
 	//Multiple Document Upload Ends
 
-	function cancelBar() {
+/* 	function cancelBar() {
 		var id = document.getElementById("closeKey");
 		id.style.display = "block";
 		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
 			id.style.display = "none";
 		}
-	}
+	} */
 
-	var columnDefs = [ {
+	/* var columnDefs = [ {
 		headerCheckboxSelection : true,
 		headerCheckboxSelectionFilteredOnly : true,
 		checkboxSelection : true,
@@ -135,11 +341,11 @@ $(function() {
 			width : 200,
 			height : 20
 		},
-		rowSelection : 'multiple',
+		rowSelection : 'single',
 		//onSelectionChanged : onSelectionChanged,
 		onRowClicked : onRowClicked
 	};
-	
+	 */
 	
 	function onRowClicked(event) {
 		  // Access the selected rows
@@ -245,7 +451,7 @@ $(function() {
 
 	    $.ajax({
 	        type: "POST",
-	        url: "canteen-combo-add-dtls",
+	        url: "assign-add-dtls",
 	        contentType: "application/json",
 	        data: JSON.stringify(selectedRowDataArray), // Send selectedRowData
 	        success: function (response) {
@@ -275,7 +481,7 @@ $(function() {
 	//Category call
 	function getIncentiveStatusall() {
 
-		alert("hello");
+		//alert("hello");
 		//alert(variant)
 
 		$.ajax({
@@ -299,99 +505,151 @@ $(function() {
 
 		<div class="container-fluid">
 			<div class="row">
-				<div class="maincontentsec">
-				
-					<div class="content_padding" id="main">
-					<div class="row">
-				<div class="col-md-4 font-design" id="totalReq">
-								ORDER LIST (<span></span>)
-							</div>
-						<div class="col-md-4  btn-hs" id="searchRowDiv">
-							<div class="input-style">
-								<input type="text" placeholder="Search.." name="search"
-									class="searchboxinput" onkeyup="cancelBar()"
-									oninput="onQuickFilterChanged()" id="quickFilter">
-								<div class="searchicon">
-									<a href="javascript:void(0)"><span
-										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
-										id="closeKey"
-										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
-										class="close_i"><i class="ti-close srchicon"></i></span></a><a
-										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
-								</div>
-							</div>
+				<div class="maincontentsec">					
+						<div class="innercontent">
+								<div class="row">	
+								
+								
+														
+									<div class="col-md-6" id="searchFilterDiv"
+										style="margin-bottom: 10px;">
 
-						</div>
-						</div>
-						</div>
-						<div class="row" id="upperOne">
-							<div class="innerstickybg">
-							
+										<div class="form-group">
+											<label>Category</label>
+											<div class="select">
+												<select id="categry" class="form-control"
+													onchange="getIncentiveStatus()">
+													<option value="">--Select--</option>
+													<option th:each="c,iter:${incentivedetails}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+												</select> <span id="errmsg_name"></span>
+											</div>
 
-								<!-- Search Filter Div Start-->
-					<div class="row mt-4" id="searchFilterDiv" >
-						<div class="col-md-3 mt-2" >
-							<div class="form-group">
-								<label>Order Status</label>
-								<div class="select">
-									<select id="orderStatusFilter" class="form-control" >
-										<option value="">--Select--</option>
-										<option th:each="c,iter:${orderStatusList}" th:value="${c.key}"
-											th:text="${c.name}"></option>
-									</select>
-								</div>
-							</div>
-						</div>
+										</div>
+									</div>
+									
+										
+									
+									<div class="col-md-6">
+										<div class="form-group">
+											<label>Sub Category</label>
+											<div class="select">
+												<select id="subcategry" class="form-control"
+													onchange="getIncentiveStatus()">
+													<option value="">--Select--</option>
+													<option th:each="c,iter:${clubMemberDetails}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+												</select> <span id="errmsg_name"></span>
+											</div>
 
-						<div class="col-md-2 form-group mt-2" id="fdDiv" >
-							<label>From Date</label>
-							<div class="form-group calendar_box">
-								<input type="text" id="fromDate" value="" class="form-control"
-									placeholder="from date.."
-									th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|"
-									readonly> <i class="ti-calendar picker_calendar"
-									id="fromDateCalender"
-									style="top: 12px; right: 5px;"></i>
-							</div>
-						</div>
-						<div class="col-md-2 form-group mt-2" id="tdDiv">
-							<label>To Date</label>
-							<div class="form-group calendar_box">
-								<input type="date" id="toDate" value="" class="form-control"
-									placeholder="to date.."
-									th:attr="onkeyup=|formatDate('toDate','${session.DATEFORMAT_JS}')|"
-									readonly> <i class="ti-calendar picker_calendar"
-									id="toDateCalendar" 
-									style="top: 12px; right: 5px;"></i>
-							</div>
-						</div>
-						<div class="col-md-5 d-flex justify-content-start mt-3" id="searchBtn">
-							<input type="button" class="btn1 mr-10" id="filterDealer"
-								value="Search" onclick="changeData()"
-								style="float: none; position: relative; bottom: -17px;">
-							<input type="button" class="btn1 mr-10" id="resetFilterId"
-								value="Reset" onclick="filterReset()"
-								style="float: none; position: relative; bottom: -17px;">
-						</div>
+										</div>
+									</div>
+									
 
-					</div>
-					<!-- Search Filter Div End-->
-					
+									
+									<div class="col-md-6">
+										<div class="form-group">
+											<label>Variant</label>
+											<div class="select">
+												<select id="variant" class="form-control"
+													onchange="getIncentiveStatus()">
+													<option value="">--Select--</option>
+													<option th:each="c,iter:${variantDetails}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+												</select> <span id="errmsg_name"></span>
+									</div>
+							 </div>
+						  </div>		
+					  </div>  
+								
+                       
+					  <div class="row" >						  
+					            <div class="col-lg-6">
+										<div class="autocomplete"
+											style="width: auto !important; margin-top: 0px;">
+											<div class="form-group">
+												<label>Menu Name</label> <input type="text"
+													id="itemName" placeholder="Search Menu Name"
+													class="form-control" onkeyup='getProductList();'><input
+													type="hidden" id="itemId">
+													<span id="errmsg_producn"></span>
+											</div>
+										</div>
+									 <div id="suggesstion-box11_" class="sugg-cls"></div>
+								 </div>
 
-							</div>
+							<!-- 	
+			                   <div class="col-lg-6">
+										<div class="autocomplete"
+											style="width: auto !important; margin-top: 0px;">
+											<div class="form-group">
+												<label>Combo Name</label> <input type="text"
+													id="comboName" placeholder="Search Combo Name"
+													class="form-control" onkeyup='getComboList();'><input
+													type="hidden" id="comboId">
+													<span id="errmsghhg_producn"></span>
+											</div>
+										</div>
+										<div id="suggesstion-box21_" class="sugg-cls"></div>
+									</div>	
+									 -->
+							<!-- 		 
+								<div class="col-md-6">
+										<div class="form-group">
+											<label>Variant</label>
+											<div class="select">
+												<select id="variant" class="form-control"
+													onchange="getIncentiveStatus()">
+													<option value="">--Select--</option>
+													<option th:each="c,iter:${variantDetails}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+												</select> <span id="errmsg_name"></span>
+									       </div>
+							            </div>
+						      </div>	 -->
+									
+									 
+							     <div class="col-lg-4 ">
+								    <div class="form-group">										
+										<label>Combo Name</label>										
+										 <select id="comboId" multiple data-multi-select-plugin 
+												 class="form-control" onkeyup='getIncentiveStatus()();'>								          
+										<option th:each="c,iter:${comboDetails}"
+												 th:value="${c.key}" th:text="${c.name}"></option>
+								        </select>															 
+								    </div>
+							    </div>
+						  </div>
+						  						  							
+					     <div class="row mt-4">
+							 <div class="col-md-6" >
+								 <div id="myGrid2"
+							       style="width: 100%; height: 200px; "
+							       class="ag-theme-alpine">
+							     </div>
+							 </div>
+						     <div class="col-md-6 mb-4">
+							     <div id="myGrid1"
+							       style="width: 100%; height: 200px; "
+							       class="ag-theme-alpine">
+							     </div>
+							 </div> 
 						</div>
-						<div id="myGrid"
+							</div>				
+				<!-- 	<div id="myGrid"
 							style="width: 100%; height: 350px; margin-top: 100px;"
-							class="ag-theme-alpine"></div>
+							class="ag-theme-alpine"></div>  -->
 					</div>
 				</div>
-
 			</div>
-		</div>
-
-	</div>
-	</div>
-	</div>
+		 </div>
+	 </div>
+   </div>
+</div>
+	
+	
+	
+	
 </body>
 
 </html>

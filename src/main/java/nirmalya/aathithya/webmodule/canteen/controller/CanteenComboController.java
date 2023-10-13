@@ -124,7 +124,7 @@ public class CanteenComboController {
 	}
 
 
-		  //View
+	//View
 		@SuppressWarnings("unchecked")
 		@GetMapping("canteen-combo/canteen-item-list")
 		public @ResponseBody List<WebMenuModel> viewItemList(HttpSession session , String catId ,String subCatId ,String variant ) {
@@ -219,7 +219,7 @@ public class CanteenComboController {
 			return resp.getBody();
 		}*/
 		
-		//searchin
+	//searchin
 		@SuppressWarnings("unchecked")
 		@PostMapping(value = { "canteen-combo-menu-list" })
 		public @ResponseBody JsonResponse<WebMenuModel> getProductAutoSearchList(Model model,

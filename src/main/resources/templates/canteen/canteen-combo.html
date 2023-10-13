@@ -1,992 +1,92 @@
-
-
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/master}">
 <head>
-<style>
-.hvrbox .hvrbox-layer_top {
-	opacity: 0;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	width: 25%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.3);
-	color: #fff;
-	padding: 15px;
+<style type="text/css">
+.highcharts-exporting-group {
+	display: none;
 }
 
-.btn1 {
-	border: none;
-	border-radius: 7px;
-	font-size: 14px;
-	background-color: #5784c4;
-	color: #fff !important;
-	margin-left: 5px;
-	margin-bottom: 8px;
-	height: 28px;
-	line-height: 12px;
-	float: right;
-	text-transform: uppercase;
-	cursor: pointer;
-	font-weight: bold;
-}
-
-
-
-.btn1_new {
-    width: 130px;
-    border: none;
-    border-radius: 4px;
-    font-size: 13px!important;
-    background: linear-gradient(0deg, rgb(42 22 57) 0%, rgb(88 0 152) 100%) !important;
-    color: #fff!important;
-    margin-left: 5px;
-    margin-bottom: 8px;
-    /* min-width: 70px !important; */
-    height: 33px;
-    line-height: 12px;
-    float: right;
-    box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5), 7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
-    text-transform: uppercase;
-    cursor: pointer;
-    font-weight: 700;
-    padding: 0 5px;
-}
-
-.btn3 {
-	border: none;
-	border-radius: 7px;
-	font-size: 13px;
-	background-color: #ff4b4b;
-	color: #fff !important;
-	margin-left: 5px;
-	margin-bottom: 8px;
-	width: 70px;
-	height: 33px;
-	line-height: 12px;
-	float: right;
-	text-transform: uppercase;
-	cursor: pointer;
-	white-space: normal;
-	font-weight: bold;
-}
-
-.taskInfo {
-	padding-left: 10px;
-	color: #0c63e4;
-}
-
-.rating {
-	float: left;
-}
-
-.rating:not(:checked )>input {
-	position: absolute;
-	top: -9999px;
-	clip: rect(0, 0, 0, 0);
-}
-
-.rating:not(:checked )>label {
-	float: right;
-	width: 1em;
-	padding: 0 .1em;
-	overflow: hidden;
-	white-space: nowrap;
-	cursor: pointer;
-	font-size: 200%;
-	line-height: 1.2;
-	color: rgba(0, 0, 0, 0.6);
-	/*  text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating:not(:checked )>label:before {
-	content: '★ ';
-}
-
-.rating>input:checked ~ label {
-	color: #ea0;
-	/*  text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating:not(:checked )>label:hover, .rating:not(:checked )>label:hover 
-	 ~ label {
-	color: black;
-	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating>input:checked+label:hover, .rating>input:checked+label:hover ~
-	label, .rating>input:checked ~ label:hover, .rating>input:checked ~
-	label:hover ~ label, .rating>label:hover ~ input:checked ~ label {
-	color: #ea0;
-	/*  text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5); */
-}
-
-.rating>label:active {
+.autocomplete {
 	position: relative;
-	top: 2px;
-	left: 2px;
+	display: inline-block;
+	width: 100%;
+}
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.fixed-nav-bar {
+  top: 0;
+  z-index: 100;
+  position: fixed;
+  width: 100%;
+}
+/* .fixed-nav-bar {
+ position: fixed;
+ top: 0; left: 0;
+ z-index: 9999;
+ width: 100%;
+ height: 50px;
+ background-color: #00a087;
+} */
+.sugg-cls ul {
+	height: 150px;
+	overflow-x: scroll;
+	position: relative;
 }
 
-.btn-outline-primary {
-	color: #007bff;
-	background-color: rgb(240 243 241/ 90%);
-	background-image: none;
-	border-color: #007bff;
-	cursor: pointer;
-}
-
-.picker_calendar5 {
-	cursor: pointer;
-	position: absolute;
-	bottom: 361px;
-	left: 742px;
-}
-
-.picker_calendar6 {
-	cursor: pointer;
-	position: absolute;
-	bottom: 361px;
-	left: 1132px;
-}
-
-.btnbill {
-	position: absolute;
-	right: 70px;
-	margin-top: -50px;
+ul#autocomplete-list1 {
+	position: relative;
 	z-index: 999;
 }
 
-.btn-primarynew {
-	color: #fff !important;
-	background-color: #0d6efd;
-	border-color: #0d6efd;
+ul#autocomplete-list1 li {
+	position: relative;
+	color: #fff;
+	padding-left: 6px;
+	background-color: #1f57a8;
+	border-bottom: solid 1px #6189c2;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
-.formValidation1 {
-	font-size: 10px;
-	font-weight: 100;
-	color: #ff9e99;
-	background-color: transparent;
+a.addCust {
+	color: #fff;
+}
+
+.slidebox {
+	padding: 14px;
+	margin-top: 0px;
+	margin: 0px 10px;
+}
+
+/* .form-group label {
+	font-size: 12px;
 	position: relative;
-	top: -1px;
-	padding: 3px 0;
+	top: 4px;
+} */
+.holdCls {
+	background-color: rgb(0, 143, 0);
 }
-.ag-header-cell-text {
-    color:white!important;
-}
-.ag-header-viewport{
-    background:linear-gradient(0deg, rgba(87, 132, 196,1) 0%, rgba(12,25,180,1) 100%);
+
+.bg_white {
+	background: #ffffff !important;
 }
 </style>
+<script src="../javascript/canteen/canteen-combo.js"></script>
 <script>
+function clearErrorMessage() {
+    // Get the error message span element by its ID
+    var errorMessageSpan = document.getElementById("errmsg_remark");
 
-//Initialize a variable to store the total price
-let totalPrice = 0;
-
-$(function() {
-       // alert("hello")
-	var gridDiv = document.querySelector('#myGrid');
-	new agGrid.Grid(gridDiv, gridOptions);
-	agGrid.simpleHttpRequest({
-		url : "canteen-combo-all-throughAjax"
-	}).then(function(data) {
-		
-		//alert("gello");
-		
-		var len = data.length;
-		$('#totalReq').find('span').html(len);
-
-		gridOptions.api.setRowData(data);
-
-	});
-	$("#myGrid").show();
-	$("#delete").attr("disabled", true);
-
-
-		var gridDiv = document.querySelector('#myGrid1');
-		new agGrid.Grid(gridDiv, gridOptionschaildassign);
-		gridOptionschaildassign.api.setRowData([]);
-		agGrid.simpleHttpRequest({
-			url : "canteen-combo-menu-list"
-		}).then(function(data) {
-			var len = data.length;
-			$('#totalReq').find('span').html(len);
-			
-
-			// Check if selectedRows is equal to dataArray
-			if (arraysEqual(selectedRows, dataArray)) {
-			    // Create a copy of selectedRows to avoid modifying the original data
-			    const newRowsToAdd = [...selectedRows];
-
-			    // Append new rows to the existing data
-			    const combinedDataArray = dataArray.concat(newRowsToAdd);
-
-			    // Set the combined data to the grid
-			    gridOptionschaildassign.api.setRowData(combinedDataArray);
-			}
-
-			// Function to check if two arrays are equal (as shown in the previous response)
-			function arraysEqual(arr1, arr2) {
-			    // ...
-			}
-
-
-
-		});
-		
-		
-		$("#myGrid").show();
-		$("#delete").attr("disabled", true);
-	
-		
-		//alert("hello")
-		
-		var gridDiv = document.querySelector('#myGrid2');
-		new agGrid.Grid(gridDiv, gridOptionschaildview);
-		//gridOptionschaildview.api.setRowData();
-		agGrid.simpleHttpRequest({
-			url : "canteen-combo-throughAjax"
-		}).then(function(data) {
-			var len = data.length;
-			$('#totalReq').find('span').html(len);
-
-			gridOptionschaildview.api.setRowData(data);
-			
-		});
-		$("#myGrid").show();
-		$("#delete").attr("disabled", true);
-	});
-
-	
-	
-	//search bar
-	
-	function onQuickFilterChanged() {
-		gridOptions1.api
-				.setQuickFilter(document.getElementById('quickFilter').value);
-	}	
-   	function cancelBar() {
-		var id = document.getElementById("closeKey");
-		id.style.display = "block";
-
-		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
-			id.style.display = "none";
-		}
-	}
-
-	$('input,textarea').focus(
-			function() {
-				$(this).data('placeholder', $(this).attr('placeholder')).attr(
-						'placeholder', '');
-			}).blur(function() {
-		$(this).attr('placeholder', $(this).data('placeholder'));
-	});
-	
-	
-	
-	//************************************
-	 var ItemchildViewassign = [{
-		headerCheckboxSelection : true,
-		headerCheckboxSelectionFilteredOnly : true,
-		checkboxSelection : true,
-		width : 10,
-		sortable : false,
-		filter : false,
-		resizable : true
-	}, {
-		headerName : "Item Id",
-		field : "itemId",
-		width : 200
-
-	}, {
-		headerName : "Item Name",
-		field : "itemName",
-		width : 200
-	}, {
-		headerName : "Price",
-		field : "price",
-		width : 200
-	}/* , {
-		headerName : "Price",
-		field : "price",
-		width : 150
-	} */];
-
-	var gridOptionschaildassign = {
-		columnDefs : ItemchildViewassign,
-		defaultColDef : {
-			sortable : true,
-			filter : true,
-			resizable : true,
-			width : 200,
-			height : 20
-		},
-		//rowSelection : 'multiple',
-		//onSelectionChanged : onSelectionChanged,
-		//onRowClicked : onRowClicked
-	};
-	
-	
-	
-	 
-	//************************************
-	 var  columnDefs= [ {
-		headerCheckboxSelection : true,
-		headerCheckboxSelectionFilteredOnly : true,
-		checkboxSelection : true,
-		width : 10,
-		sortable : false,
-		filter : false,
-		resizable : true
-	},
-	{
-		headerName : 'Item Id',
-		field : "itemId",
-		width : 350,
-		cellRenderer : function(params) {
-			return '<a onclick=editPage("' + params.data.itemId
-					+ ',' + '0' + '") href="javascript:void(0)">'
-					+ params.data.itemId + '</a>';
-		}
-	},
-
-	{
-		headerName : "Combo Name",
-		field : "comboName",
-		width : 350,
-		cellStyle : {
-			textAlign : 'center'
-		},
-		  cellRenderer : function(params) {
-				return '<div style="color:black;font-weight: bold;">'
-				+ params.data.itemName 
-				+ '</div>';
-      	}
-	}, {
-		headerName : "Price",
-		field : "price",
-		cellStyle : {
-			textAlign : 'right'
-		},
-		  cellRenderer : function(params) {
-				return '<div style="color:black;font-weight: bold;">'
-				+ params.data.price 
-				+ '</div>';
-      	}
-	}];
-
-	 const gridOptions = {
-				columnDefs : columnDefs,
-				defaultColDef : {
-					sortable : true,
-					filter : true,
-					resizable : true,
-					width : 220,
-					height : 10
-				},
-				//rowSelection : 'multiple',
-				suppressRowClickSelection : true,
-				onSelectionChanged : rowSelect,
-				getRowNodeId : function(data) {
-					return data.itemId;
-				}
-			};
-	
-		var deleteId = "";
-		function rowSelect() {
-			alert('hello select');
-			var selectedRows = gridOptions.api.getSelectedRows();
-			deleteId = "";
-	
-			for (var i = 0; i < selectedRows.length; i++) {
-				deleteId = deleteId + '"' + selectedRows[i].itemId + '",';
-				// deleteId = deleteId  + selectedRows[i].paymentId + ',';
-			}
-			deleteId = deleteId.substring(0, deleteId.length - 1);
-			console.log(deleteId)
-			var rowCount = 0;
-	
-			selectedRows.forEach(function(selectedRow, index) {
-				rowCount = rowCount + 1;
-			});
-	
-			if (rowCount > 0) {
-				$('#delete').attr("disabled", false);
-	
-			} else {
-				$('#delete').attr("disabled", true);
-			}
-		}
-		
-	
-		function deleteIncentive() {
-			//console.log("delete ids--------------"+deleteId);
-			alert("fsdc")
-	
-			$.ajax({
-				type : "GET",
-				url : "canteen-combo-delete-id?id=" + deleteId,
-				success : function(response) {
-					if (response.message == "Success") {
-						swal("Menu delete successfully!", " ", "success");
-						cancelBtn();
-						agGrid.simpleHttpRequest({
-							url : "canteen-combo-all-throughAjax"
-						}).then(function(data) {
-							gridOptions.api.setRowData(data);
-						});
-					
-	
-					}
-				}
-	
-			});
-	
-			$('#delete').attr("disabled", true);
-		}
-		
-		
-		
-	
-	
-//********************************************************* child View Start *******************************************************
-	// column Defs
-	const chaildview = [
-			{
-				headerCheckboxSelection : true,
-				checkboxSelection : true,
-				width : 8,
-				sortable : false,
-				filter : false,
-				resizable : true
-
-			},
-			{
-				headerName : 'Item Id',
-				field : "itemId",
-				width : 200
-			},
-
-			{
-				headerName : "Item Name",
-				field : "itemName",
-				width : 200,
-				cellStyle : {
-					textAlign : 'center'
-				}
-			}, {
-				headerName : "Price",
-				field : "price",
-				width : 200,
-				cellStyle : {
-					textAlign : 'right'
-				}
-			}
-
-	];
-
-	 var gridOptionschaildview = {
-				columnDefs : chaildview,
-				defaultColDef : {
-					sortable : true,
-					filter : true,
-					resizable : true,
-					width : 200,
-					height : 20
-				},
-				rowSelection : 'multiple',
-				onSelectionChanged : onRowClickedAkm
-				//onRowClicked : onRowClickedAkm
-			};
-	  
-	 function onRowClickedAkm(param) {	
-		 totalPrice = 0;
-		  	if(itemDataOnSearch.length > 0){
-		  		console.log("itemDataOnSearch", itemDataOnSearch);
-		  		//gridOptionschaildassign.api.setRowData(itemDataOnSearch);
-		  	}else{
-		  		gridOptionschaildassign.api.setRowData([]);
-		  	}
-		  	
-		  	console.log("Grid Data on row select",param.api.getSelectedRows());
-		    var selectedRows = param.api.getSelectedRows();
-		    const assignItemTablelist = gridOptionschaildassign.api.getModel().rowsToDisplay.map(rowNode => rowNode.data);
-		    console.log("selectedRows", selectedRows);
-		    console.log("assignItemTablelist", assignItemTablelist);
-		    if(assignItemTablelist.length > 0){
-		    	let filteredArrayForAssignItem = [];
-		    	
-		    		filteredArrayForAssignItem = selectedRows.filter(item => assignItemTablelist.some(searchItem => {
-        	    			return JSON.stringify(item) === JSON.stringify(searchItem);
-        	    		})
-    				);
-		    	
-			    	
-		    	if(filteredArrayForAssignItem.length > 0){
-		    		swal("Already Selected!");
-		    		
-		    	}else{
-	        		let gridListData = [...selectedRows, ...assignItemTablelist];
-	        		gridOptionschaildassign.api.setRowData(gridListData);
-	        		console.log("gridListData", gridListData)
-	        		
-		   		     // Iterate through gridList and extract the price values
-		   		     gridListData.forEach(item => {
-		   		       if (item.hasOwnProperty('price')) {
-		   		         var priceValue = parseFloat(item.price);
-		   		         if (!isNaN(priceValue)) {
-		   		           totalPrice += priceValue;
-		   		         }
-		   		       }
-		   		     });
-		   		     
-	        	}
-		    }else{
-		    	gridOptionschaildassign.api.setRowData(selectedRows);
-		    	selectedRows.forEach(item => {
-			       if (item.hasOwnProperty('price')) {
-			         const priceValue = parseFloat(item.price); // Parse the price as a floating-point number
-			         if (!isNaN(priceValue)) { // Check if the parsed value is a valid number
-			           totalPrice += priceValue; // Add the parsed price to the total
-			         }
-			       }
-			     });
-		    }
-		     console.log("Total price:", totalPrice);
-		     document.getElementById("allPrice").value = totalPrice.toFixed(2); 
-		}
-	 
-	 
-
-	//*************************************Child View Start ************************************************
-	 
-	 
-	 
-	 //function call
-	function downloadDocDetails() {
-		
-		var dataset = [];
-		gridOptions1.api
-				.forEachNodeAfterFilterAndSort(function(rowNode, index) {
-					dataset.push(rowNode.data);
-
-				});
-		gridOptions1.api.exportDataAsCsv(dataset);
-	}
-	
-	var selectedRowDataArray = []; 
-
-	// Row click event handler
-	function onRowClicked(event) {
-		
-	    var selectedRowData = event.data;
-	    processRowData(selectedRowData);
-	    selectedRowDataArray.push(selectedRowData);
-	}
-
-	function processRowData(rowData) {
-	    var encodedRowData = encodeURIComponent(rowData);
-	    console.log("message" + encodedRowData);
-	    return encodedRowData;
-	}
-
-	function anotherFunction() {
-	    var processedData = processRowData(rowData);  
-	    console.log("Processed Data in anotherFunction: " + processedData);
-	}
-
-
-
-	
-	
- function saveTableData() {
-	 
-    var selectedRows = gridOptionschaildassign.api.getModel().rowsToDisplay.map(rowNode => rowNode.data);
-
-    var requestData = {
-    		comboId:  $("#comboId").val(),
-    	comboName:  $("#comboName").val(),
-    	itemList: selectedRows,
-    	price: $("#allPrice").val()
-        //dataArray: itemDataOnSearch
-    };
-    
-    console.log("requestData"+JSON.stringify(requestData))
-    $.ajax({
-        type: "POST",
-        url: "canteen-combo-add-dtls",
-        contentType: "application/json",
-        data: JSON.stringify(requestData), // Send requestData as the request payload
-        success: function (response) {
-            if (response.message == "Success") {
-            	console.log(response.message == "Success");
-                swal("Menu added successfully!", " ", "success");
-                cancelBtn();
-                agGrid.simpleHttpRequest({
-                    url: "canteen-combo-all-throughAjax"
-                }).then(function (data) {
-                    gridOptions.api.setRowData(data);
-                });
-            }
-        },
-        error: function (data) {
-            // Handle error
-        }
-    });
+    // Clear the error message by setting its textContent to an empty string
+    errorMessageSpan.textContent = "";
 }
-	
-	function viewImage(id) {
-		window.open(id, '_blank');
-	}
-
-	
-	
-	
-	
-	var deleteId = "";
-	function rowSelect() {
-		var selectedRows = gridOptions.api.getSelectedRows();
-		deleteId = "";
-
-		for (var i = 0; i < selectedRows.length; i++) {
-			deleteId = deleteId + '"' + selectedRows[i].itemId + '",';
-		}
-		deleteId = deleteId.substring(0, deleteId.length - 1);
-		console.log(deleteId)
-		var rowCount = 0;
-
-		selectedRows.forEach(function(selectedRow, index) {
-			rowCount = rowCount + 1;
-		});
-
-		if (rowCount > 0) {
-			$('#delete').attr("disabled", false);
-
-		} else {
-			$('#delete').attr("disabled", true);
-		}
-	}
-	// for new button
-	function newBtn() {
-		
-		$("#itemId").empty();
-		$("#copy").hide();
-		$("#add").hide();
-		$("#delete").hide();
-		$("#myGrid").hide();
-		$("#searchRowDiv").hide();
-		$("#totalReq").hide();
-		$("#statusDiv").hide();
-		$("#idDiv").hide();
-		$("#collapseFour").hide();
-		$("#headingFour").hide();
-		$("#myGridActivity").hide();
-		$("#demo").show();
-
-	}
-	// for cancel button
-	function cancelBtn() {
-		$("#add").show();
-		$("#copy").show();
-		$("#delete").show();
-		$("#totalReq").show();
-		$("#myGrid").show();
-		$("#searchRowDiv").show();
-		$("#demo").hide();
-
-		$('#itemId').val("");
-		$('#itemName').val("");
-		$('#price').val("");
-		$('#categry').val("");
-		$('#subcategry').val("");
-		$('#variant').val("");
-		$('#status').val("");
-
-		agGrid.simpleHttpRequest({
-			url : "canteen-combo-all-throughAjax"
-		}).then(function(data) {
-			gridOptions.api.setRowData(data);
-		});
-		
-	}
-
-
-	
-	
 </script>
-<script>
-
-	function clubMemberGetDetail(){
-		var clubMemberId = $('#clubmember').val();
-		$.ajax({
-			type : "GET",
-			url : "canteen-combo-getMemberDetails?id=" + subcategry,
-			async : false,
-			success : function(response) {
-				//console.log("response------" + JSON.stringify(response));
-				if (response.message == "Success") {
-					$("#rangefrom").val(response.body[0].memberRangeFrom);
-					$("#rangeto").val(response.body[0].memberRangeTo);
-				}
-
-			}
-		})
-	}
-	
-	
-	
-	function getIncentiveStatus(){
-		
-		var categry = $('#categry').val();
-		$.ajax({
-			type : "GET",
-			url : "canteen-combo-getIncentiveDetails?id=" + categry,
-			async : false,
-			success : function(response) {
-				if (response.message == "Success") {
-					$("#incentivecode").val(response.body[0].itemId);
-				}
-
-			}
-		})
-	}
-	
-	
-	//Category call
-	function getIncentiveStatus() {
-		//alert(id);
-		var catId = $("#categry").val();
-		var subCatId = $("#subcategry").val();
-		var variant = $("#variant").val();
-		$.ajax({
-			type : "GET",
-			url : "canteen-combo/canteen-item-list?catId=" + catId + "&subCatId="
-					+ subCatId + "&variant=" + variant,
-			async : false,
-			success : function(response) {
-				console.log("response------" + JSON.stringify(response));
-				if (response.body != "") {
-					gridOptionschaildview.api.setRowData();
-					gridOptionschaildview.api.setRowData(response);	
-				}
-			}
-		})
-	}
-	
-	 function getIncentiveStatusall() {
-		$.ajax({
-			type : "GET",
-			url : "canteen-combo-all-throughAjax",
-			async : false,
-			success : function(response) {
-				console.log("response------" + JSON.stringify(response));
-				if (response.body != "") {
-					
-					gridOptions.api.setRowData();
-					gridOptions.api.setRowData(response);
-				}
-
-			}
-		})
-	} 
-	
-	 
-	 
-	 let itemDataOnSearch = []; 
-  //searching
-    function getProductList() {
-		$("#itemId").val("");
-		var search = $("#itemName").val();
-		//var search = $("#price").val();
-		if (search) {
-			//alert('hello get cust2');
-			$
-					.ajax({
-						type : "POST",
-						url : "canteen-combo-menu-list",
-						dataType : 'json',
-						contentType : 'application/json',
-						data : search,
-						success : function(response) {
-							if (response.code == "success") {
-								if (response.body.length != 0) {
-									itemDataOnSearch = [];
-									itemDataOnSearch = response.body;
-									$("#search").css("background", "#FFF");
-									var content = '<ul id="autocomplete-list1" >';
-									for (var i = 0; i < response.body.length; i++) {
-										content += '<li style="margin-left:0px; font-weight:100; font-size:14px; color:#ccc;     background-color: #dbdbdb;"  class="autocompletedata cp" 										onClick="selectAutocompleteValue1(\''
-												+ response.body[i].itemId + '\',\''+response.body[i].itemName+'\')">'
-												+ response.body[i].itemName
-												+ '</li>';
-										       
-									}
-									content += '<li style="margin-left:-30px;" >'
-											+ '</li>';
-									content += '</ul>';
-									////console.log("content " + content)
-									$("#suggesstion-box11_").show();
-									$("#suggesstion-box11_").html(content);
-
-								} else {
-									$("#search").css("background", "#FFF");
-									var content = '<ul id="autocomplete-list1">';
-									content += '<li style="margin-left:0px; font-weight:100; font-size:14px; color:#ccc;     background-color: #dbdbdb;">'
-											+ "No Data Found" + '</li>';
-									content += '<li style="margin-left:-30px;" '
-											+ '</li>';
-									content += '</ul>';
-									$("#suggesstion-box11_").show();
-									$("#suggesstion-box11_").html(content);
-									
-								}
-							}
-						
-						},
-						error : function(data) {
-							//console.log(data);
-						}
-					})
-		}
-
-	}
-
-function selectAutocompleteValue1(itemid,itemname) {
-	//alert(itemname)
-	$("#itemName").val(itemname);
-	totalPrice = 0;
-	
-	console.log("Serahc", itemDataOnSearch);
-	 
-	itemDataOnSearch = itemDataOnSearch.filter(itm => itm.itemId == itemid);
-	
-	console.log("Serahc DATA Autocolplete", itemDataOnSearch);
-	  const prices = [];
-	 var allprice = 0 ;
-	 itemDataOnSearch.forEach(item => {
-          if (item.hasOwnProperty('price')) {
-            prices.push(item.price);
-            var intValue = parseInt(prices);
-            allprice = allprice+intValue;
-          }
-        });
-	 console.log("price"+allprice);
-	  document.getElementById("allPrice").value = allprice;  
-	
-    if (itemDataOnSearch.length > 0) {	
-      	const assignItemTableData = gridOptionschaildassign.api.getModel().rowsToDisplay.map(rowNode => rowNode.data);
-        if(assignItemTableData.length > 0){
-        	console.log(assignItemTableData)
-        	
-        	const filteredArray = assignItemTableData.filter(item => itemDataOnSearch.some(searchItem => {
-        	    	return JSON.stringify(item) === JSON.stringify(searchItem);
-        	  	})
-        	);
-        	console.log(filteredArray, "  Duplicate object");
-        	if(filteredArray.length > 0){
-        		
-						swal("Already Selected!");
-        	} else{
-        		let gridList = [...assignItemTableData, ...itemDataOnSearch];
-        		gridOptionschaildassign.api.setRowData(gridList);
-     
-	   		     let totalPrice = 0;
-	   		     gridList.forEach(item => {
-	   		       if (item.hasOwnProperty('price')) {
-	   		         const priceValue = parseFloat(item.price); 
-	   		         if (!isNaN(priceValue)) { 
-	   		           totalPrice += priceValue; 
-	   		         }
-	   		       }
-	   		     });
-	   		     document.getElementById("allPrice").value = totalPrice.toFixed(2); 
-        	}
-        }else{
-        	gridOptionschaildassign.api.setRowData(itemDataOnSearch);
-        }
-        let gridList = [...assignItemTableData, ...itemDataOnSearch];
-        $("#suggesstion-box11_").hide(); 
-    } else {
-        // Handle the case where itemId is not available
-        $("#itemId").val("");
-        $("#itemName").val("");
-        $("#price").val("");
-        $("#search").val("");
-        $("#search").attr('data-procat', "");
-        $("#suggesstion-box11_").hide();
-       // gridOptionschaildassign.api.setRowData(itemDataOnSearch);
-    }
-   
-}
-
-    
-//Edit & stage change 
-function editPage(id) {
-	
-	alert(id);
-	var editId = id.split(",");
-	var itemId = editId[0];
-	var modal = editId[1];
-	$("#demo").show();
-	$("#add").hide();
-	$("#copy").hide();
-	$("#delete").hide();
-	$("#myGrid").hide();
-	$("#searchRowDiv").hide();
-	$("#totalReq").hide();
-	$("#statusDiv").hide();
-	$("#idDiv").hide();
-	$("#collapseFour").hide();
-	$("#headingFour").hide();
-	$("#myGridActivity").hide();
-
-	$.ajax({
-		type : "GET",
-		url : "canteen-combo-edit?id=" + itemId,
-		async : false,
-		success : function(response) {
-			console.log("response------" + JSON.stringify(response));
-			if (response.message == "Success") {
-
-				$("#add").hide();
-				$("#copy").hide();
-				$("#delete").hide();
-				$("#myGrid").hide();
-				$("#searchRowDiv").hide();
-				$("#totalReq").hide();
-				$("#statusDiv").hide();
-				$("#idDiv").hide();
-				$("#collapseFour").hide();
-				$("#headingFour").hide();
-				$("#myGridActivity").hide();
-
-				$("#demo").show();
-
-				$(".container").hide();
-
-				$("#itemId").text(response.body[0].itemId);
-				$("#itemName").val(response.body[0].itemName);
-				$("#price").val(response.body[0].price);
-				$("#categry").val(response.body[0].categry);
-				$("#subcategry").val(response.body[0].subcategry);
-				$("#variant").val(response.body[0].variant);
-				$("#status").val(response.body[0].status);
-
-			}
-
-		}
-	})
-}
-    
-    
-</script>
-
 </head>
 
 <body>
@@ -1022,7 +122,7 @@ function editPage(id) {
 							<!-- <input type="button" class="btn2" id="action" value="Action"
 									 readonly> -->
 
-							<input type="button" class="btn1_new" id="add" value="Add " onclick="newBtn()" readonly>
+							<input type="button" class="btn1" id="add" value="Add " onclick="newBtn()" readonly>
 						</div>
 					</div>
 
@@ -1033,7 +133,9 @@ function editPage(id) {
 						<div class="innercontent">
 							<div class="innerstickybg">
 								<div class="d-flex justify-content-between" id="main">
-								<div   class="col-md-6"></div>
+								<div   class="col-md-6">
+								  <span id="comboId"></span>
+								</div>
 									<div class="col-md-6 padding-0" align="right">
 										<button class="btn1" id="cancel" onclick="cancelBtn()">BACK</button>
 										<button class="btn4" id="cancel" onclick="cancelBtn()">CANCEL</button>
@@ -1045,13 +147,23 @@ function editPage(id) {
 								<div class="row">
 									<!-- Search Filter Div Start-->
 									<div class="row" style="margin-top: 70px">
-									<div class="col-md-6">
+								<!-- 	<div class="col-md-6">
 										<div class="form-group">
 											<label>Combo Name</label> <input type="text"
 												class="form-control" id="comboName" placeholder="Item Name">
 											<span id="errmsg_remark"></span>
 										</div>
-									</div>
+									</div> -->
+									
+									<div class="col-md-6">
+                                     <div class="form-group">
+                                     <label>Combo Name</label> 
+                                        <input type="text" class="form-control" onclick="clearErrorMessage()" id="comboName" placeholder="Item Name">
+                                    <span id="errmsg_name"></span>
+                                      </div>
+</div>
+									
+									
 									<div class="col-md-6" id="searchFilterDiv"
 										style="margin-bottom: 10px;">
 
@@ -1126,7 +238,7 @@ function editPage(id) {
                                    <div class="form-group">
                                      <label>All Price</label>
                                        <input type="text" class="form-control" id="allPrice" placeholder="All Price">
-                                             <span id="errmsg_remark"></span>
+                                              <span id="errmsg_price"></span>
                                            </div>
                                     </div>
 

@@ -11,6 +11,7 @@ public class WebMenuModel {
 	private String itemName;
 	private String comboName;
 	private String price;
+	private String allPrice;
 	private String categry;
 	private String subcategry;
 	private String variant;
@@ -24,6 +25,12 @@ public class WebMenuModel {
 	public WebMenuModel() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	public String getAllPrice() {
+		return allPrice;
+	}
+	public void setAllPrice(String allPrice) {
+		this.allPrice = allPrice;
 	}
 	public String getComboName() {
 		return comboName;
