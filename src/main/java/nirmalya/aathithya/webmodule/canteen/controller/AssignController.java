@@ -133,6 +133,41 @@ public class AssignController {
 			return resp.getBody();
 		}
 		
+		
+		//View Combo
+				@SuppressWarnings("unchecked")
+				@GetMapping("assign/canteen-combo-list")
+				
+				public @ResponseBody List<WebMenuModel> viewCombo(HttpSession session , String comboId) {
+
+					logger.info("Method : viewItemList starts"+comboId);
+
+					JsonResponse<List<WebMenuModel>> resp = new JsonResponse<List<WebMenuModel>>();
+
+					try {
+						resp = restClient.getForObject(env.getcanteenUrl() + "rest-assign-combo-list?comboId="+comboId  , JsonResponse.class);
+					} catch (RestClientException e) {
+						e.printStackTrace();
+					}
+
+					ObjectMapper mapper = new ObjectMapper();
+
+					List<WebMenuModel> manageincentiveModel = mapper.convertValue(resp.getBody(),
+							new TypeReference<List<WebMenuModel>>() {
+							});
+
+					resp.setBody(manageincentiveModel);
+					System.out.println("resp.getBody()-----------" + resp.getBody());
+					
+					if(resp.getMessage() ==null) {
+						resp.setMessage("Success");
+					}
+
+					logger.info("Method : viewItemList ends"+resp);
+					return resp.getBody();
+				}
+				
+			
 	
 	
 	
@@ -145,11 +180,11 @@ public class AssignController {
 
 		JsonResponse<List<WebMenuModel>> resp = new JsonResponse<List<WebMenuModel>>();
 
-		try {
-			resp = restClient.getForObject(env.getcanteenUrl() + "restViewAssignDetails", JsonResponse.class);
-		} catch (RestClientException e) {
-			e.printStackTrace();
-		}
+		/*
+		 * try { resp = restClient.getForObject(env.getcanteenUrl() +
+		 * "restViewAssignDetails", JsonResponse.class); } catch (RestClientException e)
+		 * { e.printStackTrace(); }
+		 */
 
 		ObjectMapper mapper = new ObjectMapper();
 

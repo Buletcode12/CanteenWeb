@@ -3,6 +3,7 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/master}">
+	 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
 <head>
 <style type="text/css">
 select[data-multi-select-plugin] {
@@ -131,6 +132,8 @@ select[data-multi-select-plugin] {
     background-size: 10px;
     background-repeat: no-repeat;
 }
+
+
 
 .search-container ul {
     position: absolute;
@@ -526,20 +529,22 @@ a.addCust {
 		})
 	}
 </script>
+
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+    <script>
+        new MultiSelectTag('countries')  // id
+    </script>
 <body>
 	<div layout:fragment="content" class="maincontent">
 
 		<div class="container-fluid">
 			<div class="row">
-				<div class="maincontentsec">					
-						<div class="innercontent">
-								<div class="row">	
-								
-								
-														
-									<div class="col-md-6" id="searchFilterDiv"
+				<div class="maincontentsec">
+									
+					<div class="innercontent">						
+						<div class="row">	
+								<div class="col-md-6" id="searchFilterDiv"
 										style="margin-bottom: 10px;">
-
 										<div class="form-group">
 											<label>Category</label>
 											<div class="select">
@@ -552,11 +557,9 @@ a.addCust {
 											</div>
 
 										</div>
-									</div>
-									
-										
-									
-									<div class="col-md-6">
+								 </div>	
+								 																											
+								 <div class="col-md-6">
 										<div class="form-group">
 											<label>Sub Category</label>
 											<div class="select">
@@ -569,10 +572,9 @@ a.addCust {
 											</div>
 
 										</div>
-									</div>
-									
-
-							<div class="col-md-6">
+								  </div>	
+								  					
+							      <div class="col-md-6">
 										<div class="form-group">
 											<label>Variant</label>
 											<div class="select">
@@ -584,24 +586,40 @@ a.addCust {
 												</select> <span id="errmsg_name"></span>
 									       </div>
 						 	            </div>
-						            </div>			
-									
-						  
-						   <div class="col-lg-6 ">
-								    <div class="form-group">										
-										<label>Combo Name</label>										
-										 <select  multiple data-multi-select-plugin id="comboId"
-												 class="form-control" onchange="getCombo()">							          
-										<option th:each="c,iter:${comboDetails}"
-												 th:value="${c.key}" th:text="${c.name}"></option>
-								        </select>															 
-								    </div>
-							    </div>
-						  	
+						          </div>	
+						          
+						       <!--   <div class="col-lg-4">
+								        <div class="form-group">
+								            <label>Store Name</label>
+								            <select multiple data-multi-select-plugin id="comboId" class="form-control" onchange="getCombo()">
+								                <option value="">--Select--</option>
+								                <option th:each="c,iter:${comboDetails}" th:value="${c.key}" th:text="${c.name}"></option>
+								            </select>
+								        </div>
+								  </div>  -->
+								  
+						    <!--  <div class="col-md-6">
+								    <div class="form-group">
+										   <label>Combo Name</label>
+										   <div class="select">
+												<select id="comboId" class="form-control"
+													onchange="getCombo()">
+													<option value="">--Select--</option>
+													<option th:each="c,iter:${comboDetails}"
+														th:value="${c.key}" th:text="${c.name}"></option>
+												</select> <span id="errmsg_name"></span>
+									       </div>
+						 	       </div>
+						     </div>	 -->
+						         
+						     											  						           																	         
+							</div>											  	
 					  </div>  
+					  
+					  
 								
                        
-					  <div class="row" >						  
+					      <div class="row" >					      					     					      						  
 					            <div class="col-lg-6">
 										<div class="autocomplete"
 											style="width: auto !important; margin-top: 0px;">
@@ -614,83 +632,76 @@ a.addCust {
 											</div>
 										</div>
 									 <div id="suggesstion-box11_" class="sugg-cls"></div>
-								 </div>																								 							    							    <br>
+								</div>																								 							    							    <br>
 						  </div>
-						  						  							
-					    <!--  <div class="row mt-4">
-							 <div class="col-md-6" >
-								 <div id="myGrid2"
-							       style="width: 100%; height: 200px; "
-							       class="ag-theme-alpine">
-							     </div>
-							 </div>
-						     <div class="col-md-6 mb-4">
-							     <div id="myGrid1"
-							       style="width: 100%; height: 200px; "
-							       class="ag-theme-alpine">
-							     </div>
-							 </div> 
-						</div> -->
+						  
+						    <div class="row" >					      					     					      						  
+					            <div class="col-lg-6">
+										<div class="autocomplete"
+											style="width: auto !important; margin-top: 0px;">
+											<div class="form-group">
+												<label>Combo Name</label> 
+													<div class="selected-items" id="selected-items">
+													 </div>
+													
+													<input type="text"
+													id="comboName" placeholder="Search combo Name"
+													class="form-control" onkeyup='getComboList();'><input
+													type="hidden" id="comboId">
+													<span id="errmsg_producn"></span>
+											</div>
+										</div>
+									 <div id="suggesstion-box21_" class="sugg-cls"></div>
+								</div>																								 							    							    <br>
+						  </div>
+						  						  													
 						
-						
-						
-						
-						
-						
-			  <div class="row mt-4">
-				  <div class="col-md-6">
-					  <table class="table tables_ui table-bordered" id="t_draggable1">
-					 
-					<tbody class="t_sortable ui-sortable">
-					    <h5>Order List</h5>
-					   <tr>
-						  <th scope="row"></th>
-					      <th scope="col">Item Id</th>
-					      <th scope="col">Item Name</th>
-					      <th scope="col">Price</th>
-					    </tr>
-					 <tr th:each="b :${book}" class="ui-sortable-handle"> 
-					      <th scope="row"></th>
-					      <td th:text="${b.itemId}"></td>
-					      <td th:text="${b.itemName}"></td>
-					      <td th:text="${b.price}"></td>
-					       
-					      
-					    </tr>
-					 
-					</tbody>
-					
-					</table>
-					</div>
-
-				 <div class="col-md-6">
-						<table class="table tables_ui table-bordered" id="t_draggable2">
-						<tbody class="t_sortable ui-sortable">
-						 <h5>Order Assign</h5>
-						  <tr>
-						  <th scope="row"></th>
-					      <th scope="col"> Id</th>
-					      <th scope="col"> Name</th>
-					      <th scope="col">Price</th>
-					    </tr>				  
-						</tbody>
-						</table>		
-				    </div>
-				</div>
-									</div>				
+						 <div class="row mt-4">
+							<div class="col-md-6">
+							  <table class="table tables_ui table-bordered" id="t_draggable1">					 
+								<tbody class="t_sortable ui-sortable">
+								    <h5>Order List</h5>
+								   <tr>
+									  <th scope="row"></th>
+								      <th scope="col">Item Id</th>
+								      <th scope="col">Item Name</th>
+								      <th scope="col">Price</th>
+								    </tr>
+								    <tr th:each="b :${book}" class="ui-sortable-handle"> 
+								      <th scope="row"></th>
+								      <td th:text="${b.itemId}"></td>
+								      <td th:text="${b.itemName}"></td>
+								      <td th:text="${b.price}"></td>					      					      
+								    </tr>					 
+								</tbody>					
+							  </table>
+							</div>
+			
+							 <div class="col-md-6">
+								<table class="table tables_ui table-bordered" id="t_draggable2">
+								  <tbody class="t_sortable ui-sortable">
+									 <h5>Order Assign</h5>
+									 <tr>
+									  
+								       <th scope="col"> Id</th>
+								       <th scope="col"> Name</th>
+								       <th scope="col">Price</th>
+								     </tr>				  
+									</tbody>
+									</table>		
+							    </div>
+							</div>
+			             </div>				
 				<!-- 	<div id="myGrid"
 							style="width: 100%; height: 350px; margin-top: 100px;"
 							class="ag-theme-alpine"></div>  -->
 					</div>
 				</div>
 			</div>
-		 </div>
-	 </div>
-   </div>
-</div>
+		
 	
 	
-	
+	 
 	
 </body>
 
