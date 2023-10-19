@@ -540,10 +540,14 @@ a.addCust {
 		<div class="container-fluid">
 			<div class="row">
 				<div class="maincontentsec">
-									
-					<div class="innercontent">						
+				<div class="row">
+				                <div class="mt-2">
+								<button class="btn1" id="save" onclick="addIncentiveInfo()">SAVE</button>
+								</div>
+							</div>		
+					<div class="innercontent ">						
 						<div class="row">	
-								<div class="col-md-6" id="searchFilterDiv"
+								<div class="col-md-4" id="searchFilterDiv"
 										style="margin-bottom: 10px;">
 										<div class="form-group">
 											<label>Category</label>
@@ -559,7 +563,7 @@ a.addCust {
 										</div>
 								 </div>	
 								 																											
-								 <div class="col-md-6">
+								 <div class="col-md-4">
 										<div class="form-group">
 											<label>Sub Category</label>
 											<div class="select">
@@ -574,7 +578,7 @@ a.addCust {
 										</div>
 								  </div>	
 								  					
-							      <div class="col-md-6">
+							      <div class="col-md-4">
 										<div class="form-group">
 											<label>Variant</label>
 											<div class="select">
@@ -587,6 +591,12 @@ a.addCust {
 									       </div>
 						 	            </div>
 						          </div>	
+						          
+						          
+						          				      					     					      						  
+					           																						 							    							    <br>
+						  
+						          
 						          
 						       <!--   <div class="col-lg-4">
 								        <div class="form-group">
@@ -620,7 +630,7 @@ a.addCust {
 								
                        
 					      <div class="row" >					      					     					      						  
-					            <div class="col-lg-6">
+					            <div class="col-lg-4">
 										<div class="autocomplete"
 											style="width: auto !important; margin-top: 0px;">
 											<div class="form-group">
@@ -632,11 +642,9 @@ a.addCust {
 											</div>
 										</div>
 									 <div id="suggesstion-box11_" class="sugg-cls"></div>
-								</div>																								 							    							    <br>
-						  </div>
-						  
-						    <div class="row" >					      					     					      						  
-					            <div class="col-lg-6">
+								</div>	
+								
+								 <div class="col-lg-4">
 										<div class="autocomplete"
 											style="width: auto !important; margin-top: 0px;">
 											<div class="form-group">
@@ -652,8 +660,29 @@ a.addCust {
 											</div>
 										</div>
 									 <div id="suggesstion-box21_" class="sugg-cls"></div>
-								</div>																								 							    							    <br>
+								</div>		
+								
+							<div class="col-md-4">
+							    <div class="form-group">
+							        <label>Weakend Calender</label>
+							        <select  id="weakendName">
+							         <option value="option1">--select--</option>
+							            <option value="monday">Monday</option>
+							            <option value="tuesday">Tuesday</option>
+							            <option value="wednesday">Wednesday</option>
+							             <option value="thursday">Thursday</option>
+							              <option value="friday">Friday</option>
+							              <option value="saturday">Saturday</option>
+							              <option value="sunday">Sunday</option>
+							        </select>
+							    </div>
+							</div>
+															
+								
+																															 							    							    <br>
 						  </div>
+						  
+						   
 						  						  													
 						
 						 <div class="row mt-4">
@@ -662,7 +691,7 @@ a.addCust {
 								<tbody class="t_sortable ui-sortable">
 								    <h5>Order List</h5>
 								   <tr>
-									  <th scope="row"></th>
+									 
 								      <th scope="col">Item Id</th>
 								      <th scope="col">Item Name</th>
 								      <th scope="col">Price</th>
@@ -678,15 +707,14 @@ a.addCust {
 							</div>
 			
 							 <div class="col-md-6">
-								<table class="table tables_ui table-bordered" id="t_draggable2">
-								  <tbody class="t_sortable ui-sortable">
-									 <h5>Order Assign</h5>
-									 <tr>
-									  
-								       <th scope="col"> Id</th>
-								       <th scope="col"> Name</th>
-								       <th scope="col">Price</th>
-								     </tr>				  
+								  <table class="table tables_ui table-bordered" id="t_draggable2">
+								    <tbody class="t_sortable ui-sortable">
+									   <h5>Order Assign</h5>
+									   <tr>									  
+								       <th scope="col" id="id"> Id</th>
+								       <th scope="col" id="name"> Name</th>
+								       <th scope="col" id="price"> Price</th>
+								      </tr>				  
 									</tbody>
 									</table>		
 							    </div>

@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nirmalya.aathithya.webmodule.canteen.model.AssignComboModel;
 import nirmalya.aathithya.webmodule.canteen.model.WebMenuModel;
 import nirmalya.aathithya.webmodule.common.utils.DropDownModel;
 import nirmalya.aathithya.webmodule.common.utils.EnvironmentVaribles;
@@ -263,6 +264,36 @@ public class AssignController {
 				return res;
 			}
 			
-			
+
+			   //Add
+				@SuppressWarnings("unchecked")
+				@PostMapping("assign-add-dtls")
+				public @ResponseBody JsonResponse<Object> addIncentive(@RequestBody AssignComboModel assignComboModel, Model model,
+						HttpSession session) {
+
+					logger.info("Method : addincentivesDetails starts" + assignComboModel);
+
+					System.out.println("resp web controller-----------------------------------" + assignComboModel);
+
+					JsonResponse<Object> resp = new JsonResponse<Object>();
+
+					try {
+
+						resp = restClient.postForObject(env.getcanteenUrl() + "restassign-add", assignComboModel, JsonResponse.class);
+
+					} catch (RestClientException e) {
+
+						e.printStackTrace();
+					}
+
+					if (resp.getMessage() == "") {
+						resp.setMessage("Success");
+					}
+					logger.info("Method : addincentivesDetails ends" + resp);
+
+					return resp;
+				}
+				
+				
 
 }

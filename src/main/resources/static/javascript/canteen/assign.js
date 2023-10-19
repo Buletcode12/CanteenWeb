@@ -109,81 +109,144 @@ var deleteId = "";
 		    });
 		  }
 			
-
-	//***********************Subcategry function**********************/
-	    function clubMemberGetDetail(){
-		    var clubMemberId = $('#clubmember').val();
-			   $.ajax({
-				 type : "GET",
-				 url : "assign-getMemberDetails?id=" + subcategry,
-				 async : false,
-				 success : function(response) {
-					//console.log("response------" + JSON.stringify(response));
-					  if (response.message == "Success") {
-						$("#rangefrom").val(response.body[0].memberRangeFrom);
-						$("#rangeto").val(response.body[0].memberRangeTo);
-					}
-				  }
-			   })
-		    }
-		
-	
-	//************************categry********************* */
-		function getIncentiveStatus(){
-			
-			 var categry = $('#categry').val();
-			 $.ajax({
-				type : "GET",
-				url : "assign-getIncentiveDetails?id=" + categry,
-				async : false,
-				success : function(response) {
-					if (response.message == "Success") {
-						$("#incentivecode").val(response.body[0].itemId);
-					}
-				}
-			})
-		}
-	//******************Combo call *************************/
-		/*function getCombo(){			
-			alert("hiii"+comboId)			
-			console.log("hiii")
-		}*/
-
-	//*******************************Category call**********************
-		/*		var firstFetchedData = []; // Store the first fetched data
+				
+					//***********************Subcategry function**********************/
+					    function clubMemberGetDetail(){
+						    var clubMemberId = $('#clubmember').val();
+							   $.ajax({
+								 type : "GET",
+								 url : "assign-getMemberDetails?id=" + subcategry,
+								 async : false,
+								 success : function(response) {
+									//console.log("response------" + JSON.stringify(response));
+									  if (response.message == "Success") {
+										$("#rangefrom").val(response.body[0].memberRangeFrom);
+										$("#rangeto").val(response.body[0].memberRangeTo);
+									}
+								  }
+							   })
+						    }
+						
 									
-					function getIncentiveStatus() {
-					    var catId = $("#categry").val();
-					    var subCatId = $("#subcategry").val();
-					    var variant = $("#variant").val();
-					      
-					    //d  alert("csdc")
-					   
-					    $.ajax({
-							    type: "GET",
-							    url: "assign/canteen-item-list?catId=" + catId + "&subCatId=" + subCatId + "&variant=" + variant,
-							    async: false,
-							    success: function(response) {
-							        
-							        var items = response;											       
-							        var tbody = $("#t_draggable1 tbody");
+					//************************categry********************* */
+						function getIncentiveStatus(){
+							
+							 var categry = $('#categry').val();
+							 $.ajax({
+								type : "GET",
+								url : "assign-getIncentiveDetails?id=" + categry,
+								async : false,
+								success : function(response) {
+									if (response.message == "Success") {
+										$("#incentivecode").val(response.body[0].itemId);
+									}
+								}
+							})
+						}
+						
+						
+	 //*********************** Assign Order Add  ***********************************/	
+					function addIncentiveInfo() {
+					    alert("hello");
+					
+					    var obj = {};
+					
+					    obj.weakendName = $('#weakendName').val();
+					    obj.data = [];
+					
+					    $('#t_draggable2 tbody tr').each(function(index, row) {
+							
+					        var $cells = $(row).find('td');
+					        var id = $cells.eq(0).text(); 
+					        var name = $cells.eq(1).text();
+					        var price = $cells.eq(2).text(); 
+					
+					        obj.data.push({
+					            id: id,
+					            name: name,
+					            price: price
+					        });
+					    });
+					
+					    console.log("object on add: " + JSON.stringify(obj));
+					
+					    var validation = true;
+					
+					    if (validation) {
+					        $.ajax({
+					            type: "POST",
+					            url: "assign-add-dtls",
+					            contentType: "application/json",
+					            data: JSON.stringify(obj),
+					            success: function(response) {
+					                if (response.message == "Success") {
+					                    swal("Menu added successfully!", " ", "success");
+					                    cancelBtn();
+					                    agGrid.simpleHttpRequest({
+					                        url: "menu-throughAjax"
+					                    }).then(function(data) {
+					                        gridOptions.api.setRowData(data);
+					                    });
+					                }
+					            },
+					            error: function(data) {
+					                console.log(data);
+					            }
+					        });
+					    }
+					}
 
-							        for (var i = 0; i < items.length; i++) {
-							            var item = items[i];
-							            // Create a new row for each item
-							            var newRow = $("<tr>");
-							            newRow.append("<th scope='row'></th>");
-							            newRow.append("<td>" + item.itemId + "</td>");
-							            newRow.append("<td>" + item.itemName + "</td>");
-							            newRow.append("<td>" + item.price + "</td>");
-							            // You can add more columns or data as needed
-							            tbody.append(newRow);
-							        }
-							    }
-							});
-			    	   }   */
-			    	   
-				 var addedItemIds = [];					
+	
+	
+	/*
+				function addIncentiveInfo() {
+					
+					alert (id)
+							  
+					    var id = $("#id").val();
+					    var name = $("#name").val();
+					    var price = $("#price").val();
+					    
+					    var newRow = $("<tr>");
+					    newRow.append("<td>" + id + "</td>");
+					    newRow.append("<td>" + name + "</td>");
+					    newRow.append("<td>" + price + "</td>");
+					
+					   // $("#t_draggable2 tbody").append(newRow);									  
+					    var obj = {
+					        id: id,
+					        name: name,
+					        price: price,
+					        weakendName: $('#weakendName').val()
+					    };
+					console.log(obj)
+					  
+					    $.ajax({
+					        type: "POST",
+					        url: "assign-add-dtls",
+					        contentType: "application/json",
+					        data: JSON.stringify(obj),
+					        success: function(response) {
+					            if (response.message === "Success") {
+					                swal("Menu added successfully!", " ", "success");
+					                cancelBtn();
+					                agGrid.simpleHttpRequest({
+					                    url: "menu-throughAjax"
+					                }).then(function(data) {
+					                    gridOptions.api.setRowData(data);
+					                });
+					            }
+					        },
+					        error: function(data) {
+					            console.log(data);
+					        }
+					    });
+					}
+					*/
+						
+	
+ //***********************Combo Function call dropDown view  ***********************************/								    	   
+			       var addedItemIds = [];					
 					function getIncentiveStatus() {
 					    var catId = $("#categry").val();
 					    var subCatId = $("#subcategry").val();
@@ -196,6 +259,8 @@ var deleteId = "";
 					        success: function (response) {
 					            var items = response;
 					            var tbody = $("#t_draggable1 tbody");
+					 
+					              tbody.find('td').remove();
 					
 					            for (var i = 0; i < items.length; i++) {
 					                var item = items[i];
@@ -212,17 +277,12 @@ var deleteId = "";
 					                    addedItemIds.push(item.itemId);
 					                } else {
 					                    // Handle the case where the item is already in the table (show an error message, for example)
-					                    swal("Already Selected!");
+					                   // swal("Already Selected!");
 					                }
 					            }
 					        }
 					    });
 					}
-
-
-
-
-//**************************combo name********************* */
 
 
     //***********************Combo Function call view  ***********************************/	
@@ -298,6 +358,7 @@ var deleteId = "";
 							contentType : 'application/json',
 							data : search,
 							success : function(response) {
+								//console.log(response)
 								if (response.code == "success") {
 									//alert(response.code == "success")
 									if (response.body.length != 0) {
@@ -307,7 +368,8 @@ var deleteId = "";
 										var content = '<ul id="autocomplete-list1" >';
 										for (var i = 0; i < response.body.length; i++) {
 											content += '<li style="margin-left:0px; font-weight:400; font-size:14px; color:#343a40;   background-color: #dbdbdb;"  class="autocompletedata cp" onClick="selectAutocompleteValue2(\''
-													+ response.body[i].comboId + '\',\''+response.body[i].comboName+'\')">'
+													+ response.body[i].comboId + '\',\''
+													+response.body[i].comboName+'\')">'
 													+ response.body[i].comboName
 													+ '</li>';}
 										content += '<li  >'
@@ -339,12 +401,22 @@ var deleteId = "";
 			        }
 	         	}
  		
-                       var accumulatedComboNames = [];
-							function selectAutocompleteValue2(comboId, comboName) {
+ 		
+						var accumulatedComboNames = [];
+							
+							function selectAutocompleteValue2(comboId, comboName ) {
+							//console.log(comboId+"")
 							    var selectedItems = document.getElementById('selected-items');
 							    $("#comboId").val(comboId);
 							
 							    var currentComboName = $("#comboName").val();
+							    
+							    // Check if the item is already in accumulatedComboNames
+							    if (accumulatedComboNames.some(item => item.comboId === comboId)) {
+							        swal("This Combo already selected.");
+							         $("#suggesstion-box21_").hide();
+							        return;
+							    }
 							
 							    if (currentComboName) {
 							        accumulatedComboNames.push({ comboName, comboId });
@@ -362,63 +434,33 @@ var deleteId = "";
 							    } else {
 							        accumulatedComboNames = [{ comboName, comboId }];
 							        $("#comboName").val("");
-							        		   
-							}
-							 var items = accumulatedComboNames;	
-						     var tbody = $("#t_draggable2 tbody");	
-					                									 
-							 $("#suggesstion-box21_").hide();
-							 			       					        
-					         //for (var i = 0; i < items.length; i++) {
-					            //var item = items[i];
-					           // alert(comboId)	
-					            //if (item.itemId === comboId) {
-					            //Create a new row for the selected item
-					                //alert("hi")
-					                var row = "<tr><td>" + comboId + "</td>" +
-					                "<td>" + comboName + "</td>" +
-					                "<td>" +  + "</td></tr>";
-					                $("#t_draggable2 tbody").append(row);					                					              					                
-					                addedItemIds.push(comboId);	
-					               
-					                			                							           					              
-					            //}					               
-					        //}
-					        					       
-					     }											
-							 
-						
-							
-					function removeSelectedItem(element, comboId) {
-						
-					   const selectedItems = document.getElementById('selected-items');
-					    selectedItems.removeChild(element.parentNode);
-				
-					    const index = addedItemIds.indexOf(comboId);
-					    if (index !== -1) {
-								   alert(index)
-					        addedItemIds.splice(index, 1);
-					       
-					    }
-						   alert(selectedItems)
-					    // Remove the corresponding row from the table
-					    $("#t_draggable2 tbody td td:first-child").each(function () {
-					        if ($(this).text() === selectedItems) {
-								
-					            $(this).closest("tr").remove();
-					        }
-					    });
-							
-                       }
-
-
-					    // To remove a suggestion on click		
-							function removeLastSuggestion() {
-							    if (accumulatedComboNames.length > 0) {
-							        accumulatedComboNames.pop(); // Remove the last suggestion
-							        $("#comboName").val(accumulatedComboNames.join(', ')); // Update the field value
 							    }
+							
+							    var row = "<tr><td>" + comboId + "</td>" +
+							        "<td>" + comboName + "</td>" +
+							        //"<td>" + allPrice + "</td>" +
+							        "<td><span class='remove-button' onclick='removeSelectedItem(this, " + comboId + ")'>50</span></td>";
+							
+							    $("#t_draggable2 tbody").append(row);
+							     $("#suggesstion-box21_").hide();
 							}
+							
+							function removeSelectedItem(element, comboName, comboId) {
+							    const selectedItems = document.getElementById('selected-items');
+							    selectedItems.removeChild(element.parentNode);
+							
+							    const index = accumulatedComboNames.findIndex(item => item.comboName === comboName && item.comboId === comboId);
+							    if (index !== -1) {
+							        accumulatedComboNames.splice(index, 1);
+							    }
+							    
+							    // Remove the corresponding row from the table
+							    $("#t_draggable2 tbody tr td:first-child:contains('" + comboId + "')").parent().remove();
+							}
+
+ 		
+ 		
+                     
 							
 
  //*******************************Auto Search *************************/            
@@ -481,8 +523,9 @@ var deleteId = "";
 					function selectAutocompleteValue1(itemid, itemname) {
 					    // Check if the item ID is already in the addedItemIds array
 					    if (addedItemIds.includes(itemid)) {
+							
 							$("#suggesstion-box11_").hide();
-					        swal("Item is already selected!");
+					        swal("Order already assign!");
 					    } else {
 					        // Add the item to the table
 					        $("#itemName").val(itemname);
@@ -513,164 +556,6 @@ var deleteId = "";
 		  
 		  
 		  
- //******************Searching *****************/  
- //  let itemDataOnSearch = []; 
-	/*    //searching
-	     function getComboList() {
-			 // alert("sacsdca")
-			 $("#comboId").val("");
-			  var search = $("#comboName").val();
-			  if (search) {
-				$.ajax({
-						type : "POST",
-							url : "assign-combo-list",
-							dataType : 'json',
-							contentType : 'application/json',
-							data : search,
-							success : function(response) {
-								if (response.code == "success") {
-									//alert(response.code == "success")
-									if (response.body.length != 0) {
-										comboDataOnSearch = [];
-										comboDataOnSearch = response.body;
-										$("#search").css("background", "#FFF");
-										var content = '<ul id="autocomplete-list1" >';
-										for (var i = 0; i < response.body.length; i++) {
-											content += '<li style="margin-left:0px; font-weight:400; font-size:14px; color:#343a40;   background-color: #dbdbdb;"  class="autocompletedata cp" onClick="selectAutocompleteValue2(\''
-													+ response.body[i].comboId + '\',\''+response.body[i].comboName+'\')">'
-													+ response.body[i].comboName
-													+ '</li>';}
-										content += '<li  >'
-												+ '</li>';
-										content += '</ul>';
-										////console.log("content " + content)
-										$("#suggesstion-box21_").show();
-										$("#suggesstion-box21_").html(content);
-	
-									} else {
-										$("#search").css("background", "#FFF");
-										var content = '<ul id="autocomplete-list1">';
-										content += '<li style="margin-left:0px; font-weight:100; font-size:14px; color:#ccc;     background-color: #dbdbdb;">'
-												+ "No Data Found" + '</li>';
-										content += '<li style="margin-left:-30px;" '
-												+ '</li>';
-										content += '</ul>';
-										$("#suggesstion-box21_").show();
-										$("#suggesstion-box21_").html(content);
-										
-									}
-								}
-							
-							},
-							error : function(data) {
-								//console.log(data);
-							}
-						})
-			        }
-	         	}*/
- 
- 		
-/*// Initialize a variable to accumulate selected combo names
-var accumulatedComboNames = "";
-
-function selectAutocompleteValue2(comboId, comboName) {
-	
-   // $("#comboId").val(comboId);
-    
-   
-    accumulatedComboNames += comboName + " ,"; // You can use a comma or any other separator
-
-    // Set the value for #comboNdddddddsdame with the accumulatedComboNames
-    $("#comboAllName").val(accumulatedComboNames);
-    
-    // Hide the suggestion box
-    $("#suggesstion-box21_").hide();
-    
-    // Log the selected comboName
-    console.log(comboName);
-    
-    // You can perform additional actions or set data in other fields here
-}
-*/
-
-
-/*var accumulatedComboNames = "";
-
-function selectAutocompleteValue2(comboId, comboName) {
-    accumulatedComboNames += comboName + " ,"; // You can use a comma or any other separator
-    $("#comboAllName").val(accumulatedComboNames);
-    $("#suggesstion-box21_").hide();
-    console.log(comboName);
-
-    // Add a click event listener to clear the field on user click
-    $("#comboAllName").on("click", function() {
-        accumulatedComboNames = "";
-        $("#comboAllName").val("");
-    });
-
-    // You can perform additional actions or set data in other fields here
-}*/
-
-	   
-		/*		   
-		 var accumulatedComboNames = "";
-			
-	       function selectAutocompleteValue2(comboId, comboName) {
-			    // Set the value for #comboId
-			    $("#comboId").val(comboId);
-			
-			    // Append the selected comboName to the search field value
-			    var currentComboName = $("#comboName").val();
-			    
-			    if (currentComboName) {
-			        accumulatedComboNames += '' + comboName +' ,';
-			    }
-			    
-			    $("#comboName").val(accumulatedComboNames);
-			
-			    // Hide the suggestion box
-			    $("#suggesstion-box21_").hide();
-			
-			    // Log the selected comboName
-			    console.log(comboName);
-			    // You can perform additional actions or set data in other fields here
-			}
-			
-*/
-		
-/*		var accumulatedComboNames = [];		
-		function selectAutocompleteValue2(comboId, comboName) {
-		    // Set the value for #comboId
-		    $("#comboId").val(comboId);
-		
-		    // Append the selected comboName to the search field value
-		    var currentComboName = $("#comboName").val();
-		
-		    if (currentComboName) {
-		        accumulatedComboNames.push(comboName); // Add the selected comboName to the array
-		        $("#comboName").val(accumulatedComboNames.join(', ')); // Join the array and set it as the field value
-		    } else {
-		        accumulatedComboNames = [comboName]; // If the field is empty, start a new array
-		        $("#comboName").val(comboName);
-		    }
-		
-		    // Hide the suggestion box
-		    $("#suggesstion-box21_").hide();
-		
-		    // Log the selected comboName
-		    console.log(comboName);
-		
-		    // You can perform additional actions or set data in other fields here
-		}
-
-    // To remove a suggestion on click
-		function removeLastSuggestion() {
-		    if (accumulatedComboNames.length > 0) {
-		        accumulatedComboNames.pop(); // Remove the last suggestion
-		        $("#comboName").val(accumulatedComboNames.join(', ')); // Update the field value
-		    }
-		}*/
-
  
 		    	
 //*********************Edit function ****************//
@@ -950,57 +835,4 @@ function selectAutocompleteValue2(comboId, comboName) {
 						
 					
 									  
-									  				
- //************************ItemchildViewassign******************************** */
-				/* var ItemchildViewassign = [{
-					headerCheckboxSelection : true,
-					headerCheckboxSelectionFilteredOnly : true,
-					checkboxSelection : true,
-					width : 10,
-					sortable : false,
-					filter : false,
-					resizable : true
-				}, {
-					headerName : "Item Id",
-					field : "itemId",
-					width : 175
-			
-				}, {
-					headerName : "Item Name",
-					field : "itemName",
-					width : 175
-				}, {
-					headerName : "Price",
-					field : "price",
-					width : 175
-				}, {
-					headerName : "Action",
-					field : "param",
-					width : 95,
-					cellStyle : {
-						textAlign : 'center'
-						
-					},
-					  cellRenderer : function(param) {
-						  return `
-						  <div >
-					        <div style="color: black; font-weight: bold;"></div>
-					        <button onclick=onRowClickedForAssignItem('${param.data.itemId}')>Delete</button>
-					    </div>
-					    `;
-			      	}
-				}];
-				var gridOptionschaildassign = {
-					columnDefs : ItemchildViewassign,
-					defaultColDef : {
-						sortable : true,
-						filter : true,
-						resizable : true,
-						width : 200,
-						height : 20
-					},
-					rowSelection : 'multiple',
-					//onSelectionChanged : onRowClicked
-					//onRowClicked : onRowClicked
-				};
-				    */
+	
