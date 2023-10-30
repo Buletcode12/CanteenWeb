@@ -122,7 +122,7 @@ public String viewIncentive(Model model, HttpSession session) {
 	}
 	
 	
-   //View
+    //View
 			@SuppressWarnings("unchecked")
 			@GetMapping("menu-throughAjax")
 			public @ResponseBody List<WebMenuModel> viewIncentive(HttpSession session) {
@@ -150,7 +150,7 @@ public String viewIncentive(Model model, HttpSession session) {
 				return resp.getBody();
 			}
 			
-    // Edit  
+                // Edit  
 						@SuppressWarnings("unchecked")
 						@GetMapping("menu-edit")
 						public @ResponseBody JsonResponse<List<WebMenuModel>> editShoukeenincentiveInfo(Model model,
@@ -191,7 +191,7 @@ public String viewIncentive(Model model, HttpSession session) {
 
 
 						
-		   //Delete
+		       //Delete
 						@SuppressWarnings("unchecked")
 						@GetMapping("menu-delete-id")
 						public @ResponseBody JsonResponse<Object> deleteIncentiveDetails(@RequestParam String id,
@@ -199,9 +199,7 @@ public String viewIncentive(Model model, HttpSession session) {
 							logger.info("Method : deleteincentiveDetails function starts"+id);
 
 							JsonResponse<Object> res = new JsonResponse<Object>();
-
 							
-
 							try {
 								res = restClient.getForObject(env.getcanteenUrl() + "delete-inceDetails?id=" + id  , JsonResponse.class);
 							} catch (RestClientException e) {

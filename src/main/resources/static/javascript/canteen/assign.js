@@ -1,35 +1,36 @@
-//******variable dec */
-let totalPrice = 0;
-var deleteId = "";
+		//******variable dec */
+		let totalPrice = 0;
+		var deleteId = "";
 
 
 
      
-  //****************onRowClickedAkm*********** ******/   
-     function onRowClickedAkm(param) {	
-		   var totalPrice = 0;
-		   var selectedRows = param.api.getSelectedRows();
-		   
-		   if(selectedRows){
-			 // alert("sdfsd")
-			  const fruits = [];
-              fruits.push(selectedRows);
-              
-               //alert(fruits)
-		   }		 		
-		  console.log("selectedRows"+selectedRows);
-		 
-		   		     selectedRows.forEach(item => {
-		   		       if (item.hasOwnProperty('price')) {
-		   		         const priceValue = parseFloat(item.price); 
-		   		         if (!isNaN(priceValue)) { 
-		   		           totalPrice += priceValue; 
-		   		         }
-		   		       }
-		   		     });
-		   		   document.getElementById("allPrice").value = totalPrice.toFixed(2);   		   		  
-		      }
-		  
+	  //****************onRowClickedAkm*********** ******/   
+				     function onRowClickedAkm(param) {	
+						   var totalPrice = 0;
+						   var selectedRows = param.api.getSelectedRows();
+						   
+						   if(selectedRows){
+							 // alert("sdfsd")
+							  const fruits = [];
+				              fruits.push(selectedRows);
+				              
+				               //alert(fruits)
+						   }		 		
+			 
+			  console.log("selectedRows"+selectedRows);
+			  		 
+			   		     selectedRows.forEach(item => {
+			   		       if (item.hasOwnProperty('price')) {
+			   		         const priceValue = parseFloat(item.price); 
+			   		         if (!isNaN(priceValue)) { 
+			   		           totalPrice += priceValue; 
+			   		         }
+			   		       }
+			   		     });
+			   		   document.getElementById("allPrice").value = totalPrice.toFixed(2);   		   		  
+			      }
+			  
 		
 		
 //************************Delete Function**********************************************		
@@ -94,7 +95,7 @@ var deleteId = "";
 		            success: function (response) {
 		            if (response.message == "Success") {
 		            	 console.log(response.message == "Success");
-		                  swal("Menu added successfully!", " ", "success");
+		                  swal("Order assign successfully!", " ", "success");
 		                  cancelBtn();
 		                  agGrid.simpleHttpRequest({
 		                  url: "assign-all-throughAjax"
@@ -147,7 +148,7 @@ var deleteId = "";
 						
 	 //*********************** Assign Order Add  ***********************************/	
 					function addIncentiveInfo() {
-					    alert("hello");
+					  //  alert("hello");
 					
 					    var obj = {};
 					
@@ -161,13 +162,14 @@ var deleteId = "";
 					        var name = $cells.eq(1).text();
 					        var price = $cells.eq(2).text(); 
 					
-					        obj.data.push({
-					            id: id,
-					            name: name,
-					            price: price
-					        });
+					       if (id.trim() !== '' && name.trim() !== '' && price.trim() !== '') {
+					            obj.data.push({
+					                id: id,
+					                name: name,
+					                price: price
+					            });
+					        }
 					    });
-					
 					    console.log("object on add: " + JSON.stringify(obj));
 					
 					    var validation = true;
@@ -180,7 +182,7 @@ var deleteId = "";
 					            data: JSON.stringify(obj),
 					            success: function(response) {
 					                if (response.message == "Success") {
-					                    swal("Menu added successfully!", " ", "success");
+					                    swal("Order Assign Successfully!", " ", "success");
 					                    cancelBtn();
 					                    agGrid.simpleHttpRequest({
 					                        url: "menu-throughAjax"
@@ -195,7 +197,7 @@ var deleteId = "";
 					        });
 					    }
 					}
-
+	
 	
 	
 	/*

@@ -52,6 +52,7 @@ var deleteId = "";
            	totalPrice += parseFloat(item.price)
        }
      });
+     
 	 document.getElementById("allPrice").value = totalPrice;  
 	    }else{
 	        let gridListData = [...selectedRows, ...assignItemTablelist];
@@ -178,7 +179,7 @@ var deleteId = "";
 		    }
 		
 	
-	//************************categry********************* */
+	//************************categry****************************//
 		function getIncentiveStatus(){	
 			 var categry = $('#categry').val();
 			 $.ajax({
@@ -518,7 +519,7 @@ var deleteId = "";
 				
 					
 
-//************************************columnDefs *************************
+//************************************columnDefs*************************
 				 var  columnDefs= [ {
 					headerCheckboxSelection : true,
 					headerCheckboxSelectionFilteredOnly : true,
